@@ -1,14 +1,16 @@
-import { Schema, model, models } from "mongoose";
+import mongoose from "mongoose";
 
-const userSchema = new Schema({
+
+const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please provide a name"],
+    unique: true,
   },
   username: {
     type: String,
     required: [true, "Please provide a username"],  // This must be changed 
-    unique: true,
+   
   },
   email: {
     type: String,
@@ -39,6 +41,6 @@ const userSchema = new Schema({
   // I will add more fields later
 });
 
-const User = models.users || model("User", userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;
