@@ -1,25 +1,19 @@
 import mongoose from "mongoose";
 
-
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Please provide a name"],
+    required: [true, "Name is required"],
     unique: true,
-  },
-  username: {
-    type: String,
-    required: [true, "Please provide a username"],  // This must be changed 
-   
   },
   email: {
     type: String,
-    required: [true, "Please provide an email"],
+    required: [true, "Email is required"],
     unique: true,
   },
   password: {
     type: String,
-    required: [true, "Please provide a password"]
+    required: [true, "Password is required"],
   },
   isVerified: {
     type: Boolean,
@@ -27,18 +21,30 @@ const userSchema = new mongoose.Schema({
   },
   isAdmin: {
     type: Boolean,
-    default: false
+    default: false,
   },
-  forgotPasswordToken: String,
-  forgotPasswordExpire: Date,
-  verifyToken: String,
-  verifyExpire: Date,
+  forgotPassword: {
+    type: String,
+    default: "",
+  },
+  forgotPasswordExpires: {
+    type: Date,
+  },
+  verificationToken: {
+    type: String,
+    default: "",
+  },
+  verificationTokenExpires: {
+    type: Date,
+  },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
-
-  // I will add more fields later
+  updatedAt: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
