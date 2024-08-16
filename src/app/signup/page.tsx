@@ -30,7 +30,7 @@ export default function SignUpPage() {
       // console.log("trying to sign up");
       const response = await axios.post("/api/users/signup", user);
       console.log("signUp successful");
-      
+
       console.log("response", response.data.message);
       // router.push("/login");
     } catch (error: any) {
@@ -84,9 +84,7 @@ export default function SignUpPage() {
           Log In
         </button>
       </form>
-      <Link href="/login">
-        Sign up
-      </Link>
+      <Link href="/login">Sign up</Link>
     </div>
   );
 }
