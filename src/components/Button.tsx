@@ -15,7 +15,7 @@ export function Button({ title, onClick, disabled, className, leftIcon, rightIco
     <motion.button
       whileTap={{ scale: 0.975 }}
       onClick={onClick}
-      className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border border-cyan-600/10 bg-cyan-500 px-9 py-3.5 text-sm font-semibold text-white hover:scale-[0.99] dark:bg-cyan-500 dark:text-black ${className}`}
+      className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border border-cyan-600/10 bg-[#00CCFF] px-9 py-3.5 text-sm font-semibold text-white hover:scale-[0.99] dark:bg-cyan-500 dark:text-black ${className}`}
       disabled={disabled}
       {...rest}
     >
@@ -31,7 +31,7 @@ export function OutlineButton({ title, onClick, disabled, className, leftIcon, r
     <motion.button
       whileTap={{ scale: 0.975 }}
       onClick={onClick}
-      className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border border-cyan-500/80 bg-transparent px-9 py-3.5 text-sm font-semibold text-black/80 shadow-sm hover:scale-[0.99] dark:border-white/80 dark:bg-transparent dark:text-white/80 ${className}`}
+      className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border border-black/80 bg-transparent px-9 py-3.5 text-sm font-semibold text-black/80 shadow-sm hover:scale-[0.99] dark:border-white/80 dark:text-white/80 ${className}`}
       disabled={disabled}
       {...rest}
     >
