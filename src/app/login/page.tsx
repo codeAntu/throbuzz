@@ -18,22 +18,20 @@ export default function login() {
             type='password'
             name='password'
             placeholder='Enter your password'
-            leftIcon={<KeyRound />}
-            rightIcon={<Eye />}
+            leftIcon={<Ic Icon={KeyRound} />}
+            rightIcon={<Ic Icon={Eye} />}
           />
         </div>
         <div className='flex flex-col items-center justify-center gap-4'>
           <Button
             title='Login'
             onClick={() => console.log('Login')}
-            disabled={false}
             className={'w-full bg-transparent'}
             leftIcon={<LogIn className='' width={20} />}
           />
           <OutlineButton
             title='Create new account'
             onClick={() => console.log('Create new password')}
-            disabled={false}
             className='w-full'
             leftIcon={<Ic Icon={Sparkles} className='text-black dark:text-white' />}
           />
