@@ -1,17 +1,18 @@
 'use client'
 
 import { Button, OutlineButton } from '@/components/Button'
+import Continue from '@/components/Continue'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
 import Input from '@/components/Input'
 import { Screen } from '@/components/Screen'
-import { Eye, GoalIcon, KeyRound, LogIn, Mail, Sparkles } from 'lucide-react'
+import { Eye, KeyRound, LogIn, Mail, Sparkles } from 'lucide-react'
 
 export default function login() {
   return (
-    <Screen className='justify-center gap-5 sm:gap-10'>
+    <Screen className='justify-center gap-14 pt-8'>
       <Hero />
-      <div className='flex flex-col gap-6 px-1'>
+      <div className='flex flex-col gap-8'>
         <div className='flex flex-col items-center justify-center gap-4'>
           <Input type='email' name='email' placeholder='Enter your email address' leftIcon={<Ic Icon={Mail} />} />
           <Input
@@ -36,14 +37,9 @@ export default function login() {
             leftIcon={<Ic Icon={Sparkles} className='text-black dark:text-white' />}
           />
         </div>
-      </div>
-      <div>
-        {/* <div>
-          Start with 
-        </div>
         <div>
-          <GoalIcon className="text-white/70 " width={20} />
-        </div> */}
+          <Continue />
+        </div>
       </div>
     </Screen>
   )

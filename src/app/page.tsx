@@ -1,19 +1,23 @@
 'use client'
 
 import { Button, OutlineButton } from '@/components/Button'
+import Continue from '@/components/Continue'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
 import Input from '@/components/Input'
 import { Screen } from '@/components/Screen'
-import { Eye, KeyRound, LogIn, Mail, Sparkles } from 'lucide-react'
+import TAndC from '@/components/T&C'
+import { AtSign, Eye, KeyRound, LogIn, Mail, Sparkles, User } from 'lucide-react'
 
 export default function Home() {
   return (
-    <Screen className='justify-center gap-5 sm:gap-10'>
+    <Screen className='justify-center gap-10'>
       <Hero />
-      <div className='flex flex-col gap-6 px-1'>
-        <div className='flex flex-col items-center justify-center gap-4'>
+      <div className='flex flex-col gap-6'>
+        <div className='flex flex-col items-center justify-center gap-3'>
+          <Input type='text' name='name' placeholder='Enter your name' leftIcon={<Ic Icon={User} />} />
           <Input type='email' name='email' placeholder='Enter your email address' leftIcon={<Ic Icon={Mail} />} />
+          <Input type='text' name='userName' placeholder='Choose a user name' leftIcon={<Ic Icon={AtSign} />} />
           <Input
             type='password'
             name='password'
@@ -22,28 +26,24 @@ export default function Home() {
             rightIcon={<Ic Icon={Eye} />}
           />
         </div>
-        <div className='flex flex-col items-center justify-center gap-4'>
+        <div className='flex flex-col items-center justify-center gap-3.5'>
           <Button
-            title='Login'
+            title='Create new account'
             onClick={() => console.log('Login')}
             className={'w-full bg-transparent'}
-            leftIcon={<LogIn className='' width={20} />}
+            leftIcon={<Ic Icon={Sparkles} className='text-white dark:text-black' />}
           />
           <OutlineButton
-            title='Create new account'
+            title='Login'
             onClick={() => console.log('Create new password')}
             className='w-full'
-            leftIcon={<Ic Icon={Sparkles} className='text-black dark:text-white' />}
+            leftIcon={<LogIn className='' width={20} />}
           />
         </div>
-      </div>
-      <div>
-        {/* <div>
-          Start with 
-        </div>
         <div>
-          <GoalIcon className="text-white/70 " width={20} />
-        </div> */}
+          <Continue />
+        </div>
+        <TAndC />
       </div>
     </Screen>
   )
