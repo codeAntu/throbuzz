@@ -2,37 +2,31 @@
 
 import { Button, OutlineButton } from '@/components/Button'
 import Hero from '@/components/Hero'
+import { Ic } from '@/components/Icon'
 import Input from '@/components/Input'
 import { Screen } from '@/components/Screen'
 import { Eye, GoalIcon, KeyRound, LogIn, Mail } from 'lucide-react'
 
 export default function login() {
   return (
-    <Screen className='justify-center items-center gap-4'>
+    <Screen className='items-center justify-center gap-4'>
       <div className=''>
         <Hero />
         <div className='flex flex-col gap-5 px-1'>
-          <Input
-            type='email'
-            name='email'
-            className='w-full'
-            placeholder='Enter your email address'
-            leftIcon={<Mail className='text-white/70' width={20} />}
-          />
+          <Input type='email' name='email' placeholder='Enter your email address' leftIcon={<Ic Icon={Mail} />} />
           <Input
             type='password'
             name='password'
-            className='w-full'
             placeholder='Enter your password'
-            leftIcon={<KeyRound className='text-white/70' width={20} />}
-            rightIcon={<Eye className='text-white/70' width={20} />}
+            leftIcon={<KeyRound className='' width={20} />}
+            rightIcon={<Eye className=' ' width={20} />}
           />
           <Button
             title='Login'
             onClick={() => console.log('Login')}
             disabled={false}
             className={'w-full bg-transparent'}
-            leftIcon={<LogIn className='text-black/70' width={20} />}
+            leftIcon={<LogIn className='' width={20} />}
           />
           <OutlineButton
             title='Create new account'

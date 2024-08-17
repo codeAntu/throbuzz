@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["throbuzz"]
+  "cSpell.words": ["throbuzz"],
+  "files.autoSave": "onFocusChange"
 }
