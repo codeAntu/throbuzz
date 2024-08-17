@@ -30,7 +30,6 @@ export default function Home() {
           <Button
             title='Create new account'
             onClick={() => console.log('Login')}
-            className={'w-full bg-transparent'}
             leftIcon={<Ic Icon={Sparkles} className='text-white dark:text-black' />}
           />
           <OutlineButton

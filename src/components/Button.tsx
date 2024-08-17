@@ -1,22 +1,17 @@
 import { motion } from 'framer-motion'
+import { ComponentProps } from 'react'
 
-type buttonProps = {
-  title?: string
-  onClick?: () => void
-  disabled?: boolean
+type buttonProps = ComponentProps<'button'> & {
   className?: string
   leftIcon?: React.ReactNode
   rightIcon?: React.ReactNode
-  rest?: any
 }
 
-export function Button({ title, onClick, disabled, className, leftIcon, rightIcon, ...rest }: buttonProps) {
+export function Button({ title, className, leftIcon, rightIcon, ...rest }: buttonProps) {
   return (
     <motion.button
       whileTap={{ scale: 0.975 }}
-      onClick={onClick}
-      className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border border-cyan-600/10 bg-[#00CCFF] px-9 py-3.5 text-sm font-semibold text-white hover:scale-[0.99] dark:bg-cyan-500 dark:text-black ${className}`}
-      disabled={disabled}
+      className={`bg-accent border-accent flex w-full items-center justify-center gap-2.5 rounded-2xl border px-9 py-3.5 text-sm font-semibold text-white duration-100 hover:scale-[0.99] dark:text-black ${className}`}
       {...rest}
     >
       {leftIcon}
@@ -26,14 +21,12 @@ export function Button({ title, onClick, disabled, className, leftIcon, rightIco
   )
 }
 
-export function OutlineButton({ title, onClick, disabled, className, leftIcon, rightIcon, ...rest }: buttonProps) {
+export function OutlineButton({ title, className, leftIcon, rightIcon, ...rest }: buttonProps) {
   return (
     <motion.button
       whileTap={{ scale: 0.975 }}
-      onClick={onClick}
-      className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border border-black/80 bg-transparent px-9 py-3.5 text-sm font-semibold text-black/80 shadow-sm hover:scale-[0.99] dark:border-white/80 dark:text-white/80 ${className}`}
-      disabled={disabled}
       {...rest}
+      className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border border-black/70 bg-transparent px-9 py-3.5 text-sm font-semibold text-black/70 duration-100 hover:scale-[0.99] dark:border-white/70 dark:text-white/70 ${className}`}
     >
       {leftIcon}
       {title}
