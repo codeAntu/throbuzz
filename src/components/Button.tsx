@@ -11,7 +11,7 @@ export function Button({ title, className, leftIcon, rightIcon, ...rest }: butto
   return (
     <motion.button
       whileTap={{ scale: 0.975 }}
-      className={`bg-accent border-accent flex w-full items-center justify-center gap-2.5 rounded-2xl border px-9 py-3.5 text-sm font-semibold text-white duration-100 hover:scale-[0.99] dark:text-black ${className}`}
+      className={`bg-accent border-accent flex w-full items-center justify-center gap-2.5 rounded-[14px] border px-9 py-3.5 text-sm font-semibold text-white duration-100 hover:scale-[0.99] dark:text-black ${className}`}
       {...rest}
     >
       {leftIcon}

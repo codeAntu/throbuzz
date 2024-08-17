@@ -1,90 +1,84 @@
-"use client";
-import React, { useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import axios from "axios";
+'use client'
+import { Button } from '@/components/Button'
+import Continue from '@/components/Continue'
+import Hero from '@/components/Hero'
+import { Ic } from '@/components/Icon'
+import Input from '@/components/Input'
+import { Screen } from '@/components/Screen'
+import TAndC from '@/components/T&C'
+import axios from 'axios'
+import { AtSign, Eye, KeyRound, Mail, Sparkles, User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import React, { useEffect } from 'react'
 
 export default function SignUpPage() {
-  const router = useRouter();
+  const router = useRouter()
   const [user, setUser] = React.useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [buttonDisabled, setButtonDisabled] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+    name: '',
+    email: '',
+    password: '',
+  })
+  const [buttonDisabled, setButtonDisabled] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
 
   useEffect(() => {
     if (user.name && user.email && user.password) {
-      setButtonDisabled(false);
+      setButtonDisabled(false)
     } else {
-      setButtonDisabled(true);
+      setButtonDisabled(true)
     }
-  }, [user]);
+  }, [user])
 
   async function onSignUp(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+    event.preventDefault()
     try {
-      setLoading(true);
+      setLoading(true)
       // console.log("user", user);
       // console.log("trying to sign up");
-      const response = await axios.post("/api/users/signup", user);
-      console.log("signUp successful");
+      const response = await axios.post('/api/users/signup', user)
+      console.log('signUp successful')
 
-      console.log("response", response.data.message);
+      console.log('response', response.data.message)
       // router.push("/login");
     } catch (error: any) {
-      console.log("signUp failed");
-      console.log("error", error);
+      console.log('signUp failed')
+      console.log('error', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   return (
-    <div className="flex flex-col gap-5 items-center">
-      <h1>Sigh In</h1>
-      <p>{loading ? "Loading..." : "Create an account"}</p>
-      <form className="flex flex-col gap-2" onSubmit={onSignUp}>
-        <label className="grid gap-1">
-          Username:
-          <input
-            type="text"
-            name="username"
-            className="text-black"
-            onChange={(e) => setUser({ ...user, name: e.target.value })}
+    <Screen className='justify-center gap-10 pt-10'>
+      <Hero />
+      <div className='flex flex-col gap-5'>
+        <div className='flex flex-col items-center justify-center gap-2.5'>
+          <Input type='text' name='name' placeholder='Enter your name' leftIcon={<Ic Icon={User} />} />
+          <Input type='email' name='email' placeholder='Enter your email address' leftIcon={<Ic Icon={Mail} />} />
+          <Input type='text' name='userName' placeholder='Choose a user name' leftIcon={<Ic Icon={AtSign} />} />
+          <Input
+            type='password'
+            name='password'
+            placeholder='Enter your password'
+            leftIcon={<Ic Icon={KeyRound} />}
+            rightIcon={<Ic Icon={Eye} />}
           />
-        </label>
-        <label className="grid gap-1">
-          Email:
-          <input
-            type="email"
-            name="email"
-            className="text-black"
-            onChange={(e) => setUser({ ...user, email: e.target.value })}
-          />
-        </label>
-        <label className="grid gap-1">
-          Password:
-          <input
-            type="password"
-            name="password"
-            className="text-black"
-            placeholder="Password"
-            onChange={(e) => setUser({ ...user, password: e.target.value })}
-          />
-        </label>
-        <button
-          className={` mt-5 border-white/70 rounded-xl text-black ${
-            buttonDisabled ? "bg-gray-300" : "bg-blue-500"
-          }`}
-          type="submit"
-          disabled={loading}
-        >
-          Log In
-        </button>
-      </form>
-      <Link href="/login">Sign up</Link>
-    </div>
-  );
+        </div>
+        <Button
+          title='Create new account'
+          onClick={() => console.log('Login')}
+          leftIcon={<Ic Icon={Sparkles} className='text-white dark:text-black' />}
+        />
+
+        <div className='text-center text-sm text-black/40 dark:text-white/40'>
+          Already have an account?{' '}
+          <button className='font-semibold text-accent' onClick={() => router.push('/login')}>
+            Login
+          </button>
+        </div>
+        <Continue />
+        <TAndC />
+      </div>
+    </Screen>
+  )
 }
