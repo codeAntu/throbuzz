@@ -40,5 +40,4 @@ export function OutlineButton({ title, onClick, disabled, className, leftIcon, r
       {rightIcon}
     </motion.button>
   )
-
 }
