@@ -1,11 +1,19 @@
-import ProfileLayout from "../layout";
+import { Screen } from '@/components/Screen'
+import ProfileLayout from '../layout'
 
-export default function userProfile({ params } : { params: any }) {
+export default function userProfile({ params }: { params: any }) {
   return (
-    <div className="">
-      <h1>CodeAntu Page</h1>
-      <p>This is the page</p>
-      <div className="text-red-500">{params.userName} </div>
+    <Screen>
+      <Bio />
+    </Screen>
+  )
+}
+
+function Bio() {
+  return (
+    <div>
+      <img src='./images/profile.jpg' alt='' className='bg-white p-7' />
+      <img src='./icons/github.png' alt='' />
     </div>
-  );
+  )
 }
