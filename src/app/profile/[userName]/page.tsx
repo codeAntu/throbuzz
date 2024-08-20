@@ -5,25 +5,49 @@ import { Ic } from '@/components/Icon'
 import { Bold, Bolt, LogIn, MoveLeft, Pencil, Settings } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { useRouter } from 'next/navigation'
+import Post from '@/components/Post'
 
 export default function userProfile({ params }: { params: any }) {
   const router = useRouter()
   return (
     <Screen0 className='max-w-[700px]'>
-      <div className='flex w-full items-center justify-between bg-white px-5 py-2 dark:bg-black'>
+      <div className='flex w-full items-center justify-between bg-white px-5 py-4 dark:bg-black'>
         <MoveLeft size={26} onClick={() => router.back()} className='hover:bg-white/20' />
         <Bolt size={26} />
       </div>
       <Bio />
-      <About />
+      {/* <About /> */}
+      <Posts />
+      <Posts />
     </Screen0>
+  )
+}
+
+function Posts() {
+  return (
+    <div className='` bg-slate-400 pt-1 text-black dark:text-white'>
+      <div className='border-b border-black/10 bg-white py-4 dark:border-white/10 dark:bg-black'>
+        <div className='px-5 text-lg font-semibold leading-5'>Posts</div>
+        <div className='leading px-5 text-sm font-medium text-black/60 dark:text-white/60'>450 posts</div>
+      </div>
+      <div className='flex flex-col gap-0.5 bg-slate-400'>
+        {/* <Post /> */}
+        <Post />
+        <Post />
+        <Post />
+      </div>
+    </div>
   )
 }
 
 function About() {
   return (
     <div className='px-5'>
-      <div>About</div>
+      <div>
+        <div className='text-lg font-semibold'>About</div>
+        <div className='text-sm text-black/70 dark:text-white/70'>This section will be added letter .</div>
+      </div>
+      <div></div>
     </div>
   )
 }
@@ -33,16 +57,16 @@ function Bio() {
     <div className=''>
       <div className=''>
         <div className='relative'>
-          <img src='/images/bg2.jpg' alt='' className='max-h-40 w-full bg-red-500 object-cover' />
-          <div className='absolute bottom-0 right-0 cursor-pointer rounded-full border border-black/10 bg-red-400 p-2 duration-100 hover:scale-[1.03] hover:border-black/10 hover:bg-black/5 dark:border-white/10 hover:dark:border-white/10 hover:dark:bg-white/5'>
+          <img src='/images/bg2.jpg' alt='' className='max-h-36 w-full bg-red-500 object-cover md:max-h-40' />
+          <div className='absolute bottom-2 right-2 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white'>
             <Pencil className='bg-transparent' size={22} />
           </div>
         </div>
 
-        <div className='relative -top-14 -mb-14 flex w-40 bg-red-300'>
-          <img src='/images/profile.jpg' alt='' className='w-40 rounded-full bg-white p-1.5 dark:bg-black' />
-          <div className='absolute bottom-0 right-0 cursor-pointer rounded-full border-2 border-white bg-white/10 p-2 duration-100 hover:scale-[1.03] hover:border-black/10 hover:bg-black/5 dark:border-white/10 hover:dark:border-white/10 hover:dark:bg-white/5'>
-            <Pencil className='bg-transparent' size={22} />
+        <div className='relative -top-14 -mb-14 flex w-36 md:w-40'>
+          <img src='/images/profile.jpg' alt='' className='w-36 rounded-full bg-white p-1.5 md:w-40 dark:bg-black' />
+          <div className='absolute bottom-1 right-1 cursor-pointer rounded-full border-4 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white'>
+            <Pencil className='' size={22} />
           </div>
         </div>
       </div>
@@ -57,10 +81,10 @@ function Bio() {
           Next.js | Freelancer | JS | Competitive Programmer & Next.js | Freelancer | JS | Competitive Programmer2222
         </div>
         <div className='flex items-center justify-normal gap-1 py-1 text-sm font-medium text-accent dark:text-accent/80'>
-          <button className='rounded-full border border-accent/20 bg-accent/5 px-3 py-1 duration-200 hover:bg-accent/10'>
+          <button className='rounded-full border border-accent/30 bg-accent/5 px-3 py-1 duration-200 hover:bg-accent/10'>
             214 followers
           </button>
-          <button className='rounded-full border border-accent/20 bg-accent/5 px-3 py-1 duration-200 hover:bg-accent/10'>
+          <button className='rounded-full border border-accent/30 bg-accent/5 px-3 py-1 duration-200 hover:bg-accent/10'>
             214 following
           </button>
         </div>
