@@ -7,7 +7,7 @@ import { Button } from '@/components/Button'
 import { useRouter } from 'next/navigation'
 import Post from '@/components/Post'
 
-export default function userProfile({ params }: { params: any }) {
+export default function UserProfile({ params }: { params: any }) {
   const router = useRouter()
   return (
     <Screen0 className='max-w-[700px]'>
@@ -16,7 +16,6 @@ export default function userProfile({ params }: { params: any }) {
         <Bolt size={26} />
       </div>
       <Bio />
-      {/* <About /> */}
       <Posts />
       <Posts />
     </Screen0>
@@ -25,12 +24,12 @@ export default function userProfile({ params }: { params: any }) {
 
 function Posts() {
   return (
-    <div className='` bg-slate-400 pt-1 text-black dark:text-white'>
+    <div className='border-t-2 pt-1 text-black dark:text-white'>
       <div className='border-b border-black/10 bg-white py-4 dark:border-white/10 dark:bg-black'>
         <div className='px-5 text-lg font-semibold leading-5'>Posts</div>
         <div className='leading px-5 text-sm font-medium text-black/60 dark:text-white/60'>450 posts</div>
       </div>
-      <div className='flex flex-col gap-0.5 bg-slate-400'>
+      <div className='flex flex-col'>
         {/* <Post /> */}
         <Post />
         <Post />

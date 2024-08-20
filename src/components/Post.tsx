@@ -2,7 +2,7 @@ import { MessageCircle, MoreHorizontal, MoreVertical, Share, Share2, ThumbsUp } 
 
 export default function Post() {
   return (
-    <div className='flex flex-col gap-0 bg-white py-2 text-black dark:bg-black dark:text-white'>
+    <div className='flex flex-col gap-0 border-t bg-white py-2 text-black dark:bg-black dark:text-white'>
       <Account />
       <Text />
       <Media />

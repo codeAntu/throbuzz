@@ -10,7 +10,7 @@ import TAndC from '@/components/T&C'
 import { Eye, KeyRound, LogIn, Mail, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-export default function login() {
+export default function Login() {
   const router = useRouter()
 
   return (
