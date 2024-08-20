@@ -15,7 +15,16 @@ export default function userProfile({ params }: { params: any }) {
         <Bolt size={26} />
       </div>
       <Bio />
+      <About />
     </Screen0>
+  )
+}
+
+function About() {
+  return (
+    <div className='px-5'>
+      <div>About</div>
+    </div>
   )
 }
 
@@ -23,10 +32,18 @@ function Bio() {
   return (
     <div className=''>
       <div className=''>
-        <img src='/images/bg2.jpg' alt='' className='max-h-40 w-full bg-red-500 object-cover' />
+        <div className='relative'>
+          <img src='/images/bg2.jpg' alt='' className='max-h-40 w-full bg-red-500 object-cover' />
+          <div className='absolute bottom-0 right-0 cursor-pointer rounded-full border border-black/10 bg-red-400 p-2 duration-100 hover:scale-[1.03] hover:border-black/10 hover:bg-black/5 dark:border-white/10 hover:dark:border-white/10 hover:dark:bg-white/5'>
+            <Pencil className='bg-transparent' size={22} />
+          </div>
+        </div>
 
-        <div className='relative -top-14 left-3 -mb-14 w-40'>
-          <img src='/images/profile.jpg' alt='' className='rounded-full bg-white p-1.5 dark:bg-black' />
+        <div className='relative -top-14 -mb-14 flex w-40 bg-red-300'>
+          <img src='/images/profile.jpg' alt='' className='w-40 rounded-full bg-white p-1.5 dark:bg-black' />
+          <div className='absolute bottom-0 right-0 cursor-pointer rounded-full border-2 border-white bg-white/10 p-2 duration-100 hover:scale-[1.03] hover:border-black/10 hover:bg-black/5 dark:border-white/10 hover:dark:border-white/10 hover:dark:bg-white/5'>
+            <Pencil className='bg-transparent' size={22} />
+          </div>
         </div>
       </div>
       <div className='flex flex-col justify-center gap-2 px-5 py-2'>
@@ -39,9 +56,13 @@ function Bio() {
           Next.js | Freelancer | JS | Competitive Programmer Frontend Developer | React Frontend Developer | React &
           Next.js | Freelancer | JS | Competitive Programmer & Next.js | Freelancer | JS | Competitive Programmer2222
         </div>
-        <div className='flex items-center justify-normal gap-4 py-1 text-sm font-medium text-black/80 dark:text-white/70'>
-          <button className='hover:text-black hover:dark:text-white'> 214 followers </button>
-          <button className='hover:text-black hover:dark:text-white'>214 following</button>
+        <div className='flex items-center justify-normal gap-1 py-1 text-sm font-medium text-accent dark:text-accent/80'>
+          <button className='rounded-full border border-accent/20 bg-accent/5 px-3 py-1 duration-200 hover:bg-accent/10'>
+            214 followers
+          </button>
+          <button className='rounded-full border border-accent/20 bg-accent/5 px-3 py-1 duration-200 hover:bg-accent/10'>
+            214 following
+          </button>
         </div>
         <div></div>
       </div>
