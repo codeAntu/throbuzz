@@ -1,14 +1,17 @@
+'use client'
 import { Screen, Screen0 } from '@/components/Screen'
 import ProfileLayout from '../layout'
 import { Ic } from '@/components/Icon'
 import { Bold, Bolt, LogIn, MoveLeft, Pencil, Settings } from 'lucide-react'
 import { Button } from '@/components/Button'
+import { useRouter } from 'next/navigation'
 
 export default function userProfile({ params }: { params: any }) {
+  const router = useRouter()
   return (
     <Screen0 className='max-w-[700px]'>
       <div className='flex w-full items-center justify-between bg-white px-5 py-2 dark:bg-black'>
-        <MoveLeft size={26} />
+        <MoveLeft size={26} onClick={() => router.back()} className='hover:bg-white/20' />
         <Bolt size={26} />
       </div>
       <Bio />

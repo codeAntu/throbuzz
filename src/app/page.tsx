@@ -8,11 +8,20 @@ import Input from '@/components/Input'
 import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
 import { AtSign, Eye, KeyRound, LogIn, Mail, Sparkles, User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
+  const router = useRouter()
+
   return (
     <Screen className='justify-center gap-10 pt-10'>
       <Hero />
+
+      <Button onClick={() => router.push('/profile/AnantaKarmakar')} leftIcon={<Ic Icon={LogIn} />}>
+        {' '}
+        Profile
+      </Button>
+
       <div className='flex flex-col gap-5'>
         <div className='flex flex-col items-center justify-center gap-2.5'>
           <Input type='text' name='name' placeholder='Enter your name' leftIcon={<Ic Icon={User} />} />
@@ -34,7 +43,7 @@ export default function Home() {
 
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Already have an account?{' '}
-          <a href='/' className='text-accent font-semibold'>
+          <a href='/' className='font-semibold text-accent'>
             Login
           </a>
         </div>
