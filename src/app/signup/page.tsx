@@ -14,23 +14,23 @@ import React, { useEffect } from 'react'
 export default function SignUpPage() {
   const router = useRouter()
   const [user, setUser] = React.useState({
-    name: '',
-    email: '',
-    password: '',
+    name: 'Ananta',
+    email: 'one@gmail.com',
+    userName: 'antu',
+    password: 'ekjfbEHJb',
   })
   const [buttonDisabled, setButtonDisabled] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
 
-  useEffect(() => {
-    if (user.name && user.email && user.password) {
-      setButtonDisabled(false)
-    } else {
-      setButtonDisabled(true)
-    }
-  }, [user])
+  // useEffect(() => {
+  //   if (user.name && user.email && user.password) {
+  //     setButtonDisabled(false)
+  //   } else {
+  //     setButtonDisabled(true)
+  //   }
+  // }, [user])
 
-  async function onSignUp(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  async function onSignUp() {
     try {
       setLoading(true)
       // console.log("user", user);
@@ -42,7 +42,7 @@ export default function SignUpPage() {
       // router.push("/login");
     } catch (error: any) {
       console.log('signUp failed')
-      console.log('error', error)
+      console.log('error', error.message)
     } finally {
       setLoading(false)
     }
@@ -53,29 +53,63 @@ export default function SignUpPage() {
       <Hero />
       <div className='flex flex-col gap-5'>
         <div className='flex flex-col items-center justify-center gap-2.5'>
-          <Input type='text' name='name' placeholder='Enter your name' leftIcon={<Ic Icon={User} />} />
-          <Input type='email' name='email' placeholder='Enter your email address' leftIcon={<Ic Icon={Mail} />} />
-          <Input type='text' name='userName' placeholder='Choose a user name' leftIcon={<Ic Icon={AtSign} />} />
+          <Input
+            type='text'
+            name='name'
+            placeholder='Enter your name'
+            leftIcon={<Ic Icon={User} />}
+            value={user.name}
+            onChange={(e: any) => {
+              setUser({ ...user, name: e.target.value })
+            }}
+          />
+          <Input
+            type='email'
+            name='email'
+            placeholder='Enter your email address'
+            leftIcon={<Ic Icon={Mail} />}
+            value={user.email}
+            onChange={(e: any) => {
+              setUser({ ...user, email: e.target.value })
+            }}
+          />
+          <Input
+            type='text'
+            name='userName'
+            placeholder='Choose a user name'
+            leftIcon={<Ic Icon={AtSign} />}
+            value={user.userName}
+            onChange={(e: any) => {
+              setUser({ ...user, userName: e.target.value })
+            }}
+          />
           <Input
             type='password'
             name='password'
             placeholder='Enter your password'
             leftIcon={<Ic Icon={KeyRound} />}
             rightIcon={<Ic Icon={Eye} />}
+            value={user.password}
+            onChange={(e: any) => {
+              setUser({ ...user, password: e.target.value })
+            }}
           />
         </div>
         <Button
           title='Create new account'
-          onClick={() => console.log('Login')}
+          onClick={() => {
+            console.log('signing up')
+            onSignUp()
+          }}
           leftIcon={<Ic Icon={Sparkles} className='text-white dark:text-black' />}
         />
-
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Already have an account?{' '}
           <button className='font-semibold text-accent' onClick={() => router.push('/login')}>
             Login
           </button>
         </div>
+        z
         <Continue />
         <TAndC />
       </div>

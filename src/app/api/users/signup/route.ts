@@ -1,46 +1,17 @@
-import { connect } from "@/dbConfig/dbConfig";
-import { NextRequest, NextResponse } from "next/server";
-import bcryptjs from "bcryptjs";
-import User from "@/models/userModel";
+import { connect } from '@/dbConfig/dbConfig'
+import { NextRequest, NextResponse } from 'next/server'
+import bcryptjs from 'bcryptjs'
+import User from '@/models/userModel'
 
-connect();
+connect()
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password } = await request.json();
-    const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(password, salt);
+    const { name, email, userName, password } = await request.json()
 
-    console.log("name", name);
-
-    const user = await User.findOne({
-      $or: [{ email }, { name }],
-    });
-
-    console.log("user", user);
-
-    if (user) {
-      console.log("User already exists");
-
-      return NextResponse.json(
-        { message: "User already exists" },
-        { status: 400 }
-      );
-    }
-
-    const newUser = new User({
-      name,
-      email,
-      password,
-    });
-    const savedUser = await newUser.save();
-    console.log(savedUser);
-
-    return NextResponse.json(
-      { message: "User created successfully" },
-      { status: 201 }
-    );
+    console.log('name', name)
+    console.log('email', email)
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.log('error', error.message)
   }
 }
