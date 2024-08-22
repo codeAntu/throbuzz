@@ -1,6 +1,6 @@
 import { Document, Schema } from 'mongoose'
 
-export interface User extends Document {
+export interface UserObj extends Document {
   name: string
   email: string
   username: string
@@ -9,8 +9,8 @@ export interface User extends Document {
   isAdmin: boolean
   forgotPassword: string
   forgotPasswordExpires: Date
-  verificationToken: string
-  verificationTokenExpires: Date
+  verificationCode: string
+  verificationCodeExpires: Date
   createdAt: Date
   updatedAt: Date
   profilePic: string

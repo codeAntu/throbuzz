@@ -1,7 +1,7 @@
-import type { User } from '@/lib/types'
+import type { UserObj } from '@/lib/types'
 import mongoose, { Schema } from 'mongoose'
 
-const userSchema: Schema<User> = new mongoose.Schema({
+const userSchema: Schema<UserObj> = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Name is required'],
@@ -35,11 +35,11 @@ const userSchema: Schema<User> = new mongoose.Schema({
   forgotPasswordExpires: {
     type: Date,
   },
-  verificationToken: {
+  verificationCode: {
     type: String,
     default: '',
   },
-  verificationTokenExpires: {
+  verificationCodeExpires: {
     type: Date,
   },
   createdAt: {
@@ -101,7 +101,6 @@ const userSchema: Schema<User> = new mongoose.Schema({
   },
 })
 
-//   name: {
 //     type: String,
 //     required: [true, "Name is required"],
 //     unique: true,
@@ -147,6 +146,6 @@ const userSchema: Schema<User> = new mongoose.Schema({
 //   },
 // });
 
-const User = mongoose.models.User || mongoose.model('User', userSchema)
+const User = (mongoose.models.User as mongoose.Model<UserObj>) || mongoose.model<UserObj>('User', userSchema)
 
 export default User

@@ -15,7 +15,7 @@ export default function SignUpPage() {
   const router = useRouter()
   const [user, setUser] = React.useState({
     name: 'Ananta',
-    email: 'one@gmail.com',
+    email: 'one10@gmail.com',
     userName: 'antu',
     password: 'ekjfbEHJb',
   })
@@ -31,6 +31,8 @@ export default function SignUpPage() {
   // }, [user])
 
   async function onSignUp() {
+    console.log(user)
+
     try {
       setLoading(true)
       // console.log("user", user);
@@ -42,7 +44,7 @@ export default function SignUpPage() {
       // router.push("/login");
     } catch (error: any) {
       console.log('signUp failed')
-      console.log('error', error.message)
+      console.log('error', error.response.data.error)
     } finally {
       setLoading(false)
     }
