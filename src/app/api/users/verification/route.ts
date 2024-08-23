@@ -9,6 +9,18 @@ export async function POST(request: NextRequest) {
   try {
     const { email, otp } = await request.json()
 
+    if (!email || !otp) {
+      return NextResponse.json(
+        {
+          title: 'Invalid input',
+          error: 'Please fill all the fields',
+        },
+        { status: 400 },
+      )
+    }
+
+    email.toLowerCase()
+
     const user = await User.findOne({
       email,
     })

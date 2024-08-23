@@ -7,20 +7,14 @@ import { Ic } from '@/components/Icon'
 import Input from '@/components/Input'
 import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
-import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from '@/components/ui/input-otp'
 import axios from 'axios'
-import { Eye, KeyRound, LogIn, Mail } from 'lucide-react'
+import { KeyRound, LogIn } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { SetStateAction, useRef, useState } from 'react'
+import { SetStateAction, useState } from 'react'
 
-export default function Verification() {
+export default function Verification({ email }: { email: string }) {
   const router = useRouter()
   const [otp, setOtp] = useState<string>('491787')
-  const email = 'codeantu@gmail.com'
-
-  function isValidOtp(otp: string) {
-    return /^\d{6}$/.test(otp.trim())
-  }
 
   async function onVerify() {
     try {

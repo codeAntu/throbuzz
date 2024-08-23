@@ -24,8 +24,10 @@ export async function POST(request: NextRequest) {
     email.toLowerCase()
     username.toLowerCase()
 
-    const userByUserName = await User.findOne({ username, isVerified: true })
-    if (userByUserName) {
+    const userByUserName = await User.findOne({ username })
+    if (userByUserName?.isVerified) {
+      userByUserName.username = 'test'
+
       return NextResponse.json(
         {
           title: 'Username already exists',
@@ -33,6 +35,10 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 },
       )
+    }
+    if (userByUserName && !userByUserName.isVerified) {
+      userByUserName.username = 'test'
+      await userByUserName.save()
     }
 
     const userByEmil = await User.findOne({ email: email })
@@ -92,7 +98,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ message: 'User created successfully' }, { status: 201 })
+    return NextResponse.json(
+      {
+        title: 'User created successfully',
+        message: 'User created successfully',
+      },
+      { status: 201 },
+    )
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

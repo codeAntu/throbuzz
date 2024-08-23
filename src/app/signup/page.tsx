@@ -1,6 +1,7 @@
 'use client'
 import { Button } from '@/components/Button'
 import Continue from '@/components/Continue'
+import Error from '@/components/Error'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
 import Input from '@/components/Input'
@@ -21,28 +22,30 @@ export default function SignUpPage() {
   })
   const [buttonDisabled, setButtonDisabled] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState('')
 
-  // useEffect(() => {
-  //   if (user.name && user.email && user.password) {
-  //     setButtonDisabled(false)
-  //   } else {
-  //     setButtonDisabled(true)
-  //   }
-  // }, [user])
+  function showErrors(error: string) {
+    setError(error)
+    setTimeout(() => {
+      setError('')
+    }, 3000)
+  }
 
   async function onSignUp() {
     console.log(user)
-
     try {
       setLoading(true)
       const response = await axios.post('/api/users/signup', user)
-      console.log('signUp successful')
 
-      console.log('response', response.data.message)
-      // router.push("/login");
+      if (response.data.title === 'User created successfully') {
+        console.log('User created successfully')
+        router.push('/verification/' + user.email)
+      }
     } catch (error: any) {
       console.log('signUp failed')
       console.log('error', error.response.data.error)
+
+      showErrors(error.response.data.error)
     } finally {
       setLoading(false)
     }
@@ -95,6 +98,7 @@ export default function SignUpPage() {
             }}
           />
         </div>
+        {error && <Error error={error} />}
         <Button
           title='Create new account'
           onClick={() => {
