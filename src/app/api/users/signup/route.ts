@@ -3,29 +3,48 @@ import { NextRequest, NextResponse } from 'next/server'
 import bcryptjs from 'bcryptjs'
 import User from '@/models/userModel'
 import { sendEmail } from '@/mail/sendEmail'
+import { title } from 'process'
 
 connect()
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password, userName } = await request.json()
+    const { name, email, password, username } = await request.json()
 
-    if (!name || !email || !password || !userName) {
-      return NextResponse.json({ error: 'Please enter all fields' }, { status: 400 })
+    if (!name || !email || !password || !username) {
+      return NextResponse.json(
+        {
+          title: 'Invalid input',
+          error: 'Please fill all the fields',
+        },
+        { status: 400 },
+      )
     }
 
     email.toLowerCase()
-    userName.toLowerCase()
+    username.toLowerCase()
 
-    const userByUserName = await User.findOne({ username: userName, isVerified: true })
+    const userByUserName = await User.findOne({ username, isVerified: true })
     if (userByUserName) {
-      return NextResponse.json({ error: 'User already exists with this username' }, { status: 400 })
+      return NextResponse.json(
+        {
+          title: 'Username already exists',
+          error: 'User already exists with this username',
+        },
+        { status: 400 },
+      )
     }
 
     const userByEmil = await User.findOne({ email: email })
 
     if (userByEmil?.isVerified) {
-      return NextResponse.json({ error: 'User already exists with this email ' }, { status: 400 })
+      return NextResponse.json(
+        {
+          title: 'Email already exists',
+          error: 'User already exists with this email',
+        },
+        { status: 400 },
+      )
     }
 
     const salt = await bcryptjs.genSalt(10)
@@ -39,7 +58,7 @@ export async function POST(request: NextRequest) {
     if (userByEmil && !userByEmil.isVerified) {
       userByEmil.name = name
       userByEmil.password = hashedPassword
-      userByEmil.username = userName
+      userByEmil.username = username
       userByEmil.verificationCode = verificationCode
       userByEmil.verificationCodeExpires = expiryDate
       await userByEmil.save()
@@ -48,7 +67,7 @@ export async function POST(request: NextRequest) {
         name,
         email,
         password: hashedPassword,
-        username: userName,
+        username,
         verificationCode,
         verificationCodeExpires: expiryDate,
       })
@@ -64,7 +83,13 @@ export async function POST(request: NextRequest) {
     })
 
     if (!emailResponse.success) {
-      return NextResponse.json({ error: emailResponse.message }, { status: 500 })
+      return NextResponse.json(
+        {
+          title: 'Email not sent',
+          error: 'Email not sent, please try again',
+        },
+        { status: 500 },
+      )
     }
 
     return NextResponse.json({ message: 'User created successfully' }, { status: 201 })

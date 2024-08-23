@@ -1,6 +1,7 @@
 import { connect } from '@/dbConfig/dbConfig'
 import User from '@/models/userModel'
 import bcryptjs from 'bcryptjs'
+import { error } from 'console'
 import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -14,19 +15,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           title: 'Please enter all fields',
-          message: 'Please enter all fields',
+          error: 'Please enter all fields',
         },
         { status: 400 },
       )
     }
 
+    searchKey.trim().toLowerCase()
+
     const email = searchKey.includes('@') ? searchKey : undefined
     const username = searchKey.includes('@') ? undefined : searchKey
 
-    // console.log(searchKey.includes('@'))
-
-    console.log('email', email)
-    console.log('username', username)
+    // todo :  check if user exists
 
     const user = await User.findOne({
       $or: [{ email }, { username, isVerified: true }],
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           title: 'User not found',
-          message: 'User not found with this email or username',
+          error: 'User not found with this email or username',
         },
         { status: 404 },
       )
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           title: 'User not verified',
-          message: 'User is not verified yet, please verify your email first',
+          error: 'User is not verified yet, please verify your email first',
         },
         { status: 400 },
       )
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           title: 'Wrong password',
-          message: 'Wrong password entered, please enter the correct password',
+          error: 'Wrong password entered, please enter the correct password',
         },
         { status: 400 },
       )
@@ -80,8 +80,6 @@ export async function POST(request: NextRequest) {
       { token, title: 'Login successful', message: 'You have successfully logged in' },
       { status: 200 },
     )
-
-    return NextResponse.json({ message: 'Login successful' }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

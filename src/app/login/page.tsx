@@ -21,16 +21,13 @@ export default function Login() {
   })
 
   async function onLogin() {
-    console.log(user)
-
     try {
       const response = await axios.post('/api/users/login', user)
       console.log('Login successful')
-
       console.log('response', response.data.message)
     } catch (error: any) {
       console.log('Login failed')
-      console.log('error', error.response.data.message)
+      console.log('error', error.response.data.error)
     }
   }
 
@@ -40,7 +37,7 @@ export default function Login() {
       <div className='flex flex-col gap-7'>
         <div className='flex flex-col items-center justify-center gap-3.5'>
           <Input
-            type='email'
+            type='text'
             name='email'
             placeholder='Enter your email address or username '
             leftIcon={<Ic Icon={Mail} />}

@@ -16,7 +16,7 @@ export default function SignUpPage() {
   const [user, setUser] = React.useState({
     name: 'Ananta',
     email: 'one10@gmail.com',
-    userName: 'antu',
+    username: 'antu',
     password: 'ekjfbEHJb',
   })
   const [buttonDisabled, setButtonDisabled] = React.useState(false)
@@ -78,9 +78,9 @@ export default function SignUpPage() {
             name='userName'
             placeholder='Choose a user name'
             leftIcon={<Ic Icon={AtSign} />}
-            value={user.userName}
+            value={user.username}
             onChange={(e: any) => {
-              setUser({ ...user, userName: e.target.value })
+              setUser({ ...user, username: e.target.value })
             }}
           />
           <Input
