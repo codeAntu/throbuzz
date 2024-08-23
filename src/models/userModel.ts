@@ -1,7 +1,7 @@
-import type { UserObj } from '@/lib/types'
+import type { UserT } from '@/lib/types'
 import mongoose, { Schema } from 'mongoose'
 
-const userSchema: Schema<UserObj> = new mongoose.Schema({
+const userSchema: Schema<UserT> = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Name is required'],
@@ -101,51 +101,6 @@ const userSchema: Schema<UserObj> = new mongoose.Schema({
   },
 })
 
-//     type: String,
-//     required: [true, "Name is required"],
-//     unique: true,
-//   },
-//   email: {
-//     type: String,
-//     required: [true, "Email is required"],
-//     unique: true,
-//   },
-//   password: {
-//     type: String,
-//     required: [true, "Password is required"],
-//   },
-//   isVerified: {
-//     type: Boolean,
-//     default: false,
-//   },
-//   isAdmin: {
-//     type: Boolean,
-//     default: false,
-//   },
-//   forgotPassword: {
-//     type: String,
-//     default: "",
-//   },
-//   forgotPasswordExpires: {
-//     type: Date,
-//   },
-//   verificationToken: {
-//     type: String,
-//     default: "",
-//   },
-//   verificationTokenExpires: {
-//     type: Date,
-//   },
-//   createdAt: {
-//     type: Date,
-//     default: Date.now(),
-//   },
-//   updatedAt: {
-//     type: Date,
-//     default: Date.now(),
-//   },
-// });
-
-const User = (mongoose.models.User as mongoose.Model<UserObj>) || mongoose.model<UserObj>('User', userSchema)
+const User = (mongoose.models.User as mongoose.Model<UserT>) || mongoose.model<UserT>('User', userSchema)
 
 export default User
