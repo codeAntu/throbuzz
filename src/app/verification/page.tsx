@@ -16,7 +16,7 @@ import { SetStateAction, useRef, useState } from 'react'
 export default function Verification() {
   const router = useRouter()
   const [otp, setOtp] = useState<string>('491787')
-  const email = 'two@gmail.com'
+  const email = 'codeantu@gmail.com'
 
   function isValidOtp(otp: string) {
     return /^\d{6}$/.test(otp.trim())
