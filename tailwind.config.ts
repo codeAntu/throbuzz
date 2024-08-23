@@ -14,6 +14,7 @@ const config = {
     },
     extend: {
       colors: {
+        // accent: '#00BFFF',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -36,7 +37,7 @@ const config = {
           foreground: 'hsl(var(--muted-foreground))',
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
+          DEFAULT: '#00BFFF',
           foreground: 'hsl(var(--accent-foreground))',
         },
         popover: {

@@ -16,15 +16,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found with this email ' }, { status: 404 })
     }
 
-    if (user.verificationCode !== otp) {
-      return NextResponse.json({ error: 'Invalid OTP' }, { status: 400 })
+    if (user.isVerified) {
+      return NextResponse.json({ error: 'User is already verified' }, { status: 400 })
+    }
+
+    if (!user.verificationCode) {
+      return NextResponse.json({ error: 'Verification code not generated for this user' }, { status: 400 })
     }
 
     if (user.verificationCodeExpires < new Date()) {
       return NextResponse.json({ error: 'OTP expired' }, { status: 400 })
     }
 
+    if (user.verificationCode !== otp) {
+      return NextResponse.json({ error: 'Invalid OTP' }, { status: 400 })
+    }
+
     user.isVerified = true
+    user.verificationCode = ''
+    user.verificationCodeExpires = new Date()
 
     await user.save()
 

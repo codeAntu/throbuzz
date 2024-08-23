@@ -23,9 +23,6 @@ export default function Verification() {
   }
 
   async function onVerify() {
-    console.log('Verify', otp)
-    console.log('isValidOtp', isValidOtp(otp))
-
     try {
       const response = await axios.post('/api/users/verification', { email, otp })
 
@@ -39,9 +36,16 @@ export default function Verification() {
     <Screen className='justify-center gap-12 pt-8'>
       <Hero />
       <div className='flex flex-col gap-7'>
+        <div>
+          <h1 className='text-center text-lg font-semibold text-black/70 dark:text-white/70'>Verify your email</h1>
+          <p className='text-center text-xs text-black/40 dark:text-white/40'>
+            We have sent an OTP to your email address
+          </p>
+        </div>
+
         <div className='flex flex-col items-center justify-center gap-3.5'>
           <Input
-            type='text'
+            type='number'
             name='otp'
             placeholder='Enter your otp'
             leftIcon={<Ic Icon={KeyRound} />}
