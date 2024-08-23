@@ -10,6 +10,13 @@ export async function POST(request: NextRequest) {
   try {
     const { name, email, password, userName } = await request.json()
 
+    if (!name || !email || !password || !userName) {
+      return NextResponse.json({ error: 'Please enter all fields' }, { status: 400 })
+    }
+
+    email.toLowerCase()
+    userName.toLowerCase()
+
     const userByUserName = await User.findOne({ username: userName, isVerified: true })
     if (userByUserName) {
       return NextResponse.json({ error: 'User already exists with this username' }, { status: 400 })
