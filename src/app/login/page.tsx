@@ -16,7 +16,7 @@ export default function Login() {
   const router = useRouter()
 
   const [user, setUser] = useState({
-    email: '',
+    searchKey: '',
     password: '',
   })
 
@@ -30,7 +30,7 @@ export default function Login() {
       console.log('response', response.data.message)
     } catch (error: any) {
       console.log('Login failed')
-      console.log('error', error.response.data.error)
+      console.log('error', error.response.data.message)
     }
   }
 
@@ -44,8 +44,8 @@ export default function Login() {
             name='email'
             placeholder='Enter your email address or username '
             leftIcon={<Ic Icon={Mail} />}
-            value={user.email}
-            onChange={(e) => setUser({ ...user, email: e.target.value })}
+            value={user.searchKey}
+            onChange={(e) => setUser({ ...user, searchKey: e.target.value })}
           />
           <Input
             type='password'

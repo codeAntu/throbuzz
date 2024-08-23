@@ -1,16 +1,85 @@
 import { connect } from '@/dbConfig/dbConfig'
 import User from '@/models/userModel'
+import bcryptjs from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
 
 connect()
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, userName, password } = await request.json()
+    const { searchKey, password } = await request.json()
 
-    if (!(email || userName) || !password) {
-      return NextResponse.json({ error: 'Please enter all fields' }, { status: 400 })
+    if (!searchKey || !password) {
+      return NextResponse.json(
+        {
+          title: 'Please enter all fields',
+          message: 'Please enter all fields',
+        },
+        { status: 400 },
+      )
     }
+
+    const email = searchKey.includes('@') ? searchKey : undefined
+    const username = searchKey.includes('@') ? undefined : searchKey
+
+    // console.log(searchKey.includes('@'))
+
+    console.log('email', email)
+    console.log('username', username)
+
+    const user = await User.findOne({
+      $or: [{ email }, { username, isVerified: true }],
+    })
+
+    console.log('user', user)
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          title: 'User not found',
+          message: 'User not found with this email or username',
+        },
+        { status: 404 },
+      )
+    }
+
+    if (!user.isVerified) {
+      return NextResponse.json(
+        {
+          title: 'User not verified',
+          message: 'User is not verified yet, please verify your email first',
+        },
+        { status: 400 },
+      )
+    }
+
+    const isMatch = await bcryptjs.compare(password, user.password)
+
+    if (!isMatch) {
+      return NextResponse.json(
+        {
+          title: 'Wrong password',
+          message: 'Wrong password entered, please enter the correct password',
+        },
+        { status: 400 },
+      )
+    }
+
+    const tokenData = {
+      email: user.email,
+      username: user.username,
+      id: user._id,
+    }
+
+    const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, {
+      expiresIn: '5y',
+    })
+
+    return NextResponse.json(
+      { token, title: 'Login successful', message: 'You have successfully logged in' },
+      { status: 200 },
+    )
 
     return NextResponse.json({ message: 'Login successful' }, { status: 200 })
   } catch (error: any) {
