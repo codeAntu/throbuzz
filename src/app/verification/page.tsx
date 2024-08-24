@@ -12,9 +12,10 @@ import { KeyRound, LogIn } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { SetStateAction, useState } from 'react'
 
-export default function Verification({ email }: { email: string }) {
+export default function Verification() {
   const router = useRouter()
   const [otp, setOtp] = useState<string>('491787')
+  const email = 'codeantu@gmail.com'
 
   async function onVerify() {
     try {
