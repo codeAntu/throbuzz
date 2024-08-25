@@ -83,14 +83,15 @@ export default function SignUpPage() {
     console.log('checking username', username)
 
     try {
-      const response = await axios.post('/api/users/check-username', { username: username })
-      if (await response.data) {
+      const response = await axios.post('/api/users/check-username', { username: username.toLowerCase().trim() })
+      if (await response.data.success) {
         setIsUsernameAvailable(true)
       } else {
         setIsUsernameAvailable(false)
       }
-    } catch (error) {
-      console.log('error', error)
+      console.log('response', response.data.success)
+    } catch (error: any) {
+      console.log('error', error.response.data)
     } finally {
       setIsUsernameChecking(false)
     }
