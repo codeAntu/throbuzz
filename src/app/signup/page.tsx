@@ -40,9 +40,9 @@ export default function SignUpPage() {
       if (response.data.title === 'User created successfully') {
         console.log('User created successfully')
       }
+      router.push('/verification?' + user.email)
       console.log('response', response.data.message)
     } catch (error: any) {
-      router.push('/verification?' + user.email)
       console.log('signUp failed')
       console.log('error', error.response.data.error)
 
