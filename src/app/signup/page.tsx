@@ -15,10 +15,10 @@ import React, { useEffect } from 'react'
 export default function SignUpPage() {
   const router = useRouter()
   const [user, setUser] = React.useState({
-    name: 'Ananta',
-    email: 'one10@gmail.com',
-    username: 'antu',
-    password: 'ekjfbEHJb',
+    name: '',
+    email: '',
+    username: '',
+    password: '',
   })
   const [buttonDisabled, setButtonDisabled] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
