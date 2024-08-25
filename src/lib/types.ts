@@ -26,3 +26,9 @@ export interface UserT extends Document {
   posts: []
   phone: string
 }
+
+export interface ResponseT {
+  title: string
+  error: string
+  success: boolean
+}

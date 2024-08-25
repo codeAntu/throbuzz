@@ -16,6 +16,18 @@ select:-webkit-autofill:focus {
   color: white;
 }
 
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For other browsers */
+input[type='number'] {
+  -moz-appearance: textfield; /* For Firefox */
+  appearance: none; /* For modern browsers */
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

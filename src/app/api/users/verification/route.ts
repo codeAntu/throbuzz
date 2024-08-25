@@ -2,6 +2,7 @@ import { connect } from '@/dbConfig/dbConfig'
 import User from '@/models/userModel'
 import { NextRequest, NextResponse } from 'next/server'
 import { title } from 'process'
+import { ResponseT } from '@/lib/types'
 
 connect()
 
@@ -13,7 +14,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           title: 'Invalid input',
-          error: 'Please fill all the fields',
+          error: 'Email and OTP are required',
+          success: false,
         },
         { status: 400 },
       )
@@ -30,6 +32,7 @@ export async function POST(request: NextRequest) {
         {
           title: 'User not found',
           error: 'User not found with this email ',
+          success: false,
         },
         { status: 404 },
       )
@@ -40,6 +43,7 @@ export async function POST(request: NextRequest) {
         {
           title: 'User already verified',
           error: 'User is already verified',
+          success: false,
         },
         { status: 400 },
       )
@@ -50,6 +54,7 @@ export async function POST(request: NextRequest) {
         {
           title: 'Verification code not generated',
           error: 'Verification code not generated for this user',
+          success: false,
         },
         { status: 400 },
       )
@@ -60,6 +65,7 @@ export async function POST(request: NextRequest) {
         {
           title: 'OTP expired',
           error: 'OTP expired , signup again to get new OTP',
+          success: false,
         },
         { status: 400 },
       )
@@ -71,6 +77,7 @@ export async function POST(request: NextRequest) {
           title: 'Invalid OTP',
 
           error: 'Invalid OTP , please enter correct OTP',
+          success: false,
         },
         { status: 400 },
       )
@@ -86,6 +93,7 @@ export async function POST(request: NextRequest) {
       {
         title: 'User verified successfully',
         message: 'User verified successfully',
+        success: true,
       },
       { status: 200 },
     )

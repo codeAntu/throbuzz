@@ -27,7 +27,7 @@ type InputProps = ComponentProps<'input'> & {
 
 const Input = forwardRef<HTMLInputElement, InputProps>(({ leftIcon, rightIcon, ...rest }, ref) => {
   return (
-    <div className='flex w-full items-center justify-center gap-4 rounded-2xl border border-black/10 bg-black/5 px-4 text-sm font-medium text-black shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-white'>
+    <div className='flex w-full items-center justify-center gap-4 rounded-2xl border border-black/10 bg-black/5 px-4 text-sm font-medium text-black dark:border-white/10 dark:bg-white/5 dark:text-white'>
       {leftIcon}
       <input
         ref={ref}

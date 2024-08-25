@@ -5,6 +5,7 @@ import Continue from '@/components/Continue'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
 import Input from '@/components/Input'
+import OTPInput from '@/components/OTPInput'
 import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
 import axios from 'axios'
@@ -15,21 +16,27 @@ import { string } from 'zod'
 
 export default function Verification() {
   const router = useRouter()
-  const [otp, setOtp] = useState(new Array(6).fill(''))
   const email = window.location.search.split('=')[1]
   console.log('email', email)
+  const [otp, setOtp] = useState('')
 
   async function onVerify() {
+    console.log('email', email)
+    console.log('otp', otp)
+
     try {
       const response = await axios.post('/api/users/verification', { email, otp })
 
+      if (response.data.success) {
+        router.push('/login')
+      }
       console.log('response', response.data.message)
     } catch (error: any) {
       console.log('error', error.response.data.error)
     }
   }
 
-  console.log('otp', otp)
+  console.log('otp mmmmm', otp)
 
   return (
     <Screen className='justify-center gap-12 pt-8'>
@@ -42,43 +49,7 @@ export default function Verification() {
           </p>
         </div>
 
-        {/* <div className='flex flex-col items-center justify-center gap-3.5'>
-          <Input
-            type='number'
-            name='otp'
-            placeholder='Enter your otp'
-            leftIcon={<Ic Icon={KeyRound} />}
-            value={otp}
-            onChange={(e: { target: { value: SetStateAction<string> } }) => setOtp(e.target.value)}
-          />
-        </div> */}
-
-        <div>
-          {otp.map((data, i) => (
-            <input
-              key={i}
-              type='text'
-              maxLength={1}
-              value={data}
-              className='h-12 w-12 rounded-md border border-black/10 text-center text-2xl font-semibold dark:border-white/10'
-              onChange={(e) => {
-                // i also want to overwrite the value in the array
-
-                const value = e.target.value
-                const otpCopy = [...otp]
-                otpCopy[i] = value
-                setOtp(otpCopy)
-
-                // if value.length is 1, move to next input
-                // if value.length is 0, move to previous input
-
-                if (e.target.value.length === 1 && i !== otp.length - 1) {
-                  ;(e.target.nextElementSibling as HTMLInputElement | null)?.focus()
-                }
-              }}
-            />
-          ))}
-        </div>
+        <OTPInput length={6} getOTp={(otp: string) => setOtp(otp)} />
 
         <Button
           title='Verify'
