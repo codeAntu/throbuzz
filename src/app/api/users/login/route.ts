@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
         {
           title: 'Please enter all fields',
           error: 'Please enter all fields',
+          success: false,
         },
         { status: 400 },
       )
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
         {
           title: 'User not found',
           error: 'User not found with this email or username',
+          success: false,
         },
         { status: 404 },
       )
@@ -49,6 +51,7 @@ export async function POST(request: NextRequest) {
         {
           title: 'User not verified',
           error: 'User is not verified yet, please verify your email first',
+          success: false,
         },
         { status: 400 },
       )
@@ -61,6 +64,7 @@ export async function POST(request: NextRequest) {
         {
           title: 'Wrong password',
           error: 'Wrong password entered, please enter the correct password',
+          success: false,
         },
         { status: 400 },
       )
@@ -77,7 +81,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(
-      { token, title: 'Login successful', message: 'You have successfully logged in' },
+      { token, title: 'Login successful', message: 'You have successfully logged in'  , success: true},
       { status: 200 },
     )
   } catch (error: any) {
