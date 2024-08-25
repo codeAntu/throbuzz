@@ -57,7 +57,7 @@ export default function Verification() {
           leftIcon={<Ic Icon={LogIn} className='text-white dark:text-black' />}
         />
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
-          Don't have an account?{'  '}
+          Do not have an account?{'  '}
           <button
             onClick={() => {
               router.push('/signup')

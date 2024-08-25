@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, OutlineButton } from '@/components/Button'
+import { Button } from '@/components/Button'
 import Continue from '@/components/Continue'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
@@ -8,7 +8,7 @@ import Input from '@/components/Input'
 import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
 import axios from 'axios'
-import { Eye, KeyRound, LogIn, Mail, Sparkles } from 'lucide-react'
+import { Eye, KeyRound, LogIn, Mail } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -60,7 +60,7 @@ export default function Login() {
           leftIcon={<Ic Icon={LogIn} className='text-white dark:text-black' />}
         />
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
-          Don't have an account?{'  '}
+          Do not have an account?{'  '}
           <button
             onClick={() => {
               router.push('/signup')
