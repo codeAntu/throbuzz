@@ -6,7 +6,6 @@ import { Bold, Bolt, LogIn, MoveLeft, Pencil, Settings } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { useRouter } from 'next/navigation'
 import Post from '@/components/Post'
-import Image from 'next/image'
 
 export default function UserProfile({ params }: { params: any }) {
   const router = useRouter()
@@ -57,14 +56,14 @@ function Bio() {
     <div className=''>
       <div className=''>
         <div className='relative'>
-          <Image src='/images/bg2.jpg' alt='' className='max-h-36 w-full bg-red-500 object-cover md:max-h-40' />
+          <img src='/images/bg2.jpg' alt='' className='max-h-36 w-full bg-red-500 object-cover md:max-h-40' />
           <div className='absolute bottom-2 right-2 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white'>
             <Pencil className='bg-transparent' size={22} />
           </div>
         </div>
 
         <div className='relative -top-14 -mb-14 flex w-36 md:w-40'>
-          <Image src='/images/profile.jpg' alt='' className='w-36 rounded-full bg-white p-1.5 dark:bg-black md:w-40' />
+          <img src='/images/profile.jpg' alt='' className='w-36 rounded-full bg-white p-1.5 dark:bg-black md:w-40' />
           <div className='absolute bottom-1 right-1 cursor-pointer rounded-full border-4 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white'>
             <Pencil className='' size={22} />
           </div>

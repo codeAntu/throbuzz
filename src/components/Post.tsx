@@ -1,5 +1,4 @@
 import { MessageCircle, MoreHorizontal, MoreVertical, Share, Share2, ThumbsUp } from 'lucide-react'
-import Image from 'next/image'
 
 export default function Post() {
   return (
@@ -50,7 +49,7 @@ function Text() {
 function Media() {
   return (
     <div>
-      <Image src='/images/image.2.png' alt='' className='max-h-[500px] w-full object-cover sm:object-contain' />
+      <img src='/images/image.2.png' alt='' className='max-h-[500px] w-full object-cover sm:object-contain' />
     </div>
   )
 }
@@ -59,7 +58,7 @@ function Account() {
   return (
     <div className='flex items-center justify-between px-3'>
       <div className='flex items-center justify-normal gap-2'>
-        <Image src='/images/profile.jpg' alt='' className='w-12 rounded-full' />
+        <img src='/images/profile.jpg' alt='' className='w-12 rounded-full' />
         <div className='flex w-[80%] flex-col gap-0'>
           <div className='font-semibold'>Ananta Karmakar</div>
           <div className='line-clamp-1 text-xs text-black/70 dark:text-white/70'>
