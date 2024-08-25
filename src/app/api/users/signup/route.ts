@@ -81,22 +81,22 @@ export async function POST(request: NextRequest) {
       const savedUser = await newUser.save()
     }
 
-    const emailResponse = await sendEmail({
-      email,
-      subject: 'Verify your email',
-      name,
-      OTP: verificationCode,
-    })
+    // const emailResponse = await sendEmail({
+    //   email,
+    //   subject: 'Verify your email',
+    //   name,
+    //   OTP: verificationCode,
+    // })
 
-    if (!emailResponse.success) {
-      return NextResponse.json(
-        {
-          title: 'Email not sent',
-          error: 'Email not sent, please try again',
-        },
-        { status: 500 },
-      )
-    }
+    // if (!emailResponse.success) {
+    //   return NextResponse.json(
+    //     {
+    //       title: 'Email not sent',
+    //       error: 'Email not sent, please try again',
+    //     },
+    //     { status: 500 },
+    //   )
+    // }
 
     return NextResponse.json(
       {

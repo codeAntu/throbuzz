@@ -11,11 +11,13 @@ import axios from 'axios'
 import { KeyRound, LogIn } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { SetStateAction, useState } from 'react'
+import { string } from 'zod'
 
 export default function Verification() {
   const router = useRouter()
-  const [otp, setOtp] = useState<string>('491787')
-  const email = 'codeantu@gmail.com'
+  const [otp, setOtp] = useState(new Array(6).fill(''))
+  const email = window.location.search.split('=')[1]
+  console.log('email', email)
 
   async function onVerify() {
     try {
@@ -26,6 +28,8 @@ export default function Verification() {
       console.log('error', error.response.data.error)
     }
   }
+
+  console.log('otp', otp)
 
   return (
     <Screen className='justify-center gap-12 pt-8'>
@@ -38,7 +42,7 @@ export default function Verification() {
           </p>
         </div>
 
-        <div className='flex flex-col items-center justify-center gap-3.5'>
+        {/* <div className='flex flex-col items-center justify-center gap-3.5'>
           <Input
             type='number'
             name='otp'
@@ -47,6 +51,33 @@ export default function Verification() {
             value={otp}
             onChange={(e: { target: { value: SetStateAction<string> } }) => setOtp(e.target.value)}
           />
+        </div> */}
+
+        <div>
+          {otp.map((data, i) => (
+            <input
+              key={i}
+              type='text'
+              maxLength={1}
+              value={data}
+              className='h-12 w-12 rounded-md border border-black/10 text-center text-2xl font-semibold dark:border-white/10'
+              onChange={(e) => {
+                // i also want to overwrite the value in the array
+
+                const value = e.target.value
+                const otpCopy = [...otp]
+                otpCopy[i] = value
+                setOtp(otpCopy)
+
+                // if value.length is 1, move to next input
+                // if value.length is 0, move to previous input
+
+                if (e.target.value.length === 1 && i !== otp.length - 1) {
+                  ;(e.target.nextElementSibling as HTMLInputElement | null)?.focus()
+                }
+              }}
+            />
+          ))}
         </div>
 
         <Button

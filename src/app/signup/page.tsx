@@ -62,7 +62,7 @@ export default function SignUpPage() {
       if (response.data.title === 'User created successfully') {
         console.log('User created successfully')
       }
-      router.push('/verification?' + user.email)
+      router.push('/verification?email=' + user.email)
       console.log('response', response.data.message)
     } catch (error: any) {
       console.log('signUp failed')
@@ -200,7 +200,7 @@ export default function SignUpPage() {
             Login
           </button>
         </div>
-        z
+
         <Continue />
         <TAndC />
       </div>
