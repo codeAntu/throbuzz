@@ -8,9 +8,9 @@ import Input from '@/components/Input'
 import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
 import axios from 'axios'
-import { Eye, KeyRound, LogIn, Mail } from 'lucide-react'
+import { Eye, EyeOff, KeyRound, LogIn, Mail } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 export default function Login() {
   const router = useRouter()
@@ -19,6 +19,8 @@ export default function Login() {
     searchKey: '',
     password: '',
   })
+  const passwordRef = useRef<HTMLInputElement>(null)
+  const [hidePassword, setHidePassword] = useState(true)
 
   async function onLogin() {
     try {
@@ -28,6 +30,17 @@ export default function Login() {
     } catch (error: any) {
       console.log('Login failed')
       console.log('error', error.response.data.error)
+    }
+  }
+  function focusPassword() {
+    const input = passwordRef.current
+    if (input) {
+      input.focus()
+      setTimeout(() => {
+        const len = input.value.length
+        console.log('len', len)
+        input.setSelectionRange(len, len)
+      }, 0)
     }
   }
 
@@ -45,13 +58,36 @@ export default function Login() {
             onChange={(e) => setUser({ ...user, searchKey: e.target.value })}
           />
           <Input
-            type='password'
+            ref={passwordRef}
+            type={hidePassword ? 'password' : 'text'}
             name='password'
             placeholder='Enter your password'
             leftIcon={<Ic Icon={KeyRound} />}
-            rightIcon={<Ic Icon={Eye} />}
+            rightIcon={
+              hidePassword ? (
+                <Ic
+                  Icon={Eye}
+                  onClick={() => {
+                    setHidePassword(false)
+                    focusPassword()
+                  }}
+                  className='cursor-pointer'
+                />
+              ) : (
+                <Ic
+                  Icon={EyeOff}
+                  onClick={() => {
+                    setHidePassword(true)
+                    focusPassword()
+                  }}
+                  className='cursor-pointer'
+                />
+              )
+            }
             value={user.password}
-            onChange={(e) => setUser({ ...user, password: e.target.value })}
+            onChange={(e: any) => {
+              setUser({ ...user, password: e.target.value })
+            }}
           />
         </div>
         <Button
