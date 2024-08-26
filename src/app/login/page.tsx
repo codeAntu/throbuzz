@@ -11,6 +11,7 @@ import axios from 'axios'
 import { Eye, EyeOff, KeyRound, LogIn, Mail } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
+import jwt from 'jsonwebtoken'
 
 export default function Login() {
   const router = useRouter()
@@ -25,9 +26,10 @@ export default function Login() {
   async function onLogin() {
     try {
       const response = await axios.post('/api/users/login', user)
-      if (response.data.success) {
-        router.push('/')
-      }
+      console.log('response', response.data)
+
+      const token = response.data.tokenData
+      console.log('token', token)
     } catch (error: any) {
       console.log('Login failed')
       console.log('error', error.response.data.error)

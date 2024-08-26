@@ -9,6 +9,19 @@ connect()
 
 export async function POST(request: NextRequest) {
   try {
+    const temp = (await request.cookies.get('token')?.value) || ''
+
+    if (temp) {
+      return NextResponse.json(
+        {
+          title: 'Already logged in',
+          error: 'You are already logged in',
+          success: false,
+        },
+        { status: 400 },
+      )
+    }
+
     const { searchKey, password } = await request.json()
 
     if (!searchKey || !password) {
@@ -80,10 +93,20 @@ export async function POST(request: NextRequest) {
       expiresIn: '5y',
     })
 
-    return NextResponse.json(
-      { token, title: 'Login successful', message: 'You have successfully logged in'  , success: true},
-      { status: 200 },
-    )
+    const response = NextResponse.json({
+      title: 'Login successful',
+      message: 'User Login successful',
+      success: true,
+      tokenData,
+    })
+
+    response.cookies.set('token', token, {
+      httpOnly: true,
+    })
+
+    console.log('token', token)
+
+    return response
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

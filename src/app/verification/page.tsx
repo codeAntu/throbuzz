@@ -27,9 +27,8 @@ export default function Verification() {
     try {
       const response = await axios.post('/api/users/verification', { email, otp })
 
-      if (response.data.success) {
-        router.push('/login')
-      }
+      router.push('/login')
+
       console.log('response', response.data.message)
     } catch (error: any) {
       console.log('error', error.response.data.error)

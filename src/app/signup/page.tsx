@@ -59,11 +59,9 @@ export default function SignUpPage() {
         username: username.toLowerCase(),
         password: user.password,
       })
-      if (response.data.title === 'User created successfully') {
-        console.log('User created successfully')
-      }
-      router.push('/verification?email=' + user.email)
+
       console.log('response', response.data.message)
+      router.push('/verification?email=' + user.email)
     } catch (error: any) {
       console.log('signUp failed')
       console.log('error', error.response.data.error)
