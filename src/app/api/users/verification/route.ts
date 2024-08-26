@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { title } from 'process'
 import { ResponseT } from '@/lib/types'
 import { z } from 'zod'
+import jwt from 'jsonwebtoken'
 
 const userLoginValid = z
   .object({
@@ -106,14 +107,30 @@ export async function POST(request: NextRequest) {
 
     await user.save()
 
-    return NextResponse.json(
-      {
-        title: 'User verified successfully',
-        message: 'User verified successfully',
-        success: true,
-      },
-      { status: 200 },
-    )
+    const tokenData = {
+      email: user.email,
+      username: user.username,
+      id: user._id,
+    }
+
+    const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, {
+      expiresIn: '5y',
+    })
+
+    const response = NextResponse.json({
+      title: 'Login successful',
+      message: 'User Login successful',
+      success: true,
+      tokenData,
+    })
+
+    response.cookies.set('token', token, {
+      httpOnly: true,
+    })
+
+    console.log('token', token)
+
+    return response
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

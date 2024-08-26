@@ -48,6 +48,8 @@ export async function POST(request: NextRequest) {
     const extToken = (await request.cookies.get('token')?.value) || ''
     const extTokenData = jwt.decode(extToken)
 
+    console.log('extToken ', extTokenData)
+
     if (extTokenData) {
       return NextResponse.json(
         {
