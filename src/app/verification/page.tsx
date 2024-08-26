@@ -9,17 +9,19 @@ import OTPInput from '@/components/OTPInput'
 import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
 import axios from 'axios'
-import { KeyRound, LogIn } from 'lucide-react'
+import { LogIn } from 'lucide-react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { SetStateAction, use, useState } from 'react'
-import { string } from 'zod'
-// import { useRouter as Router } from 'next/router'
+import { useState } from 'react'
 
 export default function Verification() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const email = searchParams.get('email') || ''
+  // const searchParams = useSearchParams()
+  // const email = searchParams.get('email')
+  const { email } = useParams()
+
   const [otp, setOtp] = useState('')
+
+  console.log('email', email)
 
   async function onVerify() {
     console.log('email', email)
