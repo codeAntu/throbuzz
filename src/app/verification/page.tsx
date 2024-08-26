@@ -44,7 +44,7 @@ export default function Verification() {
         <div>
           <h1 className='text-center text-lg font-semibold text-black/70 dark:text-white/70'>Verify your email</h1>
           <p className='text-center text-xs text-black/40 dark:text-white/40'>
-            We have sent an OTP to your email address
+            We have sent an OTP to your email address {email}
           </p>
         </div>
 
