@@ -4,12 +4,28 @@ import bcryptjs from 'bcryptjs'
 import User from '@/models/userModel'
 import { sendEmail } from '@/mail/sendEmail'
 import { title } from 'process'
+import jwt from 'jsonwebtoken'
 
 connect()
 
 export async function POST(request: NextRequest) {
   try {
     const { name, email, password, username } = await request.json()
+
+    const extToken = (await request.cookies.get('token')?.value) || ''
+    const extTokenData = jwt.verify(extToken, process.env.JWT_SECRET as string)
+
+    if (extTokenData) {
+      return NextResponse.json(
+        {
+          title: 'Already logged in',
+          message: 'User already logged in',
+          success: true,
+          tokenData: extTokenData,
+        },
+        { status: 200 },
+      )
+    }
 
     if (!name || !email || !password || !username) {
       return NextResponse.json(

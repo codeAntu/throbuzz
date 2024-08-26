@@ -9,20 +9,21 @@ connect()
 
 export async function POST(request: NextRequest) {
   try {
-    const temp = (await request.cookies.get('token')?.value) || ''
+    const { searchKey, password } = await request.json()
+    const extToken = (await request.cookies.get('token')?.value) || ''
+    const extTokenData = jwt.verify(extToken, process.env.JWT_SECRET as string)
 
-    if (temp) {
+    if (extTokenData) {
       return NextResponse.json(
         {
           title: 'Already logged in',
-          error: 'You are already logged in',
-          success: false,
+          message: 'User already logged in',
+          success: true,
+          tokenData: extTokenData,
         },
-        { status: 400 },
+        { status: 200 },
       )
     }
-
-    const { searchKey, password } = await request.json()
 
     if (!searchKey || !password) {
       return NextResponse.json(
