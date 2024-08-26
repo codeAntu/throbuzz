@@ -10,14 +10,15 @@ import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
 import axios from 'axios'
 import { KeyRound, LogIn } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { SetStateAction, useState } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { SetStateAction, use, useState } from 'react'
 import { string } from 'zod'
+// import { useRouter as Router } from 'next/router'
 
 export default function Verification() {
   const router = useRouter()
-  const email = window.location.search.split('=')[1]
-  console.log('email', email)
+  const searchParams = useSearchParams()
+  const email = searchParams.get('email') || ''
   const [otp, setOtp] = useState('')
 
   async function onVerify() {
@@ -32,22 +33,6 @@ export default function Verification() {
       console.log('error', error.response.data.error)
     }
   }
-
-  async function onLogin(user: { searchKey: string; password: string }) {
-    try {
-      const response = await axios.post('/api/users/login', user)
-      console.log('response', response.data)
-
-      const token = response.data.tokenData
-      console.log('token', token)
-      router.push('/profile')
-    } catch (error: any) {
-      console.log('Login failed')
-      console.log('error', error.response.data.error)
-    }
-  }
-
-  console.log('otp mmmmm', otp)
 
   return (
     <Screen className='justify-center gap-12 pt-8'>

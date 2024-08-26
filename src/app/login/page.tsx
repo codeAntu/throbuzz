@@ -4,7 +4,6 @@ import { Button } from '@/components/Button'
 import Continue from '@/components/Continue'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
-import Input from '@/components/Input'
 import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
 import axios from 'axios'
@@ -12,6 +11,7 @@ import { Eye, EyeOff, KeyRound, LogIn, Mail } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import jwt from 'jsonwebtoken'
+import Input from '@/components/Input'
 
 export default function Login() {
   const router = useRouter()
@@ -30,7 +30,7 @@ export default function Login() {
 
       const token = response.data.tokenData
       console.log('token', token)
-      router.push('/profile')
+      router.push('/')
     } catch (error: any) {
       console.log('Login failed')
       console.log('error', error.response.data.error)

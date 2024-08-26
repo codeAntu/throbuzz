@@ -17,7 +17,6 @@
 //     </div>
 //   )
 // }
-
 import React, { forwardRef, ComponentProps } from 'react'
 
 type InputProps = ComponentProps<'input'> & {
@@ -38,5 +37,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ leftIcon, rightIcon, .
     </div>
   )
 })
+
+Input.displayName = 'Input'
 
 export default Input
