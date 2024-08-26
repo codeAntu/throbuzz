@@ -5,15 +5,48 @@ import User from '@/models/userModel'
 import { sendEmail } from '@/mail/sendEmail'
 import { title } from 'process'
 import jwt from 'jsonwebtoken'
+import { z } from 'zod'
+import { parseJson } from '@/utils/utils'
+
+const user = z
+  .object({
+    name: z
+      .string({ required_error: 'Name is required' })
+      .trim()
+      .min(3, { message: 'Name must be at least 3 characters long' })
+      .max(100, { message: 'Name must be at most 100 characters long' })
+      .regex(/^[a-zA-Z\s]*$/, { message: 'Name must contain only letters' }),
+    username: z
+      .string({ required_error: 'Username is required' })
+      .trim()
+      .min(3, { message: 'Username must be at least 3 characters long' })
+      .max(50, { message: 'Username must be at most 50 characters long' })
+      .toLowerCase()
+      .regex(/^[a-zA-Z0-9]*$/, { message: 'Username must contain only letters and numbers' }),
+    email: z
+      .string({ required_error: 'Email is required' }) //
+      .trim()
+      .toLowerCase()
+      .email({ message: 'Invalid email format' }),
+    password: z
+      .string({ required_error: 'Password is required' })
+      .trim()
+      .min(5, { message: 'Password must be at least 5 characters long' })
+      .max(100, { message: 'Password must be at most 100 characters long' }),
+  })
+  .strict()
 
 connect()
 
 export async function POST(request: NextRequest) {
+  const body = await parseJson(request)
+  if (body instanceof NextResponse) return body
+
   try {
-    const { name, email, password, username } = await request.json()
+    let { name, email, password, username } = user.parse(body)
 
     const extToken = (await request.cookies.get('token')?.value) || ''
-    const extTokenData = jwt.verify(extToken, process.env.JWT_SECRET as string)
+    const extTokenData = jwt.decode(extToken)
 
     if (extTokenData) {
       return NextResponse.json(
@@ -36,9 +69,6 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       )
     }
-
-    email.toLowerCase()
-    username.toLowerCase()
 
     const userByUserName = await User.findOne({ username })
     if (userByUserName?.isVerified) {

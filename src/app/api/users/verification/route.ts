@@ -3,6 +3,23 @@ import User from '@/models/userModel'
 import { NextRequest, NextResponse } from 'next/server'
 import { title } from 'process'
 import { ResponseT } from '@/lib/types'
+import { z } from 'zod'
+
+const userLoginValid = z
+  .object({
+    email: z
+      .string({ required_error: 'Email is required' }) //
+      .trim()
+      .toLowerCase()
+      .email({ message: 'Invalid email format' }),
+    otp: z
+      .string({ required_error: 'OTP is required' })
+      .trim()
+      .min(6, { message: 'OTP must be at least 6 characters long' })
+      .max(6, { message: 'OTP must be at most 6 characters long' }),
+  })
+  .strict()
+  .refine((data) => data.email || data.otp, { message: 'Email and OTP is required' })
 
 connect()
 

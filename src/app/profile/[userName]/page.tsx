@@ -15,7 +15,7 @@ export default function UserProfile({ params }: { params: any }) {
     try {
       const response = await axios.post('/api/users/logout')
       console.log('response', response.data)
-      router.push('/')
+      router.push('/login')
     } catch (error: any) {
       console.log('Logout failed')
       console.log('error', error.response)

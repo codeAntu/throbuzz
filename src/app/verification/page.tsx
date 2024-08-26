@@ -35,6 +35,20 @@ export default function Verification() {
     }
   }
 
+  async function onLogin(user: { searchKey: string; password: string }) {
+    try {
+      const response = await axios.post('/api/users/login', user)
+      console.log('response', response.data)
+
+      const token = response.data.tokenData
+      console.log('token', token)
+      router.push('/profile')
+    } catch (error: any) {
+      console.log('Login failed')
+      console.log('error', error.response.data.error)
+    }
+  }
+
   console.log('otp mmmmm', otp)
 
   return (

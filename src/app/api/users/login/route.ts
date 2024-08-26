@@ -1,30 +1,51 @@
 import { connect } from '@/dbConfig/dbConfig'
 import User from '@/models/userModel'
+import { parseJson } from '@/utils/utils'
 import bcryptjs from 'bcryptjs'
 import { error } from 'console'
 import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+
+const userLoginValid = z
+  .object({
+    searchKey: z
+      .string({ required_error: 'Email is required' }) //
+      .trim()
+      .min(5, { message: 'Email must be at least 5 characters long' })
+      .max(100, { message: 'Email must be at most 100 characters long' })
+      .toLowerCase()
+      .optional(),
+    password: z
+      .string({ required_error: 'Password is required' })
+      .trim()
+      .min(8, { message: 'Password must be at least 5 characters long' })
+      .max(100, { message: 'Password must be at most 100 characters long' }),
+  })
+  .strict()
+  .refine((data) => data.searchKey, { message: 'Email or username is required' })
 
 connect()
 
 export async function POST(request: NextRequest) {
-  try {
-    const { searchKey, password } = await request.json()
+  const body = await parseJson(request)
+  if (body instanceof NextResponse) return body // Return if error response
 
-    //     const extToken = (await request.cookies.get('token')?.value) || ''
-    //     const extTokenData = await jwt.verify(extToken, process.env.JWT_SECRET as string)
-    // const extTokenData = await jwt.verify(extToken, process.env.JWT_SECRET as string)
-    //     if (extTokenData) {
-    //       return NextResponse.json(
-    //         {
-    //           title: 'Already logged in',
-    //           message: 'User already logged in',
-    //           success: true,
-    //           tokenData: extTokenData,
-    //         },
-    //         { status: 200 },
-    //       )
-    //     }
+  try {
+    let { searchKey, password } = userLoginValid.parse(body)
+
+    const extToken = (await request.cookies.get('token')?.value) || ''
+
+    if (extToken) {
+      return NextResponse.json(
+        {
+          title: 'Already logged in',
+          message: 'User already logged in',
+          success: true,
+        },
+        { status: 200 },
+      )
+    }
 
     if (!searchKey || !password) {
       return NextResponse.json(
@@ -36,8 +57,6 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       )
     }
-
-    searchKey.trim().toLowerCase()
 
     const email = searchKey.includes('@') ? searchKey : undefined
     const username = searchKey.includes('@') ? undefined : searchKey
