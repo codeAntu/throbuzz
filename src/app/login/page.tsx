@@ -30,6 +30,7 @@ export default function Login() {
 
       const token = response.data.tokenData
       console.log('token', token)
+      router.push('/profile')
     } catch (error: any) {
       console.log('Login failed')
       console.log('error', error.response.data.error)

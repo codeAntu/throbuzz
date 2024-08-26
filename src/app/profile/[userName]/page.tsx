@@ -6,15 +6,32 @@ import { Bold, Bolt, LogIn, MoveLeft, Pencil, Settings } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { useRouter } from 'next/navigation'
 import Post from '@/components/Post'
+import axios from 'axios'
 
 export default function UserProfile({ params }: { params: any }) {
   const router = useRouter()
+
+  async function onLogout() {
+    try {
+      const response = await axios.post('/api/users/logout')
+      console.log('response', response.data)
+      router.push('/')
+    } catch (error: any) {
+      console.log('Logout failed')
+      console.log('error', error.response)
+    }
+  }
+
   return (
     <Screen0 className='max-w-[700px]'>
       <div className='flex w-full items-center justify-between bg-white px-5 py-4 dark:bg-black'>
         <MoveLeft size={26} onClick={() => router.back()} className='hover:bg-white/20' />
         <Bolt size={26} />
+        <Button onClick={onLogout} className=''>
+          Logout
+        </Button>
       </div>
+
       <Bio />
       <Posts />
       <Posts />

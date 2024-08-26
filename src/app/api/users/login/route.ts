@@ -10,20 +10,21 @@ connect()
 export async function POST(request: NextRequest) {
   try {
     const { searchKey, password } = await request.json()
-    const extToken = (await request.cookies.get('token')?.value) || ''
-    const extTokenData = jwt.verify(extToken, process.env.JWT_SECRET as string)
 
-    if (extTokenData) {
-      return NextResponse.json(
-        {
-          title: 'Already logged in',
-          message: 'User already logged in',
-          success: true,
-          tokenData: extTokenData,
-        },
-        { status: 200 },
-      )
-    }
+    //     const extToken = (await request.cookies.get('token')?.value) || ''
+    //     const extTokenData = await jwt.verify(extToken, process.env.JWT_SECRET as string)
+    // const extTokenData = await jwt.verify(extToken, process.env.JWT_SECRET as string)
+    //     if (extTokenData) {
+    //       return NextResponse.json(
+    //         {
+    //           title: 'Already logged in',
+    //           message: 'User already logged in',
+    //           success: true,
+    //           tokenData: extTokenData,
+    //         },
+    //         { status: 200 },
+    //       )
+    //     }
 
     if (!searchKey || !password) {
       return NextResponse.json(
