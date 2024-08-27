@@ -146,13 +146,33 @@ export async function POST(request: NextRequest) {
     //   )
     // }
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         title: 'User created successfully',
         message: 'User created successfully',
       },
       { status: 201 },
     )
+
+    // save email, not verified  in token
+    // send email verification link
+
+    const tokenData = {
+      email,
+      username,
+    }
+
+    const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, {
+      expiresIn: '1h',
+    })
+
+    response.cookies.set('token', token, {
+      httpOnly: true,
+    })
+
+    console.log('token', token)
+
+    return response
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

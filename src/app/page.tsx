@@ -10,9 +10,20 @@ import TAndC from '@/components/T&C'
 import { AtSign, Eye, KeyRound, LogIn, Mail, Sparkles, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import jwt from 'jsonwebtoken'
+import axios from 'axios'
 
 export default function Home() {
   const router = useRouter()
+
+  async function onLogOut() {
+    try {
+      const response = await axios.post('/api/users/logout')
+
+      console.log('response', response.data.message)
+
+      router.push('/login')
+    } catch (error) {}
+  }
 
   return (
     <Screen className='justify-center gap-10 pt-10'>
@@ -23,7 +34,10 @@ export default function Home() {
         Profile
       </Button>
 
-      <div>Home</div>
+      <Button onClick={onLogOut} leftIcon={<Ic Icon={LogIn} />}>
+        {' '}
+        Logout
+      </Button>
     </Screen>
   )
 }

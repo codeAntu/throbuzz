@@ -11,24 +11,18 @@ import TAndC from '@/components/T&C'
 import axios from 'axios'
 import { LogIn } from 'lucide-react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+// import { useRouter } from 'next/router'
 
 export default function Verification() {
   const router = useRouter()
-  // const searchParams = useSearchParams()
-  // const email = searchParams.get('email')
-  const { email } = useParams()
-
   const [otp, setOtp] = useState('')
 
-  console.log('email', email)
-
   async function onVerify() {
-    console.log('email', email)
     console.log('otp', otp)
 
     try {
-      const response = await axios.post('/api/users/verification', { email, otp })
+      const response = await axios.post('/api/users/verification', { otp })
       console.log('response', response.data.message)
       router.push('/')
     } catch (error: any) {
@@ -43,7 +37,7 @@ export default function Verification() {
         <div>
           <h1 className='text-center text-lg font-semibold text-black/70 dark:text-white/70'>Verify your email</h1>
           <p className='text-center text-xs text-black/40 dark:text-white/40'>
-            We have sent an OTP to your email address {email}
+            We have sent an OTP to your email address .
           </p>
         </div>
 

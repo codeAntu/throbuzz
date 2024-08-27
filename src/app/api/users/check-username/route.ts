@@ -33,9 +33,12 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       )
     }
-    const user = await User.findOne({
-      username,
-    })
+
+    console.log('username', username)
+
+    const user = await User.findOne({ username })
+    console.log('user', user)
+
     if (user) {
       return NextResponse.json(
         {
@@ -54,11 +57,11 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 },
     )
-  } catch (error) {
+  } catch (error: any) {
     return NextResponse.json(
       {
         title: 'Error',
-        error: error,
+        error: error.message,
         success: false,
       },
       { status: 500 },

@@ -26,7 +26,13 @@ connect()
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, otp } = await request.json()
+    const { otp } = await request.json()
+
+    const extToken = (await request.cookies.get('token')?.value) || ''
+    const extTokenData = jwt.decode(extToken)
+    const { email } = extTokenData as { email: string }
+
+    console.log('extToken ', extTokenData)
 
     if (!email || !otp) {
       return NextResponse.json(
