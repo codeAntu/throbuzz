@@ -1,3 +1,4 @@
+import { connect } from '@/dbConfig/dbConfig'
 import User from '@/models/userModel'
 import { parseJson } from '@/utils/utils'
 import { NextRequest, NextResponse } from 'next/server'
@@ -8,13 +9,15 @@ const userLoginValid = z
     username: z
       .string({ required_error: 'Email is required' }) //
       .trim()
-      .min(3, { message: 'Email must be at least 5 characters long' })
+      .min(3, { message: 'Email must be at least 3 characters long' })
       .max(100, { message: 'Email must be at most 100 characters long' })
       .toLowerCase()
       .optional(),
   })
   .strict()
   .refine((data) => data.username, { message: 'username is required' })
+
+connect()
 
 export async function POST(request: NextRequest) {
   const body = await parseJson(request)

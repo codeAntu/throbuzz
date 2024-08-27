@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
       email: user.email,
       username: user.username,
       id: user._id,
+      isVerified: user.isVerified,
     }
 
     const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, {

@@ -7,6 +7,7 @@ import { title } from 'process'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import { parseJson } from '@/utils/utils'
+import { TokenDataT } from '@/lib/types'
 
 const user = z
   .object({
@@ -46,11 +47,11 @@ export async function POST(request: NextRequest) {
     let { name, email, password, username } = user.parse(body)
 
     const extToken = (await request.cookies.get('token')?.value) || ''
-    const extTokenData = jwt.decode(extToken)
+    const extTokenData = jwt.decode(extToken) as TokenDataT
 
     console.log('extToken ', extTokenData)
 
-    if (extTokenData) {
+    if (extTokenData?.isVerified) {
       return NextResponse.json(
         {
           title: 'Already logged in',
@@ -160,6 +161,8 @@ export async function POST(request: NextRequest) {
     const tokenData = {
       email,
       username,
+      id: '',
+      isVerified: false,
     }
 
     const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, {

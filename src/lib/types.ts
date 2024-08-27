@@ -32,3 +32,10 @@ export interface ResponseT {
   error: string
   success: boolean
 }
+
+export interface TokenDataT {
+  email: string
+  username: string
+  id: string
+  isVerified: boolean
+}

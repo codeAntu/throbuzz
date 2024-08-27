@@ -29,12 +29,16 @@ export default function Home() {
     <Screen className='justify-center gap-10 pt-10'>
       <Hero />
 
-      <Button onClick={() => router.push('/profile/AnantaKarmakar')} leftIcon={<Ic Icon={LogIn} />}>
-        {' '}
+      <Button
+        title='Go to Profile'
+        onClick={() => router.push('/profile/')}
+        leftIcon={<Ic Icon={LogIn} />}
+        className=''
+      >
         Profile
       </Button>
 
-      <Button onClick={onLogOut} leftIcon={<Ic Icon={LogIn} />}>
+      <Button title='logout' onClick={onLogOut} leftIcon={<Ic Icon={LogIn} />}>
         {' '}
         Logout
       </Button>

@@ -61,11 +61,10 @@ export default function SignUpPage() {
       })
 
       console.log('response', response.data.message)
-      router.push('/verification?email=' + user.email)
+      router.push('/verification')
     } catch (error: any) {
       console.log('signUp failed')
       console.log('error', error.response.data.error)
-
       showErrors(error.response.data.error)
     } finally {
       setLoading(false)
