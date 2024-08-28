@@ -12,9 +12,15 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import Input from '@/components/Input'
 import Error from '@/components/Error'
+import useUserStore from '@/store/store'
 
 export default function Login() {
   const router = useRouter()
+
+  const savedUser = useUserStore((state) => state.savedUser)
+  const setSavedUser = useUserStore((state) => state.setSavedUser)
+
+  console.log('savedUser', savedUser)
 
   const [user, setUser] = useState({
     searchKey: '',
@@ -38,7 +44,8 @@ export default function Login() {
     try {
       const response = await axios.post('/api/users/login', user)
       console.log('response', response.data)
-      const token = response.data.tokenData
+      setSavedUser(response.data.tokenData)
+
       router.push('/')
     } catch (error: any) {
       console.log('Login failed')

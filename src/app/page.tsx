@@ -11,19 +11,25 @@ import { AtSign, Eye, KeyRound, LogIn, Mail, Sparkles, User } from 'lucide-react
 import { useRouter } from 'next/navigation'
 import jwt from 'jsonwebtoken'
 import axios from 'axios'
+import useStore from '@/store/store'
 
 export default function Home() {
   const router = useRouter()
+
+  const savedUser = useStore((state) => state.savedUser)
+  const clearSavedUser = useStore((state) => state.clearSavedUser)
 
   async function onLogOut() {
     try {
       const response = await axios.post('/api/users/logout')
 
       console.log('response', response.data.message)
-
+      clearSavedUser()
       router.push('/login')
     } catch (error) {}
   }
+
+  console.log('savedUser', savedUser)
 
   return (
     <Screen className='justify-center gap-10 pt-10'>
@@ -38,7 +44,13 @@ export default function Home() {
         Profile
       </Button>
 
-      <Button title='logout' onClick={onLogOut} leftIcon={<Ic Icon={LogIn} />}>
+      <Button
+        title='logout'
+        onClick={() => {
+          onLogOut()
+        }}
+        leftIcon={<Ic Icon={LogIn} />}
+      >
         {' '}
         Logout
       </Button>

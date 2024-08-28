@@ -9,6 +9,7 @@ import Input from '@/components/Input'
 import OTPInput from '@/components/OTPInput'
 import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
+import useUserStore from '@/store/store'
 import axios from 'axios'
 import { LoaderCircle, LogIn } from 'lucide-react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
@@ -20,6 +21,7 @@ export default function Verification() {
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const setSavedUser = useUserStore((state: any) => state.setSavedUser)
 
   async function onVerify() {
     if (!otp) {
@@ -30,6 +32,7 @@ export default function Verification() {
     try {
       const response = await axios.post('/api/users/verification', { otp })
       console.log('response', response.data.message)
+      setSavedUser(response.data.tokenData)
       router.push('/')
     } catch (error: any) {
       console.log('error', error.response.data.error)
