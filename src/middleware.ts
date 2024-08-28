@@ -10,9 +10,12 @@ export async function middleware(request: NextRequest) {
 
   const profilePath = path === '/profile'
   const isPublicPath = path === '/login' || path === '/signup' || path === '/verification'
+  const isVerificationPath = path === '/verification'
 
   const token = (await request.cookies.get('token')?.value) || ''
   const tokenData = jwt.decode(token) as TokenDataT
+
+  console.log('tokenData', tokenData?.isVerified)
 
   if (isPublicPath && tokenData?.isVerified) {
     return NextResponse.redirect(new URL('/', request.nextUrl))
@@ -25,9 +28,13 @@ export async function middleware(request: NextRequest) {
   if (profilePath && tokenData?.isVerified) {
     return NextResponse.redirect(new URL('/profile/' + tokenData?.username, request.nextUrl.origin).toString())
   }
+
+  if (isVerificationPath && tokenData?.isVerified) {
+    return NextResponse.redirect(new URL('/signup', request.nextUrl.origin).toString())
+  }
 }
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/', '/login', '/signup', '/profile', '/verify'],
+  matcher: ['/', '/login', '/signup', '/profile', '/verification'],
 }

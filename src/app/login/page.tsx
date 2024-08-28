@@ -7,11 +7,11 @@ import { Ic } from '@/components/Icon'
 import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
 import axios from 'axios'
-import { Eye, EyeOff, KeyRound, LogIn, Mail } from 'lucide-react'
+import { Eye, EyeOff, KeyRound, LoaderCircle, LogIn, Mail } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from 'react'
-import jwt from 'jsonwebtoken'
+import { useEffect, useRef, useState } from 'react'
 import Input from '@/components/Input'
+import Error from '@/components/Error'
 
 export default function Login() {
   const router = useRouter()
@@ -22,8 +22,19 @@ export default function Login() {
   })
   const passwordRef = useRef<HTMLInputElement>(null)
   const [hidePassword, setHidePassword] = useState(true)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setError('')
+  }, [user])
 
   async function onLogin() {
+    if (!user.searchKey || !user.password) {
+      setError('Please fill all the fields')
+      return
+    }
+    setLoading(true)
     try {
       const response = await axios.post('/api/users/login', user)
       console.log('response', response.data)
@@ -34,8 +45,12 @@ export default function Login() {
     } catch (error: any) {
       console.log('Login failed')
       console.log('error', error.response.data.error)
+      setError(error.response.data.error)
+    } finally {
+      setLoading(false)
     }
   }
+
   function focusPassword() {
     const input = passwordRef.current
     if (input) {
@@ -93,11 +108,18 @@ export default function Login() {
               setUser({ ...user, password: e.target.value })
             }}
           />
+          {Error && <Error error={error} />}
         </div>
         <Button
           title='Login'
           onClick={() => onLogin()}
-          leftIcon={<Ic Icon={LogIn} className='text-white dark:text-black' />}
+          leftIcon={
+            loading ? (
+              <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
+            ) : (
+              <Ic Icon={LogIn} className='text-white dark:text-black' />
+            )
+          }
         />
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Do not have an account?{'  '}

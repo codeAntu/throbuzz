@@ -2,12 +2,13 @@ import { connect } from '@/dbConfig/dbConfig'
 import { NextRequest, NextResponse } from 'next/server'
 import bcryptjs from 'bcryptjs'
 import User from '@/models/userModel'
-import { sendEmail } from '@/mail/sendEmail'
-import { title } from 'process'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import { parseJson } from '@/utils/utils'
 import { TokenDataT } from '@/lib/types'
+import { sendEmail } from '@/mail/mailer'
+import { EmailTemplate } from '@/mail/pages/verifyEmail'
+import EmailComponent from '@/mail/verifyAccountTemplate'
 
 const user = z
   .object({
@@ -147,6 +148,19 @@ export async function POST(request: NextRequest) {
     //   )
     // }
 
+    // TODO: Uncomment the line below to send the email
+
+    const htmlToSend = EmailComponent.generateEmailHtml({
+      name,
+      OTP: verificationCode,
+    })
+
+    await sendEmail({
+      to: email,
+      subject: 'Verify your account',
+      html: htmlToSend,
+    })
+
     const response = NextResponse.json(
       {
         title: 'User created successfully',
@@ -177,6 +191,8 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error: any) {
+    console.log('error', error.message)
+
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

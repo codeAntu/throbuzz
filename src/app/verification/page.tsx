@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/Button'
 import Continue from '@/components/Continue'
+import Error from '@/components/Error'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
 import Input from '@/components/Input'
@@ -9,7 +10,7 @@ import OTPInput from '@/components/OTPInput'
 import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
 import axios from 'axios'
-import { LogIn } from 'lucide-react'
+import { LoaderCircle, LogIn } from 'lucide-react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 // import { useRouter } from 'next/router'
@@ -17,10 +18,16 @@ import { useEffect, useState } from 'react'
 export default function Verification() {
   const router = useRouter()
   const [otp, setOtp] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   async function onVerify() {
     console.log('otp', otp)
-
+    if (!otp) {
+      setError('Please fill all the fields')
+      return
+    }
+    setLoading(true)
     try {
       const response = await axios.post('/api/users/verification', { otp })
       console.log('response', response.data.message)
@@ -28,6 +35,7 @@ export default function Verification() {
     } catch (error: any) {
       console.log('error', error.response.data.error)
     }
+    setLoading(false)
   }
 
   return (
@@ -43,12 +51,20 @@ export default function Verification() {
 
         <OTPInput length={6} getOTp={(otp: string) => setOtp(otp)} />
 
+        {error && <Error error={error} />}
+
         <Button
           title='Verify'
           onClick={() => {
             onVerify()
           }}
-          leftIcon={<Ic Icon={LogIn} className='text-white dark:text-black' />}
+          leftIcon={
+            loading ? (
+              <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
+            ) : (
+              <Ic Icon={LogIn} className='text-white dark:text-black' />
+            )
+          }
         />
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Do not have an account?{'  '}

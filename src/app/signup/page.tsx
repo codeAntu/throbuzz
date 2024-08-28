@@ -9,9 +9,8 @@ import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
 import axios from 'axios'
 import { AtSign, Check, Eye, EyeOff, KeyRound, LoaderCircle, Mail, Sparkles, User, X } from 'lucide-react'
-import { set } from 'mongoose'
 import { useRouter } from 'next/navigation'
-import React, { forwardRef, use, useEffect, useRef } from 'react'
+import React, {  useEffect, useRef } from 'react'
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -21,7 +20,6 @@ export default function SignUpPage() {
     password: '',
   })
   const [username, setUsername] = React.useState('')
-  const [buttonDisabled, setButtonDisabled] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState('')
   const [isUsernameAvailable, setIsUsernameAvailable] = React.useState(false)
@@ -38,15 +36,11 @@ export default function SignUpPage() {
 
   useEffect(() => {
     setError('')
-  }, [user])
-
-  function showErrors(error: string) {
-    setError(error)
-  }
+  }, [user, username])
 
   async function onSignUp() {
     if (!user.name || !user.email || !username || !user.password) {
-      showErrors('All fields are required')
+      setError('Please fill all the fields')
       return
     }
 
@@ -63,9 +57,9 @@ export default function SignUpPage() {
       console.log('response', response.data.message)
       router.push('/verification')
     } catch (error: any) {
-      console.log('signUp failed')
-      console.log('error', error.response.data.error)
-      showErrors(error.response.data.error)
+      console.log('error', error.response.data)
+      console.log(typeof error.response.data.message)
+      setError(error.response.data.error)
     } finally {
       setLoading(false)
     }
@@ -190,7 +184,13 @@ export default function SignUpPage() {
             console.log('signing up')
             onSignUp()
           }}
-          leftIcon={<Ic Icon={Sparkles} className='text-white dark:text-black' />}
+          leftIcon={
+            loading ? (
+              <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
+            ) : (
+              <Ic Icon={Sparkles} className='text-white dark:text-black' />
+            )
+          }
         />
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Already have an account?{' '}
@@ -198,7 +198,6 @@ export default function SignUpPage() {
             Login
           </button>
         </div>
-
         <Continue />
         <TAndC />
       </div>
