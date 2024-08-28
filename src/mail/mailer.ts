@@ -20,7 +20,7 @@ export async function sendEmail({ to, subject, html, text = '' }: EmailConfig) {
     })
     const mailOptions = {
       from: {
-        name: 'Quick Notes',
+        name: 'Throbuzz ',
         address: process.env.EMAIL as string,
       },
       to,

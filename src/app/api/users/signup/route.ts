@@ -7,7 +7,6 @@ import { z } from 'zod'
 import { parseJson } from '@/utils/utils'
 import { TokenDataT } from '@/lib/types'
 import { sendEmail } from '@/mail/mailer'
-import { EmailTemplate } from '@/mail/pages/verifyEmail'
 import EmailComponent from '@/mail/verifyAccountTemplate'
 
 const user = z
@@ -76,7 +75,7 @@ export async function POST(request: NextRequest) {
 
     const userByUserName = await User.findOne({ username })
     if (userByUserName?.isVerified) {
-      userByUserName.username = 'test'
+      userByUserName.username = Math.random().toString(36).substring(7)
 
       return NextResponse.json(
         {
