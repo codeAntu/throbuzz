@@ -22,7 +22,6 @@ export default function Verification() {
   const [error, setError] = useState('')
 
   async function onVerify() {
-    console.log('otp', otp)
     if (!otp) {
       setError('Please fill all the fields')
       return
@@ -65,6 +64,7 @@ export default function Verification() {
               <Ic Icon={LogIn} className='text-white dark:text-black' />
             )
           }
+          disabled={loading}
         />
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Do not have an account?{'  '}

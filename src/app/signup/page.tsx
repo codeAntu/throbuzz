@@ -10,7 +10,7 @@ import TAndC from '@/components/T&C'
 import axios from 'axios'
 import { AtSign, Check, Eye, EyeOff, KeyRound, LoaderCircle, Mail, Sparkles, User, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import React, {  useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -44,7 +44,6 @@ export default function SignUpPage() {
       return
     }
 
-    console.log(user)
     try {
       setLoading(true)
       const response = await axios.post('/api/users/signup', {
@@ -58,7 +57,6 @@ export default function SignUpPage() {
       router.push('/verification')
     } catch (error: any) {
       console.log('error', error.response.data)
-      console.log(typeof error.response.data.message)
       setError(error.response.data.error)
     } finally {
       setLoading(false)
@@ -71,7 +69,6 @@ export default function SignUpPage() {
       return
     }
     setIsUsernameChecking(true)
-    console.log('checking username', username)
 
     try {
       const response = await axios.post('/api/users/check-username', { username: username })
@@ -94,7 +91,6 @@ export default function SignUpPage() {
       input.focus()
       setTimeout(() => {
         const len = input.value.length
-        console.log('len', len)
         input.setSelectionRange(len, len)
       }, 0)
     }
@@ -181,7 +177,6 @@ export default function SignUpPage() {
         <Button
           title='Create new account'
           onClick={() => {
-            console.log('signing up')
             onSignUp()
           }}
           leftIcon={
@@ -191,6 +186,7 @@ export default function SignUpPage() {
               <Ic Icon={Sparkles} className='text-white dark:text-black' />
             )
           }
+          disabled={loading || !isUsernameAvailable}
         />
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Already have an account?{' '}

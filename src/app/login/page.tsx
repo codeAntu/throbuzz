@@ -38,9 +38,7 @@ export default function Login() {
     try {
       const response = await axios.post('/api/users/login', user)
       console.log('response', response.data)
-
       const token = response.data.tokenData
-      console.log('token', token)
       router.push('/')
     } catch (error: any) {
       console.log('Login failed')
@@ -57,7 +55,6 @@ export default function Login() {
       input.focus()
       setTimeout(() => {
         const len = input.value.length
-        console.log('len', len)
         input.setSelectionRange(len, len)
       }, 0)
     }
@@ -120,6 +117,7 @@ export default function Login() {
               <Ic Icon={LogIn} className='text-white dark:text-black' />
             )
           }
+          disabled={loading}
         />
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Do not have an account?{'  '}

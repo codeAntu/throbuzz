@@ -27,8 +27,6 @@ export default function OTPInput({ length = 6, getOTp }: { length?: number; getO
     }
   }
 
-  console.log(inputRefs)
-
   useEffect(() => {
     if (inputRefs.current[0]) inputRefs.current[0]?.focus()
   }, [])
