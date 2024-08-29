@@ -46,7 +46,7 @@ export default function SignUpPage() {
 
     try {
       setLoading(true)
-      const response = await axios.post('/api/users/signup', {
+      const response = await axios.post('/api/auth/signup', {
         name: user.name,
         email: user.email.toLowerCase(),
         username: username.toLowerCase(),
@@ -71,7 +71,7 @@ export default function SignUpPage() {
     setIsUsernameChecking(true)
 
     try {
-      const response = await axios.post('/api/users/check-username', { username: username })
+      const response = await axios.post('/api/auth/check-username', { username: username })
       if (await response.data.success) {
         setIsUsernameAvailable(true)
       } else {

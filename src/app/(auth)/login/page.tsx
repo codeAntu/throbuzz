@@ -42,7 +42,7 @@ export default function Login() {
     }
     setLoading(true)
     try {
-      const response = await axios.post('/api/users/login', user)
+      const response = await axios.post('/api/auth/login', user)
       console.log('response', response.data)
       setSavedUser(response.data.tokenData)
 
