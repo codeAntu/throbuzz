@@ -21,7 +21,7 @@ export default function Home() {
 
   async function onLogOut() {
     try {
-      const response = await axios.get('/api/auth/logout')
+      const response = await axios.post('/api/auth/logout')
 
       console.log('response', response.data.message)
       clearSavedUser()
