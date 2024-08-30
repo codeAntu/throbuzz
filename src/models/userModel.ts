@@ -70,12 +70,24 @@ const userSchema: Schema<UserT> = new mongoose.Schema(
       type: Date,
     },
     profilePic: {
-      type: String,
-      default: '',
+      imageUrl: {
+        type: String,
+        default: '',
+      },
+      publicId: {
+        type: String,
+        default: '',
+      },
     },
     profileCover: {
-      type: String,
-      default: '',
+      imageUrl: {
+        type: String,
+        default: '',
+      },
+      publicId: {
+        type: String,
+        default: '',
+      },
     },
     bio: {
       type: String,

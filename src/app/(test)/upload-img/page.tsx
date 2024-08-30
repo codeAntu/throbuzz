@@ -15,8 +15,15 @@ export default function UploadImg() {
   }
 
   async function upload() {
+    console.log('img', img)
+
     try {
-      const response = await axios.post('/api/temp/upload-img')
+      if (!img) return
+
+      const formData = new FormData()
+      formData.append('image', img)
+
+      const response = await axios.post('/api/temp/upload-img', formData)
 
       console.log('response', response)
     } catch (error) {
@@ -27,7 +34,7 @@ export default function UploadImg() {
   return (
     <Screen>
       <div className='grid w-full gap-10'>
-        {/* <input type='file' onChange={handleFileChange} className='h-10 w-full rounded-md border border-black/10 p-2' /> */}
+        <input type='file' onChange={handleFileChange} className='h-10 w-full rounded-md border border-black/10 p-2' />
         <Button
           title='Upload'
           onClick={() => {
