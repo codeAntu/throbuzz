@@ -21,7 +21,7 @@ export default function Home() {
 
   async function onLogOut() {
     try {
-      const response = await axios.post('/api/auth/logout')
+      const response = await axios.get('/api/auth/logout')
 
       console.log('response', response.data.message)
       clearSavedUser()
@@ -29,12 +29,19 @@ export default function Home() {
     } catch (error) {}
   }
 
-  console.log('savedUser', savedUser)
+  async function getImg() {
+    try {
+      const response = await axios.get('/api/temp/get-img')
+
+      console.log('response', response.data.url)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
 
   return (
     <Screen className='justify-center gap-10 pt-10'>
       <Hero />
-
       <Button
         title='Go to Profile'
         onClick={() => router.push('/profile/')}
@@ -43,7 +50,6 @@ export default function Home() {
       >
         Profile
       </Button>
-
       <Button
         title='logout'
         onClick={() => {
@@ -54,6 +60,18 @@ export default function Home() {
         {' '}
         Logout
       </Button>
+      <Button
+        title='Get Image'
+        onClick={() => {
+          getImg()
+        }}
+        leftIcon={<Ic Icon={LogIn} />}
+      >
+        {' '}
+        Get Image
+      </Button>
+      {/* <CldImage width='960' height='600' src='<Public ID>' sizes='100vw' alt='Description of my image' /> */}
+      Expand
     </Screen>
   )
 }
