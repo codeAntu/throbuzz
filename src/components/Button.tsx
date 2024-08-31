@@ -34,3 +34,7 @@ export function OutlineButton({ title, className, leftIcon, rightIcon, ...rest }
     </motion.button>
   )
 }
+
+export function MotionButton({ ...Button }: buttonProps) {
+  return <motion.button whileTap={{ scale: 0.975 }} hover={{ scale: 1.02 }} {...Button} />
+}

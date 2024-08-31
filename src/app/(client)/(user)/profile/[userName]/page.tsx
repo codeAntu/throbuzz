@@ -1,12 +1,13 @@
 'use client'
 import { Screen, Screen0 } from '@/components/Screen'
 import ProfileLayout from '../layout'
-import { Ic } from '@/components/Icon'
-import { Bold, Bolt, LogIn, MoveLeft, Pencil, Search, Settings } from 'lucide-react'
-import { Button } from '@/components/Button'
+import { Bold, Bolt, ChevronLeft, LogIn, MoveLeft, Pencil, Search, Settings } from 'lucide-react'
+import { Button, MotionButton } from '@/components/Button'
 import { useRouter } from 'next/navigation'
 import Post from '@/components/Post'
 import axios from 'axios'
+import { Ic } from '@/components/Icon'
+import { motion } from 'framer-motion'
 
 export default function UserProfile({ params }: { params: any }) {
   const router = useRouter()
@@ -24,13 +25,29 @@ export default function UserProfile({ params }: { params: any }) {
 
   return (
     <Screen0 className='max-w-[700px]'>
-      <div className='flex w-full flex-grow items-center justify-between gap-4 bg-white px-5 py-4 dark:bg-black'>
-        <MoveLeft size={26} onClick={() => router.back()} className='hover:bg-white/20' />
-        <div className='flex max-w-[400px] flex-grow items-center justify-between gap-2 rounded-full border-2 border-black px-3 py-1.5'>
-          <input type='text' className='pr-2 text-sm outline-none' />
-          <Search size={20} />
+      <div className='flex w-full flex-grow items-center justify-between gap-4 bg-white px-1 py-2 dark:bg-black'>
+        <ChevronLeft
+          onClick={() => router.back()}
+          className='rounded-lg text-black/50 hover:cursor-pointer hover:bg-blue-50 dark:text-white/50'
+          size={32}
+        />
+        <div className='flex max-w-[400px] flex-grow items-center justify-between gap-2 rounded-full border-[1.5px] border-black/50 px-2 py-1 dark:border-white/50'>
+          <input
+            type='text'
+            className='px-1 text-sm text-black/70 outline-none dark:text-white/70'
+            value='codeAntu'
+            placeholder='search '
+          />
+          <Search
+            className='rounded-lg p-0.5 text-black/50 hover:cursor-pointer hover:bg-blue-50 dark:text-white/50'
+            size={28}
+          />
         </div>
-        <Bolt size={26} />
+        <Bolt
+          className='rounded-lg px-1 text-black/50 hover:cursor-pointer hover:bg-blue-50 dark:text-white/50'
+          onClick={() => router.push('/settings')}
+          size={32}
+        />
       </div>
 
       <Bio />
@@ -75,16 +92,32 @@ function Bio() {
       <div className=''>
         <div className='relative'>
           <img src='/images/bg2.jpg' alt='' className='max-h-36 w-full bg-red-500 object-cover md:max-h-40' />
-          <div className='absolute bottom-2 right-2 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white'>
-            <Pencil className='bg-transparent' size={22} />
-          </div>
+          <MotionButton
+            onClick={() => {
+              console.log('clicked')
+            }}
+            className='absolute bottom-2 right-2 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 dark:border-black dark:bg-slate-700 dark:text-white'
+          >
+            <Pencil className='' size={22} />
+          </MotionButton>
         </div>
 
         <div className='relative -top-14 -mb-14 flex w-36 md:w-40'>
-          <img src='/images/profile.jpg' alt='' className='w-36 rounded-full bg-white p-1.5 dark:bg-black md:w-40' />
-          <div className='absolute bottom-1 right-1 cursor-pointer rounded-full border-4 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white'>
+          <img
+            src='/images/profile.jpg'
+            alt=''
+            className='w-36 rounded-full bg-white p-1 dark:bg-black md:w-40 md:p-1.5'
+          />
+          <MotionButton
+            onClick={() => {
+              console.log('clicked')
+            }}
+            className='absolute bottom-1 right-1 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white'
+          >
             <Pencil className='' size={22} />
-          </div>
+          </MotionButton>
+
+          {/* <div className='bg-red-200'>Edit Profile</div> */}
         </div>
       </div>
       <div className='flex flex-col justify-center gap-2 px-5 py-2'>
