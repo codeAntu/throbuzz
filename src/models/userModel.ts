@@ -13,8 +13,14 @@ interface UserT extends Document {
   verificationCodeExpires: Date
   createdAt: Date
   updatedAt: Date
-  profilePic: string
-  profileCover: string
+  profilePic: {
+    imageUrl: string
+    publicId: string
+  }
+  profileCover: {
+    imageUrl: string
+    publicId: string
+  }
   bio: string
   about: string
   friends: [Schema.Types.ObjectId]
