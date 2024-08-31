@@ -2,7 +2,7 @@
 import { Screen, Screen0 } from '@/components/Screen'
 import ProfileLayout from '../layout'
 import { Ic } from '@/components/Icon'
-import { Bold, Bolt, LogIn, MoveLeft, Pencil, Settings } from 'lucide-react'
+import { Bold, Bolt, LogIn, MoveLeft, Pencil, Search, Settings } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { useRouter } from 'next/navigation'
 import Post from '@/components/Post'
@@ -24,12 +24,13 @@ export default function UserProfile({ params }: { params: any }) {
 
   return (
     <Screen0 className='max-w-[700px]'>
-      <div className='flex w-full items-center justify-between bg-white px-5 py-4 dark:bg-black'>
+      <div className='flex w-full flex-grow items-center justify-between gap-4 bg-white px-5 py-4 dark:bg-black'>
         <MoveLeft size={26} onClick={() => router.back()} className='hover:bg-white/20' />
+        <div className='flex max-w-[400px] flex-grow items-center justify-between gap-2 rounded-full border-2 border-black px-3 py-1.5'>
+          <input type='text' className='pr-2 text-sm outline-none' />
+          <Search size={20} />
+        </div>
         <Bolt size={26} />
-        <Button onClick={onLogout} className=''>
-          Logout
-        </Button>
       </div>
 
       <Bio />
