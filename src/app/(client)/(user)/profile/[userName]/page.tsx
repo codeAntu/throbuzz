@@ -96,9 +96,8 @@ function Bio() {
   const [coverImage, setCoverImage] = useState<File | null>(null)
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [selectedImage, setSelectedImage] = useState('/images/profile.jpg')
+  const router = useRouter()
 
-  // console.log('coverImage', coverImage)
-  // console.log('profileImage', profileImage)
   function handleProfileImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       setProfileImage(e.target.files[0])
@@ -165,7 +164,6 @@ function Bio() {
               className='hidden'
               id='coverImage'
               onChange={handleCoverImageChange}
-              // value={coverImage}
             />
             <label htmlFor='coverImage'>
               <Pencil className='' size={22} />
@@ -192,14 +190,19 @@ function Bio() {
                 className='hidden'
                 id='profileImage'
                 onChange={handleProfileImageChange}
-                // value={coverImage}
               />
               <label htmlFor='profileImage'>
                 <Pencil className='' size={22} />
               </label>
             </MotionButton>
           </div>
-          <MotionButton className='flex items-center justify-center gap-1 rounded-full border border-accent/60 bg-accent/5 px-4 py-1 text-sm text-accent duration-150 hover:bg-accent/10'>
+          <MotionButton
+            className='flex items-center justify-center gap-1 rounded-full border border-accent/60 bg-accent/5 px-4 py-1 text-sm text-accent duration-150 hover:bg-accent/10'
+            onClick={() => {
+              console.log('Edit Profile')
+              router.push('/profile/editProfile')
+            }}
+          >
             <Pencil className='' size={16} />
             Edit Profile
           </MotionButton>

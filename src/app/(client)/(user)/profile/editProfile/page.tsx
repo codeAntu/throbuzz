@@ -6,6 +6,7 @@ import Input from '@/components/Input'
 import { Screen } from '@/components/Screen'
 import axios from 'axios'
 import { AtSign, Check, LoaderCircle, User, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function Edit() {
@@ -13,12 +14,16 @@ export default function Edit() {
     name: '',
     bio: '',
     about: '',
+    username: '',
   })
 
-  const [username, setUsername] = useState('codeAntu')
+  const [username, setUsername] = useState('codeantuw')
   const [error, setError] = useState('')
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false)
   const [isUsernameChecking, setIsUsernameChecking] = useState(false)
+  const [isUserLoading, setIsUserLoading] = useState(false)
+
+  const router = useRouter()
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -30,6 +35,10 @@ export default function Edit() {
   useEffect(() => {
     setError('')
   }, [user, username])
+
+  useEffect(() => {
+    getUser()
+  }, [])
 
   async function checkUsername() {
     if (username.length < 3) {
@@ -89,15 +98,26 @@ export default function Edit() {
     try {
       const response = await axios.post('/api/user/getUser', { username })
       console.log('response', response)
+
+      setUser({
+        name: response.data.user.name,
+        bio: response.data.user.bio,
+        about: response.data.user.about,
+        username: response.data.user.username,
+      })
     } catch (error: any) {
       console.log('error', error)
     }
   }
 
+  console.log('user', user)
+
   return (
-    <Screen className='flex'>
-      <div className='grid gap-8'>
-        <div className='flex w-full text-center text-xl'>Edit Profile</div>
+    <Screen className=''>
+      <div className='w-full py-5 text-center text-xl font-medium text-black/70 dark:text-white/70'>
+        Edit Your Profile
+      </div>
+      <div className='flex flex-grow flex-col justify-between gap-8'>
         <div>
           <div className='flex flex-col justify-center gap-2.5'>
             <div>
@@ -139,10 +159,9 @@ export default function Edit() {
             <div>
               <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>Bio</div>
               <textarea
-                className='h-36 w-full rounded-2xl border border-black/10 bg-black/5 px-4 py-4 text-sm font-medium text-black outline-none dark:border-white/10 dark:bg-white/5 dark:text-white'
+                className='h-36 w-full rounded-2xl border border-black/10 bg-black/5 px-4 py-4 text-sm font-medium text-black/60 outline-none dark:border-white/10 dark:bg-white/5 dark:text-white/60'
                 name='bio'
                 placeholder='Enter your bio'
-                // leftIcon={<Ic Icon={User} />}
                 value={user.bio}
                 onChange={(e: any) => {
                   setUser({ ...user, bio: e.target.value })
@@ -152,7 +171,7 @@ export default function Edit() {
             <div>
               <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>About</div>
               <textarea
-                className='h-36 w-full rounded-2xl border border-black/10 bg-black/5 px-4 py-4 text-sm font-medium text-black outline-none dark:border-white/10 dark:bg-white/5 dark:text-white'
+                className='h-36 w-full rounded-2xl border border-black/10 bg-black/5 px-4 py-4 text-sm font-semibold text-black/60 outline-none dark:border-white/10 dark:bg-white/5 dark:text-white/60'
                 name='about'
                 placeholder='Enter about yourself'
                 // leftIcon={<Ic Icon={User} />}
@@ -168,10 +187,6 @@ export default function Edit() {
         </div>
         <Button title='Save' className='w-full' onClick={() => updateUser()}>
           Save
-        </Button>
-
-        <Button title='Get User' className='w-full' onClick={() => getUser()}>
-          Get User
         </Button>
       </div>
     </Screen>
