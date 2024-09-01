@@ -23,7 +23,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
       return NextResponse.json({ error: 'Image not found' }, { status: 400 })
     }
 
-    const user = await User.findOne({ email: tokenData.email })
+    const user = await User.findOne({
+      _id: tokenData.id,
+    })
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })

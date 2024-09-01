@@ -130,25 +130,6 @@ export async function POST(request: NextRequest) {
       const savedUser = await newUser.save()
     }
 
-    // const emailResponse = await sendEmail({
-    //   email,
-    //   subject: 'Verify your email',
-    //   name,
-    //   OTP: verificationCode,
-    // })
-
-    // if (!emailResponse.success) {
-    //   return NextResponse.json(
-    //     {
-    //       title: 'Email not sent',
-    //       error: 'Email not sent, please try again',
-    //     },
-    //     { status: 500 },
-    //   )
-    // }
-
-    // TODO: Uncomment the line below to send the email
-
     const htmlToSend = EmailComponent.generateEmailHtml({
       name,
       OTP: verificationCode,
@@ -168,12 +149,8 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     )
 
-    // save email, not verified  in token
-    // send email verification link
-
     const tokenData = {
       email,
-      username,
       id: '',
       isVerified: false,
     }
