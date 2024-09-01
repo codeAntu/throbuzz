@@ -85,6 +85,15 @@ export default function Edit() {
     }
   }
 
+  async function getUser() {
+    try {
+      const response = await axios.post('/api/user/getUser', { username })
+      console.log('response', response)
+    } catch (error: any) {
+      console.log('error', error.response.data)
+    }
+  }
+
   return (
     <Screen className='flex'>
       <div className='grid gap-8'>
@@ -159,6 +168,10 @@ export default function Edit() {
         </div>
         <Button title='Save' className='w-full' onClick={() => updateUser()}>
           Save
+        </Button>
+
+        <Button title='Get User' className='w-full' onClick={() => getUser()}>
+          Get User
         </Button>
       </div>
     </Screen>
