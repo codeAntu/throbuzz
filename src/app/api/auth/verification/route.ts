@@ -115,6 +115,7 @@ export async function POST(request: NextRequest) {
 
     const tokenData = {
       email: user.email,
+      username: user.username,
       id: user._id,
       isVerified: user.isVerified,
     }
