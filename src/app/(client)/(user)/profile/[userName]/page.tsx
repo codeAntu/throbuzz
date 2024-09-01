@@ -8,6 +8,7 @@ import Post from '@/components/Post'
 import axios from 'axios'
 import { Ic } from '@/components/Icon'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 
 export default function UserProfile({ params }: { params: any }) {
   const router = useRouter()
@@ -35,7 +36,6 @@ export default function UserProfile({ params }: { params: any }) {
           <input
             type='text'
             className='px-1 text-sm text-black/70 outline-none dark:text-white/70'
-            value='codeAntu'
             placeholder='search '
           />
           <Search
@@ -93,6 +93,52 @@ function About() {
 }
 
 function Bio() {
+  const [coverImage, setCoverImage] = useState<File | null>(null)
+  const [profileImage, setProfileImage] = useState<File | null>(null)
+  const [selectedImage, setSelectedImage] = useState('/images/profile.jpg')
+
+  console.log('coverImage', coverImage)
+  console.log('profileImage', profileImage)
+  function handleProfileImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files) {
+      setProfileImage(e.target.files[0])
+    }
+  }
+
+  function handleCoverImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files) {
+      setCoverImage(e.target.files[0])
+    }
+  }
+
+  async function uploadProfileImage() {
+    try {
+      if (!profileImage) return
+
+      const formData = new FormData()
+      formData.append('profileImage', profileImage)
+
+      const response = await axios.post('/api/user/uploadProfileImage', formData)
+      console.log('response', response)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
+  async function uploadCoverImage() {
+    try {
+      if (!coverImage) return
+
+      const formData = new FormData()
+      formData.append('coverImage', coverImage)
+
+      const response = await axios.post('/api/user/uploadCoverImage', formData)
+      console.log('response', response)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
   return (
     <div className=''>
       <div className=''>
@@ -104,7 +150,18 @@ function Bio() {
             }}
             className='absolute bottom-2 right-2 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 dark:border-black dark:bg-slate-700 dark:text-white'
           >
-            <Pencil className='' size={22} />
+            <input
+              type='file'
+              accept='image/*'
+              multiple
+              className='hidden'
+              id='coverImage'
+              onChange={handleCoverImageChange}
+              // value={coverImage}
+            />
+            <label htmlFor='coverImage'>
+              <Pencil className='' size={22} />
+            </label>
           </MotionButton>
         </div>
         <div className='flex w-full items-center justify-between px-2'>
@@ -120,7 +177,18 @@ function Bio() {
               }}
               className='absolute bottom-1 right-1 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white'
             >
-              <Pencil className='' size={22} />
+              <input
+                type='file'
+                accept='image/*'
+                multiple
+                className='hidden'
+                id='profileImage'
+                onChange={handleProfileImageChange}
+                // value={coverImage}
+              />
+              <label htmlFor='profileImage'>
+                <Pencil className='' size={22} />
+              </label>
             </MotionButton>
           </div>
           <MotionButton className='flex items-center justify-center gap-1 rounded-full border border-accent/60 bg-accent/5 px-4 py-1 text-sm text-accent duration-150 hover:bg-accent/10'>
@@ -157,6 +225,11 @@ function Bio() {
           </MotionButton>
         </div>
         <div></div>
+      </div>
+
+      <div>
+        <Button onClick={uploadProfileImage} title='uploadProfileImage' />
+        <Button onClick={uploadCoverImage} title='uploadCoverImage' />
       </div>
     </div>
   )

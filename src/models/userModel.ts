@@ -17,7 +17,7 @@ interface UserT extends Document {
     imageUrl: string
     publicId: string
   }
-  profileCover: {
+  coverPic: {
     imageUrl: string
     publicId: string
   }
@@ -85,7 +85,7 @@ const userSchema: Schema<UserT> = new mongoose.Schema(
         default: '',
       },
     },
-    profileCover: {
+    coverPic: {
       imageUrl: {
         type: String,
         default: '',
