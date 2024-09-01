@@ -51,11 +51,30 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     const { name, username, bio, about } = userZ.parse(body)
 
-    const user = await User.findOneAndUpdate({ _id: tokenData.id }, { name, username, bio, about }, { new: true })
+    const user = await User.findOneAndUpdate(
+      { _id: tokenData.id, isVerified: true },
+      { name, username, bio, about },
+      { new: true },
+    )
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
+
+    const newTokenData = {
+      id: user._id,
+      name: user.name,
+      username: user.username,
+      isVerified: true,
+    }
+
+    const newToken = jwt.sign(newTokenData, process.env.JWT_SECRET!, {
+      expiresIn: '7d',
+    })
+
+    res.cookies.set('token', newToken, {
+      httpOnly: true,
+    })
 
     return NextResponse.json(
       {

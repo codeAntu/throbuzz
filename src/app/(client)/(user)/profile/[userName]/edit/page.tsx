@@ -15,7 +15,7 @@ export default function Edit() {
     about: '',
   })
 
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState('codeAntu')
   const [error, setError] = useState('')
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false)
   const [isUsernameChecking, setIsUsernameChecking] = useState(false)

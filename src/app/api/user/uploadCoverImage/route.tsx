@@ -1,8 +1,11 @@
 import imageUpload from '@/cloudinary/cloudinaryUploadImage'
+import { connect } from '@/dbConfig/dbConfig'
 import { CloudinaryImageResponse, TokenDataT } from '@/lib/types'
 import User from '@/models/userModel'
 import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
+
+connect()
 
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
@@ -35,7 +38,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     await user.save()
 
-    return NextResponse.json({ message: 'Hello', img }, { status: 200 })
+    return NextResponse.json(
+      {
+        message: 'Cover image uploaded successfully',
+        img,
+      },
+      { status: 200 },
+    )
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
