@@ -15,8 +15,6 @@ export async function middleware(request: NextRequest) {
   const token = (await request.cookies.get('token')?.value) || ''
   const tokenData = jwt.decode(token) as TokenDataT
 
-  console.log('tokenData', tokenData?.isVerified)
-
   if (isPublicPath && tokenData?.isVerified) {
     return NextResponse.redirect(new URL('/', request.nextUrl))
   }

@@ -97,8 +97,8 @@ function Bio() {
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [selectedImage, setSelectedImage] = useState('/images/profile.jpg')
 
-  console.log('coverImage', coverImage)
-  console.log('profileImage', profileImage)
+  // console.log('coverImage', coverImage)
+  // console.log('profileImage', profileImage)
   function handleProfileImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       setProfileImage(e.target.files[0])
@@ -112,6 +112,14 @@ function Bio() {
   }
 
   async function uploadProfileImage() {
+    console.log('profileImage', profileImage)
+
+    if (!profileImage) {
+      console.log('No image selected')
+
+      return
+    }
+
     try {
       if (!profileImage) return
 

@@ -1,3 +1,4 @@
+// import cloudinaryConfig from '@/cloudinary/cloudinaryConfig'
 import imageUpload from '@/cloudinary/cloudinaryUploadImage'
 import { connect } from '@/dbConfig/dbConfig'
 import { CloudinaryImageResponse, TokenDataT } from '@/lib/types'
@@ -6,6 +7,8 @@ import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
 
 connect()
+
+// cloudinary
 
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
@@ -36,7 +39,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       )
     }
 
-    const user = await User.findOne({ email: tokenData.email })
+    const user = await User.findOne({ _id: tokenData.id })
 
     if (!user) {
       return NextResponse.json(
@@ -48,6 +51,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
         },
       )
     }
+
+    console.log(image)
 
     const img = (await imageUpload(image as File, 'test')) as CloudinaryImageResponse
 
