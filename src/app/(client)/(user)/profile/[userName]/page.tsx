@@ -51,6 +51,7 @@ export default function UserProfile({ params }: { params: any }) {
       </div>
 
       <Bio />
+      <About />
       <Posts />
       <Posts />
     </Screen0>
@@ -76,12 +77,17 @@ function Posts() {
 
 function About() {
   return (
-    <div className='px-5'>
+    <div className='grid gap-2 border-t-2 px-5 py-5 pt-3'>
       <div>
         <div className='text-lg font-semibold'>About</div>
-        <div className='text-sm text-black/70 dark:text-white/70'>This section will be added letter .</div>
       </div>
-      <div></div>
+      <div>
+        {/* <div className='text-base font-medium'>Bio</div> */}
+        <div className='text-sm text-black/70 dark:text-black/70'>
+          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nesciunt reiciendis accusamus rem illum repudiandae
+          nostrum sed sequi! Vero quidem non architecto. Illo quaerat iure rerum magni soluta hic architecto quas?
+        </div>
+      </div>
     </div>
   )
 }
@@ -101,42 +107,54 @@ function Bio() {
             <Pencil className='' size={22} />
           </MotionButton>
         </div>
-
-        <div className='relative -top-14 -mb-14 flex w-36 md:w-40'>
-          <img
-            src='/images/profile.jpg'
-            alt=''
-            className='w-36 rounded-full bg-white p-1 dark:bg-black md:w-40 md:p-1.5'
-          />
-          <MotionButton
-            onClick={() => {
-              console.log('clicked')
-            }}
-            className='absolute bottom-1 right-1 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white'
-          >
-            <Pencil className='' size={22} />
+        <div className='flex w-full items-center justify-between px-2'>
+          <div className='relative -top-14 -mb-14 flex w-36 md:w-40'>
+            <img
+              src='/images/profile.jpg'
+              alt=''
+              className='w-36 rounded-full bg-white p-1 dark:bg-black md:w-40 md:p-1.5'
+            />
+            <MotionButton
+              onClick={() => {
+                console.log('clicked')
+              }}
+              className='absolute bottom-1 right-1 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white'
+            >
+              <Pencil className='' size={22} />
+            </MotionButton>
+          </div>
+          <MotionButton className='flex items-center justify-center gap-1 rounded-full border border-accent/60 bg-accent/5 px-4 py-1 text-sm text-accent duration-150 hover:bg-accent/10'>
+            <Pencil className='' size={16} />
+            Edit Profile
           </MotionButton>
-
-          {/* <div className='bg-red-200'>Edit Profile</div> */}
         </div>
       </div>
-      <div className='flex flex-col justify-center gap-2 px-5 py-2'>
+      <div className='flex flex-col justify-center gap-2 px-5 py-3'>
         <div>
           <div className='line-clamp-2 text-2xl font-semibold leading-6'>Ananta Karmakar</div>
-          <div className='line-clamp-1 text-sm font-normal text-black/80 dark:text-white/70'>@codeAntu </div>
+          <div className='line-clamp-1 text-sm font-semibold text-black/70 dark:text-white/70'>@codeAntu </div>
         </div>
-        <div className='line-clamp-3 text-sm font-medium text-black/90 hover:line-clamp-none dark:text-white/80'>
+        <div className='line-clamp-3 text-sm font-medium text-black/70 dark:text-white/70'>
           Frontend Developer | React & Next.js | Freelancer | JS | Competitive Programmer Frontend Developer | React &
           Next.js | Freelancer | JS | Competitive Programmer Frontend Developer | React Frontend Developer | React &
           Next.js | Freelancer | JS | Competitive Programmer & Next.js | Freelancer | JS | Competitive Programmer2222
         </div>
-        <div className='flex items-center justify-normal gap-1 py-1 text-sm font-medium text-accent dark:text-accent/80'>
+        {/* <div className='flex items-center justify-normal gap-1 py-1 text-sm font-medium text-accent dark:text-accent/80'>
           <button className='rounded-full border border-accent/30 bg-accent/5 px-3 py-1 duration-200 hover:bg-accent/10'>
             214 followers
           </button>
           <button className='rounded-full border border-accent/30 bg-accent/5 px-3 py-1 duration-200 hover:bg-accent/10'>
             214 following
           </button>
+        </div> */}
+
+        <div className='flex items-center justify-normal gap-4 py-1 text-sm font-medium'>
+          <MotionButton className=''>
+            214 <span className='text-black/50 dark:bg-white/50'> followers</span>
+          </MotionButton>
+          <MotionButton className=''>
+            214 <span className='text-black/50 dark:bg-white/50'> following </span>
+          </MotionButton>
         </div>
         <div></div>
       </div>

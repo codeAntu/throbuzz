@@ -4,8 +4,11 @@ type ScreenProps = ComponentProps<'div'>
 
 export function Screen({ children, className, ...rest }: ScreenProps) {
   return (
-    <div className={`flex w-full items-center justify-center bg-white px-5 dark:bg-black`}>
-      <div className={`flex min-h-[100dvh] max-w-[500px] flex-col py-5 ${className || ''}`} {...rest}>
+    <div className={`flex w-full items-center justify-center bg-slate-200 px-5 dark:bg-slate-950`}>
+      <div
+        className={`flex min-h-[100dvh] max-w-[500px] flex-col bg-white py-5 dark:bg-black ${className || ''}`}
+        {...rest}
+      >
         {children}
       </div>
     </div>
@@ -14,8 +17,11 @@ export function Screen({ children, className, ...rest }: ScreenProps) {
 
 export function Screen0({ children, className, ...rest }: ScreenProps) {
   return (
-    <div className={`flex w-full items-center justify-center bg-white dark:bg-black`}>
-      <div className={`flex min-h-[100dvh] w-full max-w-[500px] flex-col ${className || ''}`} {...rest}>
+    <div className={`flex w-full items-center justify-center bg-slate-100 dark:bg-slate-950`}>
+      <div
+        className={`flex min-h-[100dvh] w-full max-w-[500px] flex-col bg-white dark:bg-black ${className || ''}`}
+        {...rest}
+      >
         {children}
       </div>
     </div>
