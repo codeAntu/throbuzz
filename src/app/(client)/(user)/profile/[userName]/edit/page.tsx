@@ -79,7 +79,7 @@ export default function Edit() {
         bio: user.bio,
         about: user.about,
       })
-      console.log('response', response.data.success)
+      console.log('response', response.data)
     } catch (error: any) {
       console.log('error', error.response.data)
     }
@@ -90,7 +90,7 @@ export default function Edit() {
       const response = await axios.post('/api/user/getUser', { username })
       console.log('response', response)
     } catch (error: any) {
-      console.log('error', error.response.data)
+      console.log('error', error)
     }
   }
 

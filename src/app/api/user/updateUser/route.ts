@@ -25,20 +25,18 @@ const userZ = z
     bio: z
       .string({ required_error: 'Bio is required' })
       .trim()
-      .max(100, { message: 'Bio must be at most 100 characters long' })
-      .optional(),
+      .max(100, { message: 'Bio must be at most 100 characters long' }),
 
     about: z
       .string({ required_error: 'About is required' })
       .trim()
-      .max(1000, { message: 'About must be at most 1000 characters long' })
-      .optional(),
+      .max(1000, { message: 'About must be at most 1000 characters long' }),
   })
   .strict()
 
 connect()
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   const body = await parseJson(req)
   if (body instanceof NextResponse) return body
   try {
@@ -57,6 +55,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
       { new: true },
     )
 
+    console.log('user', user)
+
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -69,14 +69,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 
     const newToken = jwt.sign(newTokenData, process.env.JWT_SECRET!, {
-      expiresIn: '7d',
+      expiresIn: '5y',
     })
 
-    res.cookies.set('token', newToken, {
-      httpOnly: true,
-    })
-
-    return NextResponse.json(
+    const res = NextResponse.json(
       {
         success: true,
         message: 'User updated successfully',
@@ -85,6 +81,12 @@ export async function POST(req: NextRequest, res: NextResponse) {
         status: 200,
       },
     )
+
+    res.cookies.set('token', newToken, {
+      httpOnly: true,
+    })
+
+    return res
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
