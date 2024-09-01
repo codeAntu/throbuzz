@@ -5,7 +5,7 @@ import { Ic } from '@/components/Icon'
 import Input from '@/components/Input'
 import { Screen } from '@/components/Screen'
 import axios from 'axios'
-import { AtSign, Check, LoaderCircle, User, X } from 'lucide-react'
+import { AtSign, Check, LoaderCircle, LogIn, User, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -17,11 +17,18 @@ export default function Edit() {
     username: '',
   })
 
-  const [username, setUsername] = useState('codeantuw')
+  const [updatedUser, setUpdatedUser] = useState({
+    name: '',
+    bio: '',
+    about: '',
+    username: '',
+  })
+
+  const [username, setUsername] = useState('')
   const [error, setError] = useState('')
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false)
   const [isUsernameChecking, setIsUsernameChecking] = useState(false)
-  const [isUserLoading, setIsUserLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter()
 
@@ -34,10 +41,10 @@ export default function Edit() {
 
   useEffect(() => {
     setError('')
-  }, [user, username])
+  }, [updatedUser, username])
 
   useEffect(() => {
-    getUser()
+    getMe()
   }, [])
 
   async function checkUsername() {
@@ -54,7 +61,6 @@ export default function Edit() {
       } else {
         setIsUsernameAvailable(false)
       }
-      console.log('response', response.data.success)
     } catch (error: any) {
       console.log('error', error.response.data)
     } finally {
@@ -63,23 +69,22 @@ export default function Edit() {
   }
 
   async function updateUser() {
-    if (username.length < 3) {
-      setError('Username must be atleast 3 characters long')
+    if (!updatedUser.name || !updatedUser.username) {
+      setError('Name and Username are required')
       return
     }
 
-    if (!isUsernameAvailable) {
-      setError('Username is already taken')
+    if (
+      updatedUser.name === user.name &&
+      updatedUser.username === user.username &&
+      updatedUser.bio === user.bio &&
+      updatedUser.about === user.about
+    ) {
+      setError('No changes made')
       return
     }
 
-    if (user.name.length < 3) {
-      setError('Name must be atleast 3 characters long')
-      return
-    }
-
-    console.log('user', user)
-    console.log('username', username)
+    setLoading(true)
 
     try {
       const response = await axios.post('/api/user/updateUser', {
@@ -89,15 +94,16 @@ export default function Edit() {
         about: user.about,
       })
       console.log('response', response.data)
+      router.push(`/profile/${username}`)
     } catch (error: any) {
       console.log('error', error.response.data)
     }
+    setLoading(false)
   }
 
-  async function getUser() {
+  async function getMe() {
     try {
-      const response = await axios.post('/api/user/getUser', { username })
-      console.log('response', response)
+      const response = await axios.get('/api/user/me')
 
       setUser({
         name: response.data.user.name,
@@ -105,12 +111,20 @@ export default function Edit() {
         about: response.data.user.about,
         username: response.data.user.username,
       })
+
+      setUsername(response.data.user.username)
+      setUpdatedUser({
+        name: response.data.user.name,
+        bio: response.data.user.bio,
+        about: response.data.user.about,
+        username: response.data.user.username,
+      })
     } catch (error: any) {
-      console.log('error', error)
+      console.log('error', error.response.data)
     }
   }
 
-  console.log('user', user)
+  console.log('updatedUser', updatedUser)
 
   return (
     <Screen className=''>
@@ -127,9 +141,9 @@ export default function Edit() {
                 name='name'
                 placeholder='Enter your name'
                 leftIcon={<Ic Icon={User} />}
-                value={user.name}
+                value={updatedUser.name}
                 onChange={(e: any) => {
-                  setUser({ ...user, name: e.target.value })
+                  setUpdatedUser({ ...updatedUser, name: e.target.value })
                 }}
               />
             </div>
@@ -144,7 +158,7 @@ export default function Edit() {
                 rightIcon={
                   isUsernameChecking ? (
                     <Ic Icon={LoaderCircle} className='animate-spin' />
-                  ) : isUsernameAvailable ? (
+                  ) : isUsernameAvailable || username === user.username ? (
                     <Ic Icon={Check} className='text-green-500' />
                   ) : (
                     username.length > 3 && <Ic Icon={X} className='text-red-500' />
@@ -153,6 +167,8 @@ export default function Edit() {
                 value={username}
                 onChange={(e: any) => {
                   setUsername(e.target.value)
+
+                  setUpdatedUser({ ...updatedUser, username: e.target.value })
                 }}
               />
             </div>
@@ -162,9 +178,9 @@ export default function Edit() {
                 className='h-36 w-full rounded-2xl border border-black/10 bg-black/5 px-4 py-4 text-sm font-medium text-black/60 outline-none dark:border-white/10 dark:bg-white/5 dark:text-white/60'
                 name='bio'
                 placeholder='Enter your bio'
-                value={user.bio}
+                value={updatedUser.bio}
                 onChange={(e: any) => {
-                  setUser({ ...user, bio: e.target.value })
+                  setUpdatedUser({ ...updatedUser, bio: e.target.value })
                 }}
               />
             </div>
@@ -175,9 +191,9 @@ export default function Edit() {
                 name='about'
                 placeholder='Enter about yourself'
                 // leftIcon={<Ic Icon={User} />}
-                value={user.about}
+                value={updatedUser.about}
                 onChange={(e: any) => {
-                  setUser({ ...user, about: e.target.value })
+                  setUpdatedUser({ ...updatedUser, about: e.target.value })
                 }}
               />
             </div>
@@ -185,10 +201,23 @@ export default function Edit() {
             {error && <Error error={error} />}
           </div>
         </div>
-        <Button title='Save' className='w-full' onClick={() => updateUser()}>
+        <Button
+          title='Save'
+          className='w-full'
+          onClick={() => updateUser()}
+          leftIcon={
+            loading ? (
+              <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
+            ) : (
+              <Ic Icon={LogIn} className='text-white dark:text-black' />
+            )
+          }
+          disabled={loading}
+        >
           Save
         </Button>
       </div>
+      {/* <Button title='Save' onClick={() => getMe()} /> */}
     </Screen>
   )
 }
