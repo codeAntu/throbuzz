@@ -286,8 +286,8 @@ function Bio({ user }: { user: UserResponseT }) {
           <div className='line-clamp-3 text-sm font-medium text-black/70 dark:text-white/70'>{user.bio}</div>
         ) : (
           user.isMe && (
-            <div className='line-clamp-3 bg-red-300 text-sm font-medium text-black/70 dark:text-white/70'>
-              Add a bio to your profile
+            <div className='line-clamp-3 text-sm font-medium text-black/25 dark:text-white/25'>
+              Add a bio to your profile , click on Edit Profile
             </div>
           )
         )}
@@ -295,14 +295,13 @@ function Bio({ user }: { user: UserResponseT }) {
         <div className='flex items-center justify-normal gap-4 py-1 text-sm font-medium'>
           <MotionButton className=''>
             {user.followers}
-            <span className='text-black/50 dark:bg-white/50'> followers</span>
+            <span className='text-black/60 dark:bg-white/60'> followers</span>
           </MotionButton>
           <MotionButton className=''>
             {user.following}
-            <span className='text-black/50 dark:bg-white/50'> following </span>
+            <span className='text-black/60 dark:bg-white/60'> following </span>
           </MotionButton>
         </div>
-        <div></div>
       </div>
 
       {user.about ? (
@@ -321,7 +320,7 @@ function Bio({ user }: { user: UserResponseT }) {
               <div className='text-lg font-semibold'>About</div>
             </div>
             <div>
-              <div className='text-sm text-black/70 dark:text-black/70'>Add a bio to your profile</div>
+              <div className='text-sm font-medium text-black/25 dark:text-white/25'>Add a bio to your profile</div>
             </div>
           </div>
         )
