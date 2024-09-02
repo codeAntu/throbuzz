@@ -88,10 +88,10 @@ export default function Edit() {
 
     try {
       const response = await axios.post('/api/user/updateUser', {
-        name: user.name,
+        name: updatedUser.name,
         username: username,
-        bio: user.bio,
-        about: user.about,
+        bio: updatedUser.bio,
+        about: updatedUser.about,
       })
       console.log('response', response.data)
       router.push(`/profile/${username}`)
@@ -187,7 +187,7 @@ export default function Edit() {
             <div>
               <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>About</div>
               <textarea
-                className='h-36 w-full rounded-2xl border border-black/10 bg-black/5 px-4 py-4 text-sm font-semibold text-black/60 outline-none dark:border-white/10 dark:bg-white/5 dark:text-white/60'
+                className='h-36 w-full rounded-2xl border border-black/10 bg-black/5 px-4 py-4 text-sm font-medium text-black/60 outline-none dark:border-white/10 dark:bg-white/5 dark:text-white/60'
                 name='about'
                 placeholder='Enter about yourself'
                 // leftIcon={<Ic Icon={User} />}

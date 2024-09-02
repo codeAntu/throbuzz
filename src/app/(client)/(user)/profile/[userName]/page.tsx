@@ -69,7 +69,7 @@ export default function UserProfile({ params }: { params: any }) {
 
   return (
     <Screen0 className=''>
-      <div className='flex items-center justify-between gap-4 bg-white px-1 py-2 dark:bg-black'>
+      <div className='flex items-center justify-between gap-4 border-b bg-white px-1 py-2 dark:bg-black'>
         <ChevronLeft
           onClick={() => router.back()}
           className='rounded-lg text-black/50 hover:cursor-pointer hover:bg-blue-50 dark:text-white/50'
@@ -208,10 +208,11 @@ function Bio({ user }: { user: UserResponseT }) {
       <div className=''>
         <div className='relative'>
           <img
-            src={user.coverPic || '/images/user/cover.jpg'}
-            alt='images/user/cover.jpg'
+            src={user.coverPic || '/images/user/cover.png'}
+            alt='images/user/cover.png'
             className='max-h-36 min-h-32 w-full border-b bg-slate-400 object-cover md:max-h-48 md:min-h-36'
           />
+
           {/* {user.isMe && (
             <MotionButton
               onClick={() => {
