@@ -1,17 +1,14 @@
 'use client'
 
-import { Button, OutlineButton } from '@/components/Button'
-import Continue from '@/components/Continue'
+import { Button } from '@/components/Button'
+import Drawer from '@/components/Drawer'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
-import Input from '@/components/Input'
 import { Screen } from '@/components/Screen'
-import TAndC from '@/components/T&C'
-import { AtSign, Eye, KeyRound, LogIn, Mail, Sparkles, User } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import jwt from 'jsonwebtoken'
-import axios from 'axios'
 import useStore from '@/store/store'
+import axios from 'axios'
+import { LogIn } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
   const router = useRouter()
@@ -70,8 +67,8 @@ export default function Home() {
         {' '}
         Get Image
       </Button>
-      {/* <CldImage width='960' height='600' src='<Public ID>' sizes='100vw' alt='Description of my image' /> */}
-      Expand
+
+      <Drawer />
     </Screen>
   )
 }
