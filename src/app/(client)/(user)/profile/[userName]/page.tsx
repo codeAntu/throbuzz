@@ -8,10 +8,51 @@ import Post from '@/components/Post'
 import axios from 'axios'
 import { Ic } from '@/components/Icon'
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+
+interface UserResponseT {
+  _id: string
+  name: string
+  username: string
+  bio: string
+  about: string
+  profilePic: string
+  coverPic: string
+  followers: number
+  following: number
+  isMe: boolean
+}
 
 export default function UserProfile({ params }: { params: any }) {
   const router = useRouter()
+  const [user, setUser] = useState<UserResponseT>({
+    _id: '',
+    name: '',
+    username: '',
+    bio: '',
+    about: '',
+    profilePic: '',
+    coverPic: '',
+    followers: 0,
+    following: 0,
+    isMe: false,
+  })
+
+  useEffect(() => {
+    getUser()
+  }, [])
+
+  async function getUser() {
+    try {
+      const response = await axios.post('/api/user/getUser', { username: params.userName })
+      console.log('response', response.data)
+      setUser(response.data.user)
+    } catch (error: any) {
+      console.log('error', error.response)
+    }
+  }
+
+  console.log('user', user)
 
   async function onLogout() {
     try {
@@ -25,8 +66,8 @@ export default function UserProfile({ params }: { params: any }) {
   }
 
   return (
-    <Screen0 className='max-w-[700px]'>
-      <div className='flex w-full flex-grow items-center justify-between gap-4 bg-white px-1 py-2 dark:bg-black'>
+    <Screen0 className=''>
+      <div className='flex items-center justify-between gap-4 bg-white px-1 py-2 dark:bg-black'>
         <ChevronLeft
           onClick={() => router.back()}
           className='rounded-lg text-black/50 hover:cursor-pointer hover:bg-blue-50 dark:text-white/50'
@@ -35,7 +76,7 @@ export default function UserProfile({ params }: { params: any }) {
         <div className='flex max-w-[400px] flex-grow items-center justify-between gap-2 rounded-full border-[1.5px] border-black/50 px-2 py-1 dark:border-white/50'>
           <input
             type='text'
-            className='px-1 text-sm text-black/70 outline-none dark:text-white/70'
+            className='bg-transparent px-1 text-sm text-black/70 outline-none dark:text-white/70'
             placeholder='search '
           />
           <Search
@@ -50,28 +91,11 @@ export default function UserProfile({ params }: { params: any }) {
         />
       </div>
 
-      <Bio />
+      <Bio user={user} />
       <About />
-      <Posts />
-      <Posts />
+      {/* <Posts /> */}
+      {/* <Posts /> */}
     </Screen0>
-  )
-}
-
-function Posts() {
-  return (
-    <div className='border-t-2 pt-1 text-black dark:text-white'>
-      <div className='border-b border-black/10 bg-white py-4 dark:border-white/10 dark:bg-black'>
-        <div className='px-5 text-lg font-semibold leading-5'>Posts</div>
-        <div className='leading px-5 text-sm font-medium text-black/60 dark:text-white/60'>450 posts</div>
-      </div>
-      <div className='flex flex-col'>
-        {/* <Post /> */}
-        <Post />
-        <Post />
-        <Post />
-      </div>
-    </div>
   )
 }
 
@@ -92,7 +116,7 @@ function About() {
   )
 }
 
-function Bio() {
+function Bio({ user }: { user: UserResponseT }) {
   const [coverImage, setCoverImage] = useState<File | null>(null)
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [selectedImage, setSelectedImage] = useState('/images/profile.jpg')
@@ -150,7 +174,17 @@ function Bio() {
     <div className=''>
       <div className=''>
         <div className='relative'>
-          <img src='/images/bg2.jpg' alt='' className='max-h-36 w-full bg-red-500 object-cover md:max-h-40' />
+          {/* {user.coverPic.length ? (
+            <img src={user.coverPic} alt='' className='max-h-36 w-full bg-red-500 object-cover md:max-h-40' />
+          ) : (
+            <div className='h-44 w-full bg-red-500 object-cover md:max-h-48'></div>
+          )} */}
+          <img
+            src={user.coverPic}
+            alt=''
+            className='max-h-36 min-h-32 w-full bg-red-500 object-cover md:max-h-48 md:min-h-36'
+          />
+
           <MotionButton
             onClick={() => {
               console.log('clicked')
@@ -172,8 +206,10 @@ function Bio() {
         </div>
         <div className='flex w-full items-center justify-between px-2'>
           <div className='relative -top-14 -mb-14 flex w-36 md:w-40'>
+            {}
+
             <img
-              src='/images/profile.jpg'
+              src={user.profilePic}
               alt=''
               className='w-36 rounded-full bg-white p-1 dark:bg-black md:w-40 md:p-1.5'
             />
@@ -210,29 +246,19 @@ function Bio() {
       </div>
       <div className='flex flex-col justify-center gap-2 px-5 py-3'>
         <div>
-          <div className='line-clamp-2 text-2xl font-semibold leading-6'>Ananta Karmakar</div>
-          <div className='line-clamp-1 text-sm font-semibold text-black/70 dark:text-white/70'>@codeAntu </div>
+          <div className='line-clamp-2 text-2xl font-semibold leading-6'>{user.name}</div>
+          <div className='line-clamp-1 text-sm font-semibold text-black/70 dark:text-white/70'>{user.username}</div>
         </div>
-        <div className='line-clamp-3 text-sm font-medium text-black/70 dark:text-white/70'>
-          Frontend Developer | React & Next.js | Freelancer | JS | Competitive Programmer Frontend Developer | React &
-          Next.js | Freelancer | JS | Competitive Programmer Frontend Developer | React Frontend Developer | React &
-          Next.js | Freelancer | JS | Competitive Programmer & Next.js | Freelancer | JS | Competitive Programmer2222
-        </div>
-        {/* <div className='flex items-center justify-normal gap-1 py-1 text-sm font-medium text-accent dark:text-accent/80'>
-          <button className='rounded-full border border-accent/30 bg-accent/5 px-3 py-1 duration-200 hover:bg-accent/10'>
-            214 followers
-          </button>
-          <button className='rounded-full border border-accent/30 bg-accent/5 px-3 py-1 duration-200 hover:bg-accent/10'>
-            214 following
-          </button>
-        </div> */}
+        <div className='line-clamp-3 text-sm font-medium text-black/70 dark:text-white/70'>{user.bio}</div>
 
         <div className='flex items-center justify-normal gap-4 py-1 text-sm font-medium'>
           <MotionButton className=''>
-            214 <span className='text-black/50 dark:bg-white/50'> followers</span>
+            {user.followers}
+            <span className='text-black/50 dark:bg-white/50'> followers</span>
           </MotionButton>
           <MotionButton className=''>
-            214 <span className='text-black/50 dark:bg-white/50'> following </span>
+            {user.following}
+            <span className='text-black/50 dark:bg-white/50'> following </span>
           </MotionButton>
         </div>
         <div></div>
@@ -241,6 +267,23 @@ function Bio() {
       <div>
         <Button onClick={uploadProfileImage} title='uploadProfileImage' />
         <Button onClick={uploadCoverImage} title='uploadCoverImage' />
+      </div>
+    </div>
+  )
+}
+
+function Posts() {
+  return (
+    <div className='border-t-2 pt-1 text-black dark:text-white'>
+      <div className='border-b border-black/10 bg-white py-4 dark:border-white/10 dark:bg-black'>
+        <div className='px-5 text-lg font-semibold leading-5'>Posts</div>
+        <div className='leading px-5 text-sm font-medium text-black/60 dark:text-white/60'>450 posts</div>
+      </div>
+      <div className='flex flex-col'>
+        {/* <Post /> */}
+        <Post />
+        <Post />
+        <Post />
       </div>
     </div>
   )
