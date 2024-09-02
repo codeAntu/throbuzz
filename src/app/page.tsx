@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/Button'
+import SimpleDrawer from '@/components/Drawer'
 import Drawer from '@/components/Drawer'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
@@ -68,7 +69,9 @@ export default function Home() {
         Get Image
       </Button>
 
-      <Drawer />
+      {/* <Drawer /> */}
+
+      <SimpleDrawer />
     </Screen>
   )
 }
