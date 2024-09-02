@@ -43,6 +43,8 @@ export default function UserProfile({ params }: { params: any }) {
   }, [])
 
   async function getUser() {
+    console.log('params', params.userName)
+
     try {
       const response = await axios.post('/api/user/getUser', { username: params.userName })
       console.log('response', response.data)
@@ -92,27 +94,9 @@ export default function UserProfile({ params }: { params: any }) {
       </div>
 
       <Bio user={user} />
-      <About />
       {/* <Posts /> */}
       {/* <Posts /> */}
     </Screen0>
-  )
-}
-
-function About() {
-  return (
-    <div className='grid gap-2 border-t-2 px-5 py-5 pt-3'>
-      <div>
-        <div className='text-lg font-semibold'>About</div>
-      </div>
-      <div>
-        {/* <div className='text-base font-medium'>Bio</div> */}
-        <div className='text-sm text-black/70 dark:text-black/70'>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nesciunt reiciendis accusamus rem illum repudiandae
-          nostrum sed sequi! Vero quidem non architecto. Illo quaerat iure rerum magni soluta hic architecto quas?
-        </div>
-      </div>
-    </div>
   )
 }
 
@@ -174,82 +158,90 @@ function Bio({ user }: { user: UserResponseT }) {
     <div className=''>
       <div className=''>
         <div className='relative'>
-          {/* {user.coverPic.length ? (
-            <img src={user.coverPic} alt='' className='max-h-36 w-full bg-red-500 object-cover md:max-h-40' />
-          ) : (
-            <div className='h-44 w-full bg-red-500 object-cover md:max-h-48'></div>
-          )} */}
           <img
             src={user.coverPic}
             alt=''
-            className='max-h-36 min-h-32 w-full bg-red-500 object-cover md:max-h-48 md:min-h-36'
-          />
-
-          <MotionButton
-            onClick={() => {
-              console.log('clicked')
-            }}
-            className='absolute bottom-2 right-2 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 dark:border-black dark:bg-slate-700 dark:text-white'
-          >
-            <input
-              type='file'
-              accept='image/*'
-              multiple
-              className='hidden'
-              id='coverImage'
-              onChange={handleCoverImageChange}
-            />
-            <label htmlFor='coverImage'>
-              <Pencil className='' size={22} />
-            </label>
-          </MotionButton>
-        </div>
-        <div className='flex w-full items-center justify-between px-2'>
-          <div className='relative -top-14 -mb-14 flex w-36 md:w-40'>
-            {}
-
-            <img
-              src={user.profilePic}
-              alt=''
-              className='w-36 rounded-full bg-white p-1 dark:bg-black md:w-40 md:p-1.5'
-            />
+            className='max-h-36 min-h-32 w-full border-b bg-slate-400 object-cover md:max-h-48 md:min-h-36'
+          />{' '}
+          {user.isMe && (
             <MotionButton
               onClick={() => {
                 console.log('clicked')
               }}
-              className='absolute bottom-1 right-1 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white'
+              className='absolute bottom-2 right-2 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 dark:border-black dark:bg-slate-700 dark:text-white'
             >
               <input
                 type='file'
                 accept='image/*'
                 multiple
                 className='hidden'
-                id='profileImage'
-                onChange={handleProfileImageChange}
+                id='coverImage'
+                onChange={handleCoverImageChange}
               />
-              <label htmlFor='profileImage'>
+              <label htmlFor='coverImage'>
                 <Pencil className='' size={22} />
               </label>
             </MotionButton>
+          )}
+        </div>
+        <div className='flex w-full items-center justify-between px-4'>
+          <div className='relative -top-14 -mb-14 flex w-36 md:w-40'>
+            <img
+              src={user.profilePic || '/images/user/profile.png'}
+              alt=''
+              className='h-32 w-32 rounded-full border border-black/10 bg-white outline outline-[5px] outline-white dark:border-white/10 dark:bg-black dark:outline-black'
+            />
+            {user.isMe && (
+              <MotionButton
+                onClick={() => {
+                  console.log('clicked')
+                }}
+                className='absolute bottom-1 right-2 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 duration-100 hover:scale-[1.03] dark:border-black dark:bg-slate-700 dark:text-white md:right-5'
+              >
+                <input
+                  type='file'
+                  accept='image/*'
+                  multiple
+                  className='hidden'
+                  id='profileImage'
+                  onChange={handleProfileImageChange}
+                />
+                <label htmlFor='profileImage'>
+                  <Pencil className='' size={22} />
+                </label>
+              </MotionButton>
+            )}
           </div>
-          <MotionButton
-            className='flex items-center justify-center gap-1 rounded-full border border-accent/60 bg-accent/5 px-4 py-1 text-sm text-accent duration-150 hover:bg-accent/10'
-            onClick={() => {
-              console.log('Edit Profile')
-              router.push('/profile/editProfile')
-            }}
-          >
-            <Pencil className='' size={16} />
-            Edit Profile
-          </MotionButton>
+          {user.isMe && (
+            <MotionButton
+              className='flex items-center justify-center gap-1 rounded-full border border-accent/60 bg-accent/5 px-4 py-1 text-sm text-accent duration-150 hover:bg-accent/10'
+              onClick={() => {
+                console.log('Edit Profile')
+                router.push('/profile/editProfile')
+              }}
+            >
+              <Pencil className='' size={16} />
+              Edit Profile
+            </MotionButton>
+          )}
         </div>
       </div>
       <div className='flex flex-col justify-center gap-2 px-5 py-3'>
-        <div>
+        <div className=''>
           <div className='line-clamp-2 text-2xl font-semibold leading-6'>{user.name}</div>
-          <div className='line-clamp-1 text-sm font-semibold text-black/70 dark:text-white/70'>{user.username}</div>
+          <div className='line-clamp-1 px-0.5 text-sm font-semibold text-black/70 dark:text-white/70'>
+            @ {user.username}
+          </div>
         </div>
-        <div className='line-clamp-3 text-sm font-medium text-black/70 dark:text-white/70'>{user.bio}</div>
+        {user.bio ? (
+          <div className='line-clamp-3 text-sm font-medium text-black/70 dark:text-white/70'>{user.bio}</div>
+        ) : (
+          user.isMe && (
+            <div className='line-clamp-3 bg-red-300 text-sm font-medium text-black/70 dark:text-white/70'>
+              Add a bio to your profile
+            </div>
+          )
+        )}
 
         <div className='flex items-center justify-normal gap-4 py-1 text-sm font-medium'>
           <MotionButton className=''>
@@ -264,10 +256,27 @@ function Bio({ user }: { user: UserResponseT }) {
         <div></div>
       </div>
 
-      <div>
-        <Button onClick={uploadProfileImage} title='uploadProfileImage' />
-        <Button onClick={uploadCoverImage} title='uploadCoverImage' />
-      </div>
+      {user.about ? (
+        <div className='grid gap-2 border-t-2 px-5 py-5 pt-3'>
+          <div>
+            <div className='text-lg font-semibold'>About</div>
+          </div>
+          <div>
+            <div className='text-sm text-black/70 dark:text-black/70'>{user.about}</div>
+          </div>
+        </div>
+      ) : (
+        user.isMe && (
+          <div className='grid gap-2 border-t-2 px-5 py-5 pt-3'>
+            <div>
+              <div className='text-lg font-semibold'>About</div>
+            </div>
+            <div>
+              <div className='text-sm text-black/70 dark:text-black/70'>Add a bio to your profile</div>
+            </div>
+          </div>
+        )
+      )}
     </div>
   )
 }
