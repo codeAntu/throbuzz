@@ -55,7 +55,7 @@ const SimpleDrawer = () => {
         }`}
       >
         <h2 className='text-lg font-semibold'>Drawer Title</h2>
-        <p>Here's some content for the drawer...</p>
+        <p>Here some content for the drawer...</p>
         <button className='mt-4 rounded bg-red-500 p-2 text-white' onClick={() => setIsOpen(false)}>
           Close Drawer
         </button>
