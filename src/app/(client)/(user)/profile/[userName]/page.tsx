@@ -154,16 +154,65 @@ function Bio({ user }: { user: UserResponseT }) {
     }
   }
 
+  // skeleton
+  if (!user._id)
+    return (
+      <div className='animate-pulse'>
+        <div className=''>
+          <div className='relative'>
+            <img
+              alt=''
+              className='max-h-36 min-h-32 w-full border-b bg-slate-400 object-cover md:max-h-48 md:min-h-36'
+            />
+          </div>
+          <div className='flex w-full items-center justify-between px-4'>
+            <div className='relative -top-14 -mb-14 flex w-36 md:w-40'>
+              <img
+                alt=''
+                className='h-32 w-32 rounded-full border border-black/10 bg-slate-300 outline outline-[5px] outline-white dark:border-white/10 dark:bg-slate-700 dark:outline-black'
+              />
+            </div>
+          </div>
+        </div>
+        <div className='flex flex-col justify-center gap-3 px-5 py-3'>
+          <div className='grid gap-2'>
+            <div className='h-6 w-[40%] rounded-md bg-slate-300 dark:bg-slate-700'></div>
+            <div className='h-4 w-[30%] rounded-md bg-slate-200 dark:bg-slate-700'></div>
+          </div>
+
+          <div className='grid gap-1'>
+            <div className='h-4 rounded-md bg-slate-200 dark:bg-slate-700'></div>
+            <div className='h-4 rounded-md bg-slate-200 dark:bg-slate-700'></div>
+          </div>
+          <div className='flex items-center justify-normal gap-4 py-1'>
+            <div className='h-4 w-24 rounded-md bg-slate-200 dark:bg-slate-700'></div>
+            <div className='h-4 w-24 rounded-md bg-slate-200 dark:bg-slate-700'></div>
+          </div>
+          <div></div>
+        </div>
+
+        <div className='grid gap-3 border-t px-5 py-5 pt-3'>
+          <div>
+            <div className='h-5 w-20 bg-slate-200 dark:bg-slate-700'></div>
+          </div>
+          <div className='grid gap-1'>
+            <div className='h-4 rounded-md bg-slate-200 dark:bg-slate-700'></div>
+            <div className='h-4 rounded-md bg-slate-200 dark:bg-slate-700'></div>
+          </div>
+        </div>
+      </div>
+    )
+
   return (
     <div className=''>
       <div className=''>
         <div className='relative'>
           <img
-            src={user.coverPic}
-            alt=''
+            src={user.coverPic || '/images/user/cover.jpg'}
+            alt='images/user/cover.jpg'
             className='max-h-36 min-h-32 w-full border-b bg-slate-400 object-cover md:max-h-48 md:min-h-36'
-          />{' '}
-          {user.isMe && (
+          />
+          {/* {user.isMe && (
             <MotionButton
               onClick={() => {
                 console.log('clicked')
@@ -182,16 +231,16 @@ function Bio({ user }: { user: UserResponseT }) {
                 <Pencil className='' size={22} />
               </label>
             </MotionButton>
-          )}
+          )} */}
         </div>
         <div className='flex w-full items-center justify-between px-4'>
           <div className='relative -top-14 -mb-14 flex w-36 md:w-40'>
             <img
               src={user.profilePic || '/images/user/profile.png'}
-              alt=''
+              alt='/images/user/profile.png'
               className='h-32 w-32 rounded-full border border-black/10 bg-white outline outline-[5px] outline-white dark:border-white/10 dark:bg-black dark:outline-black'
             />
-            {user.isMe && (
+            {/* {user.isMe && (
               <MotionButton
                 onClick={() => {
                   console.log('clicked')
@@ -210,7 +259,7 @@ function Bio({ user }: { user: UserResponseT }) {
                   <Pencil className='' size={22} />
                 </label>
               </MotionButton>
-            )}
+            )} */}
           </div>
           {user.isMe && (
             <MotionButton
