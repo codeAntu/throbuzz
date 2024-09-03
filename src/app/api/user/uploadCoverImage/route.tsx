@@ -31,7 +31,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const img = (await imageUpload(image as File, 'test')) as CloudinaryImageResponse
+    const img = (await imageUpload(image as File)) as CloudinaryImageResponse
 
     user.coverPic = {
       imageUrl: img.secure_url,

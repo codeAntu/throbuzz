@@ -54,7 +54,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     console.log(image)
 
-    const img = (await imageUpload(image as File, 'test')) as CloudinaryImageResponse
+    const img = (await imageUpload(image as File)) as CloudinaryImageResponse
 
     user.profilePic = {
       imageUrl: img.secure_url,
