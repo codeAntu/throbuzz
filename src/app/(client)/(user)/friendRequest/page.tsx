@@ -3,7 +3,7 @@ import { Screen } from '@/components/Screen'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 
-export default function friendRequest() {
+export default function FriendRequest() {
   const [friendRequests, setFriendRequests] = useState([])
 
   async function getFriendRequests() {
