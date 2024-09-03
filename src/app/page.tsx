@@ -28,11 +28,13 @@ export default function Home() {
     } catch (error) {}
   }
 
-  async function getImg() {
+  async function sendFriendRequest() {
     try {
-      const response = await axios.get('/api/temp/get-img')
+      const response = await axios.post('/api/user/sendFriendRequest', {
+        username: 'codeantu',
+      })
 
-      console.log('response', response.data.url)
+      console.log('response', response.data)
     } catch (error) {
       console.log('error', error)
     }
@@ -60,15 +62,12 @@ export default function Home() {
         Logout
       </Button>
       <Button
-        title='Get Image'
+        title='send friend request'
         onClick={() => {
-          getImg()
+          sendFriendRequest()
         }}
         leftIcon={<Ic Icon={LogIn} />}
-      >
-        {' '}
-        Get Image
-      </Button>
+      />
 
       {/* <Drawer /> */}
       <Popup

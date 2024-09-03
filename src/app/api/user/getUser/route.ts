@@ -3,6 +3,7 @@ import { TokenDataT } from '@/lib/types'
 import User from '@/models/userModel'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
+import Friend, { FriendT } from '@/models/friends'
 
 connect()
 
@@ -21,6 +22,18 @@ export async function POST(req: NextRequest, res: NextResponse) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
+    let friendStatus = ''
+    if (!(tokenData.id === user._id.toString())) {
+      const friendExists = await Friend.findOne({
+        sender: tokenData.id,
+        receiver: user._id,
+      })
+
+      if (friendExists) {
+        friendStatus = friendExists.status
+      }
+    }
+
     const resUser = {
       _id: user._id,
       name: user.name,
@@ -32,6 +45,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       followers: user.followers,
       following: user.following,
       isMe: tokenData.id === user._id.toString(),
+      friendStatus,
     }
 
     return NextResponse.json({ user: resUser }, { status: 200 })

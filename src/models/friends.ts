@@ -1,12 +1,12 @@
 import mongoose from 'mongoose'
 
-interface FriendRequestT extends mongoose.Document {
+export interface FriendT extends mongoose.Document {
   sender: mongoose.Schema.Types.ObjectId
   receiver: mongoose.Schema.Types.ObjectId
   status: string
 }
 
-const friendRequestSchema: mongoose.Schema<FriendRequestT> = new mongoose.Schema(
+const friendSchema: mongoose.Schema<FriendT> = new mongoose.Schema(
   {
     sender: {
       type: mongoose.Schema.Types.ObjectId,
@@ -23,3 +23,7 @@ const friendRequestSchema: mongoose.Schema<FriendRequestT> = new mongoose.Schema
   },
   { timestamps: true },
 )
+
+const Friend = (mongoose.models.Friend as mongoose.Model<FriendT>) || mongoose.model<FriendT>('Friend', friendSchema)
+
+export default Friend
