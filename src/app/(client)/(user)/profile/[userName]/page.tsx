@@ -1,13 +1,12 @@
 'use client'
-import { Screen, Screen0 } from '@/components/Screen'
-import ProfileLayout from '../layout'
-import { Bold, Bolt, ChevronLeft, LogIn, MoveLeft, Pencil, Search, Settings } from 'lucide-react'
-import { Button, MotionButton } from '@/components/Button'
-import { useRouter } from 'next/navigation'
-import Post from '@/components/Post'
-import axios from 'axios'
+import { Button, MotionButton, OutlineButton } from '@/components/Button'
 import { Ic } from '@/components/Icon'
-import { motion } from 'framer-motion'
+import Post from '@/components/Post'
+import { Screen0 } from '@/components/Screen'
+import axios from 'axios'
+import { Bolt, ChevronLeft, LoaderCircle, LogIn, Pencil, Search } from 'lucide-react'
+import { set } from 'mongoose'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 interface UserResponseT {
@@ -68,7 +67,7 @@ export default function UserProfile({ params }: { params: any }) {
   }
 
   return (
-    <Screen0 className=''>
+    <Screen0 className='relative'>
       <div className='flex items-center justify-between gap-4 border-b bg-white px-1 py-2 dark:bg-black'>
         <ChevronLeft
           onClick={() => router.back()}
@@ -103,40 +102,26 @@ export default function UserProfile({ params }: { params: any }) {
 function Bio({ user }: { user: UserResponseT }) {
   const [coverImage, setCoverImage] = useState<File | null>(null)
   const [profileImage, setProfileImage] = useState<File | null>(null)
-  const [selectedImage, setSelectedImage] = useState('/images/profile.jpg')
+  const [selectedImage, setSelectedImage] = useState('')
+  const [popup, setPopup] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
 
   function handleProfileImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       setProfileImage(e.target.files[0])
+      setSelectedImage(URL.createObjectURL(e.target.files[0]))
+      setPopup(true)
+      console.log('profileImage', profileImage)
     }
   }
 
   function handleCoverImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       setCoverImage(e.target.files[0])
-    }
-  }
-
-  async function uploadProfileImage() {
-    console.log('profileImage', profileImage)
-
-    if (!profileImage) {
-      console.log('No image selected')
-
-      return
-    }
-
-    try {
-      if (!profileImage) return
-
-      const formData = new FormData()
-      formData.append('profileImage', profileImage)
-
-      const response = await axios.post('/api/user/uploadProfileImage', formData)
-      console.log('response', response)
-    } catch (error) {
-      console.log('error', error)
+      setSelectedImage(URL.createObjectURL(e.target.files[0]))
+      setPopup(true)
     }
   }
 
@@ -144,14 +129,44 @@ function Bio({ user }: { user: UserResponseT }) {
     try {
       if (!coverImage) return
 
+      setIsUploading(true)
+      setError('')
+
       const formData = new FormData()
       formData.append('coverImage', coverImage)
 
       const response = await axios.post('/api/user/uploadCoverImage', formData)
       console.log('response', response)
-    } catch (error) {
+      // reload the page
+      window.location.reload()
+    } catch (error: any) {
       console.log('error', error)
+      setError(error.response.data.error)
     }
+    setIsUploading(false)
+  }
+  async function uploadProfileImage() {
+    console.log('profileImage', profileImage)
+    if (!profileImage) {
+      console.log('No image selected')
+      return
+    }
+    try {
+      if (!profileImage) return
+      setIsUploading(true)
+      setError('')
+      const formData = new FormData()
+      formData.append('profileImage', profileImage)
+
+      const response = await axios.post('/api/user/uploadProfileImage', formData)
+      console.log('response', response)
+      // reload the page
+      window.location.reload()
+    } catch (error: any) {
+      console.log('error', error)
+      setError(error.response.data.error)
+    }
+    setIsUploading(false)
   }
 
   // skeleton
@@ -204,7 +219,7 @@ function Bio({ user }: { user: UserResponseT }) {
     )
 
   return (
-    <div className=''>
+    <div className=' '>
       <div className=''>
         <div className='relative'>
           <img
@@ -213,7 +228,7 @@ function Bio({ user }: { user: UserResponseT }) {
             className='max-h-36 min-h-32 w-full border-b bg-slate-400 object-cover md:max-h-48 md:min-h-36'
           />
 
-          {/* {user.isMe && (
+          {user.isMe && (
             <MotionButton
               onClick={() => {
                 console.log('clicked')
@@ -232,16 +247,37 @@ function Bio({ user }: { user: UserResponseT }) {
                 <Pencil className='' size={22} />
               </label>
             </MotionButton>
-          )} */}
+          )}
+
+          {user.isMe && (
+            <MotionButton
+              onClick={() => {
+                console.log('clicked')
+              }}
+              className='absolute bottom-2 right-2 cursor-pointer rounded-full border-2 border-white bg-slate-300 p-2 dark:border-black dark:bg-slate-700 dark:text-white'
+            >
+              <input
+                type='file'
+                accept='image/*'
+                multiple
+                className='hidden'
+                id='coverImage'
+                onChange={handleCoverImageChange}
+              />
+              <label htmlFor='coverImage'>
+                <Pencil className='' size={22} />
+              </label>
+            </MotionButton>
+          )}
         </div>
         <div className='flex w-full items-center justify-between px-4'>
           <div className='relative -top-14 -mb-14 flex w-36 md:w-40'>
             <img
               src={user.profilePic || '/images/user/profile.png'}
               alt='/images/user/profile.png'
-              className='h-32 w-32 rounded-full border border-black/10 bg-white outline outline-[5px] outline-white dark:border-white/10 dark:bg-black dark:outline-black'
+              className='h-32 w-32 rounded-full border border-black/10 bg-white object-cover outline outline-[5px] outline-white dark:border-white/10 dark:bg-black dark:outline-black'
             />
-            {/* {user.isMe && (
+            {user.isMe && (
               <MotionButton
                 onClick={() => {
                   console.log('clicked')
@@ -260,7 +296,7 @@ function Bio({ user }: { user: UserResponseT }) {
                   <Pencil className='' size={22} />
                 </label>
               </MotionButton>
-            )} */}
+            )}
           </div>
           {user.isMe && (
             <MotionButton
@@ -326,6 +362,94 @@ function Bio({ user }: { user: UserResponseT }) {
           </div>
         )
       )}
+
+      {profileImage && popup && (
+        <div className=''>
+          <div
+            className='fixed left-0 top-0 h-full w-full bg-black/50 dark:bg-white/50 dark:text-black'
+            onClick={() => {
+              setPopup(false)
+            }}
+          ></div>
+          <div className='absolute left-1/2 top-1/2 flex w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center'>
+            <div className='grid max-h-[50%] w-[95%] max-w-[600px] items-center justify-center gap-5 rounded-3xl bg-white p-5 dark:bg-black md:gap-8'>
+              <div className='flex flex-col items-center justify-center gap-1'>
+                <div className='py-3 text-lg font-semibold'>Update Profile Picture</div>
+                <img
+                  src={selectedImage}
+                  alt='images/user/profile.png'
+                  className='aspect-square w-2/3 rounded-full border border-black/10 object-cover dark:border-white/10'
+                />
+              </div>
+              {error && <div className='text-red-500'>{error}</div>}
+              <div className='flex w-full flex-grow gap-5'>
+                <OutlineButton
+                  onClick={() => {
+                    setPopup(false)
+                  }}
+                  title='cancel'
+                />
+                <Button
+                  onClick={uploadProfileImage}
+                  title='Upload'
+                  leftIcon={
+                    isUploading ? (
+                      <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
+                    ) : (
+                      <Ic Icon={LogIn} className='text-white dark:text-black' />
+                    )
+                  }
+                  disabled={isUploading}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {coverImage && popup && (
+        <div className=''>
+          <div
+            className='fixed left-0 top-0 h-full w-full bg-black/50 dark:bg-white/50 dark:text-black'
+            onClick={() => {
+              setPopup(false)
+            }}
+          ></div>
+          <div className='absolute left-1/2 top-1/2 flex w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center'>
+            <div className='flex max-h-[50%] w-[95%] max-w-[600px] flex-col items-center justify-center gap-5 rounded-3xl bg-white p-5 dark:bg-black md:gap-8'>
+              <div className='flex w-full grow flex-col items-center justify-center gap-1'>
+                <div className='py-3 text-lg font-semibold'>Update cover Picture</div>
+                <img
+                  src={selectedImage}
+                  alt='images/user/profile.png'
+                  className='max-h-40 w-full rounded-xl border border-black/10 object-cover dark:border-white/10'
+                />
+              </div>
+              {error && <div className='text-red-500'>{error}</div>}
+              <div className='flex w-full flex-grow gap-5'>
+                <OutlineButton
+                  onClick={() => {
+                    setPopup(false)
+                  }}
+                  title='cancel'
+                />
+                <Button
+                  onClick={uploadCoverImage}
+                  title='Upload'
+                  leftIcon={
+                    isUploading ? (
+                      <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
+                    ) : (
+                      <Ic Icon={LogIn} className='text-white dark:text-black' />
+                    )
+                  }
+                  disabled={isUploading}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -346,3 +470,7 @@ function Posts() {
     </div>
   )
 }
+
+// function UpdateProfilePicture({ profileImage }: { profileImage: File }) {
+
+// }

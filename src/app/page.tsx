@@ -5,6 +5,7 @@ import SimpleDrawer from '@/components/Drawer'
 import Drawer from '@/components/Drawer'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
+import Popup from '@/components/Popup'
 import { Screen } from '@/components/Screen'
 import useStore from '@/store/store'
 import axios from 'axios'
@@ -70,6 +71,20 @@ export default function Home() {
       </Button>
 
       {/* <Drawer /> */}
+      <Popup
+        button={
+          <span
+            title='Open Drawer'
+            onClick={() => {
+              console.log('clicked ')
+            }}
+          >
+            Open Drawer
+          </span>
+        }
+      >
+        <div className='border-2'>Text</div>
+      </Popup>
 
       <SimpleDrawer />
     </Screen>
