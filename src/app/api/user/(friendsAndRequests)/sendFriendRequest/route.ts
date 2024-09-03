@@ -73,7 +73,9 @@ export async function POST(request: NextRequest) {
 
     const newFriend = new Friend({
       sender: sender._id,
+      senderUsername: sender.username,
       receiver: receiver._id,
+      receiverUsername: receiver.username,
       status: 'pending',
     })
 
