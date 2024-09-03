@@ -24,9 +24,13 @@ interface UserT extends Document {
   bio: string
   about: string
   friends: [Schema.Types.ObjectId]
+  friendsCount: number
   friendRequests: []
+  friendRequestsCount: number
   following: []
+  followingCount: number
   followers: []
+  followersCount: number
   projects: []
   notifications: []
   posts: []
@@ -108,17 +112,33 @@ const userSchema: Schema<UserT> = new mongoose.Schema(
       // type : [ FriendsSchema]
       default: [],
     },
+    friendsCount: {
+      type: Number,
+      default: 0,
+    },
     friendRequests: {
       type: [Schema.Types.ObjectId],
       default: [],
+    },
+    friendRequestsCount: {
+      type: Number,
+      default: 0,
     },
     following: {
       type: [Schema.Types.ObjectId],
       default: [],
     },
+    followingCount: {
+      type: Number,
+      default: 0,
+    },
     followers: {
       type: [Schema.Types.ObjectId],
       default: [],
+    },
+    followersCount: {
+      type: Number,
+      default: 0,
     },
     projects: {
       type: [Schema.Types.ObjectId],
