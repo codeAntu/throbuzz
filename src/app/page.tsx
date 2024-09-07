@@ -40,17 +40,17 @@ export default function Home() {
     }
   }
 
-  async function acceptFriendRequest() {
-    try {
-      const response = await axios.post('/api/user/acceptFriendRequest', {
-        username: 'codeantu',
-      })
+  // async function acceptFriendRequest() {
+  //   try {
+  //     const response = await axios.post('/api/user/acceptFriendRequest', {
+  //       username: 'codeantu',
+  //     })
 
-      console.log('response', response.data)
-    } catch (error) {
-      console.log('error', error)
-    }
-  }
+  //     console.log('response', response.data)
+  //   } catch (error) {
+  //     console.log('error', error)
+  //   }
+  // }
 
   return (
     <Screen className='justify-center gap-10 pt-10'>
