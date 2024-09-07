@@ -40,17 +40,31 @@ export default function Home() {
     }
   }
 
-  // async function acceptFriendRequest() {
-  //   try {
-  //     const response = await axios.post('/api/user/acceptFriendRequest', {
-  //       username: 'codeantu',
-  //     })
+  async function acceptFriendRequest() {
+    try {
+      const response = await axios.post('/api/user/acceptFriendRequest', {
+        friendRequestId: '66dbfbf268673da73fd26063',
+      })
 
-  //     console.log('response', response.data)
-  //   } catch (error) {
-  //     console.log('error', error)
-  //   }
-  // }
+      console.log('response', response.data)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
+  async function deleteFriendRequest() {
+    try {
+      const response = await axios.delete('/api/user/deleteFriendRequest', {
+        data: {
+          friendRequestId: '66dbfcc5a207e827ae9d3ea2',
+        },
+      })
+
+      console.log('response', response.data)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
 
   return (
     <Screen className='justify-center gap-10 pt-10'>
@@ -81,21 +95,21 @@ export default function Home() {
         leftIcon={<Ic Icon={LogIn} />}
       />
 
-      {/* <Drawer /> */}
-      <Popup
-        button={
-          <span
-            title='Open Drawer'
-            onClick={() => {
-              console.log('clicked ')
-            }}
-          >
-            Open Drawer
-          </span>
-        }
-      >
-        <div className='border-2'>Text</div>
-      </Popup>
+      <Button
+        title='accept friend request'
+        onClick={() => {
+          acceptFriendRequest()
+        }}
+        leftIcon={<Ic Icon={LogIn} />}
+      />
+
+      <Button
+        title='delete friend request'
+        onClick={() => {
+          deleteFriendRequest()
+        }}
+        leftIcon={<Ic Icon={LogIn} />}
+      />
 
       <SimpleDrawer />
     </Screen>
