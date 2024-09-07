@@ -22,36 +22,66 @@ export async function GET(request: NextRequest, response: NextResponse) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Extract page and limit from query parameters, defaulting to 1 and 20 respectively
     const page = parseInt(request.nextUrl.searchParams.get('page') || '1', 10)
-    const limit = parseInt(request.nextUrl.searchParams.get('limit') || '20', 10)
+    const limit = parseInt(request.nextUrl.searchParams.get('limit') || '5', 10)
     const skip = (page - 1) * limit
 
-    // Count total pending friend requests
-    const total = await Friend.countDocuments({
-      receiver: user._id,
-      status: 'pending',
-    })
+    const results = await Friend.aggregate([
+      {
+        $match: {
+          receiver: user._id,
+          status: 'pending',
+        },
+      },
+      {
+        $facet: {
+          metadata: [{ $count: 'total' }],
+          data: [
+            { $skip: skip },
+            { $limit: limit },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'sender',
+                foreignField: '_id',
+                as: 'senderDetails',
+              },
+            },
+            {
+              $unwind: '$senderDetails',
+            },
+            {
+              $project: {
+                'senderDetails.name': 1,
+                'senderDetails.username': 1,
+                'senderDetails.profilePic': 1,
+                'senderDetails.bio': 1,
+              },
+            },
+          ],
+        },
+      },
+    ])
 
-    // Fetch paginated list of friend requests
-    const friends = await Friend.find({
-      receiver: user._id,
-      status: 'pending',
-    })
-      .skip(skip)
-      .limit(limit)
-      .populate('sender') // Assuming 'sender' is the field that references the User who sent the request
-      .exec()
+    const total = results[0].metadata[0] ? results[0].metadata[0].total : 0
+    const friends = results[0].data
+
+    const totalPages = Math.ceil(total / limit)
+    const hasNextPage = page < totalPages
+    const nextPageUrl = hasNextPage ? `${request.nextUrl.pathname}?page=${page + 1}&limit=${limit}` : null
 
     return NextResponse.json(
       {
-        friends,
+        data: friends,
         total,
         page,
+        totalPages,
+        nextPage: nextPageUrl,
       },
       { status: 200 },
     )
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 })
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+    return NextResponse.json({ error: errorMessage }, { status: 400 })
   }
 }
