@@ -8,13 +8,13 @@ import Friend from '@/models/friends'
 import { z } from 'zod'
 import { parseJson } from '@/utils/utils'
 
-const userLoginValid = z
+const userName = z
   .object({
     username: z
-      .string({ required_error: 'Email is required' }) //
+      .string({ required_error: 'Username is required' }) //
       .trim()
-      .min(3, { message: 'Email must be at least 3 characters long' })
-      .max(100, { message: 'Email must be at most 100 characters long' })
+      .min(3, { message: 'Username must be at least 3 characters long' })
+      .max(100, { message: 'Username must be at most 100 characters long' })
       .toLowerCase()
       .optional(),
   })
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
   if (body instanceof NextResponse) return body
 
   try {
-    const { username } = await userLoginValid.parse(body)
+    const { username } = await userName.parse(body)
 
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
@@ -51,6 +51,9 @@ export async function POST(request: NextRequest) {
     if (!receiver) {
       return NextResponse.json({ error: 'Receiver not found' }, { status: 404 })
     }
+
+    console.log('sender', sender)
+    console.log('receiver', receiver)
 
     if (sender.username === receiver.username) {
       return NextResponse.json({ error: 'You cannot send friend request to yourself' }, { status: 400 })

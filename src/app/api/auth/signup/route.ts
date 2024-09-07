@@ -108,7 +108,9 @@ export async function POST(request: NextRequest) {
     const expiryDate = new Date()
     expiryDate.setHours(expiryDate.getHours() + 1)
 
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
+    // const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
+
+    const verificationCode = '123456'
 
     if (userByEmil && !userByEmil.isVerified) {
       userByEmil.name = name

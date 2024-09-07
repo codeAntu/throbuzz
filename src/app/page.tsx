@@ -35,6 +35,18 @@ export default function Home() {
       })
 
       console.log('response', response.data)
+    } catch (error: any) {
+      console.log('error', error.response.data.error)
+    }
+  }
+
+  async function acceptFriendRequest() {
+    try {
+      const response = await axios.post('/api/user/acceptFriendRequest', {
+        username: 'codeantu',
+      })
+
+      console.log('response', response.data)
     } catch (error) {
       console.log('error', error)
     }
