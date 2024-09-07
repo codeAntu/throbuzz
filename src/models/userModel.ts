@@ -7,6 +7,15 @@ interface UserT extends Document {
   password: string
   isVerified: boolean
   isAdmin: boolean
+  birthday: Date
+  facebook: string
+  twitter: string
+  linkedin: string
+  instagram: string
+  github: string
+  website: string
+  skills: string
+  interests: string
   forgotPassword: string
   forgotPasswordExpires: Date
   verificationCode: string
@@ -34,7 +43,10 @@ interface UserT extends Document {
   projects: []
   notifications: []
   posts: []
+  postsCount: number
   phone: string
+  deActivated: boolean
+  deactivatedAt: Date
 }
 
 const userSchema: Schema<UserT> = new mongoose.Schema(
@@ -64,6 +76,41 @@ const userSchema: Schema<UserT> = new mongoose.Schema(
     isAdmin: {
       type: Boolean,
       default: false,
+    },
+    birthday: {
+      type: Date,
+    },
+    facebook: {
+      type: String,
+      default: '',
+    },
+    twitter: {
+      type: String,
+      default: '',
+    },
+    linkedin: {
+      type: String,
+      default: '',
+    },
+    instagram: {
+      type: String,
+      default: '',
+    },
+    github: {
+      type: String,
+      default: '',
+    },
+    website: {
+      type: String,
+      default: '',
+    },
+    skills: {
+      type: String,
+      default: '',
+    },
+    interests: {
+      type: String,
+      default: '',
     },
     forgotPassword: {
       type: String,
@@ -152,9 +199,20 @@ const userSchema: Schema<UserT> = new mongoose.Schema(
       type: [Schema.Types.ObjectId],
       default: [],
     },
+    postsCount: {
+      type: Number,
+      default: 0,
+    },
     phone: {
       type: String,
       default: '',
+    },
+    deActivated: {
+      type: Boolean,
+      default: false,
+    },
+    deactivatedAt: {
+      type: Date,
     },
   },
   {
