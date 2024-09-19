@@ -87,31 +87,6 @@ export default function Home() {
         {' '}
         Logout
       </Button>
-      <Button
-        title='send friend request'
-        onClick={() => {
-          sendFriendRequest()
-        }}
-        leftIcon={<Ic Icon={LogIn} />}
-      />
-
-      <Button
-        title='accept friend request'
-        onClick={() => {
-          acceptFriendRequest()
-        }}
-        leftIcon={<Ic Icon={LogIn} />}
-      />
-
-      <Button
-        title='delete friend request'
-        onClick={() => {
-          deleteFriendRequest()
-        }}
-        leftIcon={<Ic Icon={LogIn} />}
-      />
-
-      <SimpleDrawer />
     </Screen>
   )
 }
