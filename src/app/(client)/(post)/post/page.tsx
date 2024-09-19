@@ -36,8 +36,8 @@ export default function Post() {
       const response = await axios.post('/api/post/createPost', formData)
 
       console.log('response', response)
-    } catch (error) {
-      console.log('error', error)
+    } catch (error: any) {
+      console.log('error', error.response.data)
     }
   }, [images, isPrivate, text])
 
@@ -49,6 +49,7 @@ export default function Post() {
           name=''
           id=''
           className='h-60 w-full rounded-xl border border-black/20 bg-black/5'
+          value={text}
           onChange={(e) => {
             setText(e.target.value)
           }}
