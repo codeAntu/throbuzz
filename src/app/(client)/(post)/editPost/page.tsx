@@ -45,6 +45,17 @@ export default function EditPostPage() {
     }
   }
 
+  async function deletePost(postId: string) {
+    try {
+      const response = await axios.post('/api/post/deletePost', {
+        postId,
+      })
+      console.log(response.data)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
   return (
     <Screen className='gap-10'>
       <div className='text-3xl font-bold text-blue-500'>Post</div>
@@ -82,21 +93,15 @@ export default function EditPostPage() {
         className='w-full'
         onClick={() => {
           console.log('clicked')
-          // console.log('text', text)
-          // console.log('isPrivate', isPrivate)
-          // console.log('images', images)
           getPost(postId)
         }}
         title='Load Post '
       />
 
-      <Button
+      {/* <Button
         className='w-full'
         onClick={() => {
           console.log('clicked')
-          // console.log('text', text)
-          // console.log('isPrivate', isPrivate)
-          // console.log('images', images)
           editPost({
             text,
             visibility,
@@ -105,6 +110,15 @@ export default function EditPostPage() {
         }}
         title='Edit Post'
       />
+
+      <Button
+        className='w-full'
+        onClick={() => {
+          console.log('clicked')
+          deletePost('66ed1a49c55a10fe7d426dab')
+        }}
+        title='Delete Post'
+      /> */}
     </Screen>
   )
 }
