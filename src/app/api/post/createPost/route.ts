@@ -23,8 +23,8 @@ const dataZ = z.object({
 
 export async function POST(request: NextRequest, response: NextResponse) {
   try {
-    const data = (await request.cookies.get('token')?.value) || ''
-    const tokenData = jwt.decode(data) as TokenDataT
+    const token = (await request.cookies.get('token')?.value) || ''
+    const tokenData = jwt.decode(token) as TokenDataT
 
     if (!tokenData || !tokenData.isVerified) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
