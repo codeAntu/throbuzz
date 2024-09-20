@@ -6,7 +6,7 @@ import { use, useCallback, useEffect, useState } from 'react'
 
 export default function Post() {
   const [text, setText] = useState('Text')
-  const [isPrivate, setIsPrivate] = useState(false)
+  const [visibility, setVisibility] = useState('public')
   const [images, setImages] = useState<FileList | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -21,7 +21,7 @@ export default function Post() {
       const formData = new FormData()
 
       formData.append('text', text)
-      formData.append('isPrivate', isPrivate.toString())
+      formData.append('visibility', visibility)
 
       if (images) {
         if (images.length > 10) {
@@ -39,7 +39,7 @@ export default function Post() {
     } catch (error: any) {
       console.log('error', error.response.data)
     }
-  }, [images, isPrivate, text])
+  }, [images, text, visibility])
 
   return (
     <Screen className='gap-10'>
@@ -66,7 +66,7 @@ export default function Post() {
           <input
             type='checkbox'
             onChange={(e) => {
-              setIsPrivate(e.target.checked)
+              setVisibility(e.target.checked ? 'private' : 'public')
             }}
           />
           <label htmlFor=''>Private</label>
@@ -79,7 +79,7 @@ export default function Post() {
         onClick={() => {
           console.log('clicked')
           console.log('text', text)
-          console.log('isPrivate', isPrivate)
+          console.log('visibility', visibility)
           console.log('images', images)
 
           createPost()

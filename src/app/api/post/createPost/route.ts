@@ -6,6 +6,7 @@ import { parseJson } from '@/utils/utils'
 import { z } from 'zod'
 import imageUpload from '@/cloudinary/cloudinaryUploadImage'
 import Post from '@/models/postModel'
+import { errorToJSON } from 'next/dist/server/render'
 
 connect()
 
@@ -16,7 +17,7 @@ const imageSchema = z.instanceof(File).refine((file) => file.size <= maxSizeInBy
 
 const dataZ = z.object({
   text: z.string().min(1).max(500).optional(),
-  isPrivate: z.boolean().optional(),
+  visibility: z.enum(['public', 'private']).optional(),
   images: z.array(imageSchema).max(10).optional(),
 })
 
@@ -31,19 +32,19 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
     const formData = await request.formData()
     const text = formData.get('text') as string
-    const isPrivate = formData.get('isPrivate') === 'true'
+    const visibility = formData.get('visibility') as string
     const images = formData.getAll('images') as File[]
 
-    const validationResult = dataZ.safeParse({ text, isPrivate, images })
+    const validationResult = dataZ.safeParse({ text, visibility, images })
     if (!validationResult.success) {
       return NextResponse.json({ error: validationResult.error.errors }, { status: 400 })
     }
-    const { text: validatedText, isPrivate: validatedIsPrivate, images: validatedImages } = validationResult.data
+    const { text: validatedText, images: validatedImages, visibility: validatedVisibility } = validationResult.data
 
     const publicIds: string[] = []
 
-    if (images && images.length) {
-      for (const image of images) {
+    if (validatedImages && validatedImages.length) {
+      for (const image of validatedImages) {
         try {
           const result = (await imageUpload(image)) as CloudinaryImageResponse
           publicIds.push(result.public_id)
@@ -57,25 +58,18 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
     const post = new Post({
       text: validatedText,
-      isPrivate: validatedIsPrivate,
+      visibility: validatedVisibility,
       publicIds: publicIds,
       user: tokenData.id,
+      temp: 'temp1',
     })
 
     await post.save()
 
-    console.log(post)
-
     return NextResponse.json(
       {
         message: 'Post created successfully',
-        post: {
-          text: post.text,
-          isPrivate: post.isPrivate,
-          publicIds: post.publicIds,
-          likes: post.likes,
-          comments: post.comments,
-        },
+        post,
       },
       { status: 200 },
     )

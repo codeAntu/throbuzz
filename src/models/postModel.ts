@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose'
 interface PostT extends Document {
   user: Schema.Types.ObjectId
   text: string
-  isPrivate: boolean
+  visibility: string
   publicIds: string[]
   likes: number
   comments: number
@@ -14,13 +14,18 @@ const postSchema: Schema<PostT> = new mongoose.Schema(
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
+      required: [true, 'User is required'],
     },
     text: {
       type: String,
-      required: [true, 'Text is required'],
     },
     publicIds: {
       type: [String],
+    },
+    visibility: {
+      type: String,
+      enum: ['public', 'private'],
+      default: 'public',
     },
     likes: {
       type: Number,
