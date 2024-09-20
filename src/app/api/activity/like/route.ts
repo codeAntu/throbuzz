@@ -1,6 +1,6 @@
 import { connect } from '@/dbConfig/dbConfig'
 import { TokenDataT } from '@/lib/types'
-import Like from '@/models/likeModule'
+import Like from '@/models/likeModel'
 import Post from '@/models/postModel'
 import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'

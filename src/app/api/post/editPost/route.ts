@@ -11,7 +11,7 @@ connect()
 const dataZ = z.object({
   text: z.string().min(1).max(500).optional(),
   visibility: z.enum(['public', 'private']).optional(),
-  postId: z.string().optional(),
+  postId: z.string(),
 })
 
 export async function POST(request: NextRequest) {

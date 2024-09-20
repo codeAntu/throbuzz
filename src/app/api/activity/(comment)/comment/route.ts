@@ -1,15 +1,25 @@
 import { connect } from '@/dbConfig/dbConfig'
 import { TokenDataT } from '@/lib/types'
-import Like from '@/models/likeModel'
 import Post from '@/models/postModel'
 import jwt from 'jsonwebtoken'
+import z from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
+import Comment from '@/models/commentModel'
 
 connect()
 
+const dataZ = z.object({
+  content: z.string().min(1).max(500),
+  postId: z.string(),
+})
+
 export async function POST(request: NextRequest) {
   try {
-    const { postId } = await request.json()
+    const parseResult = dataZ.safeParse(await request.json())
+    if (!parseResult.success) {
+      return NextResponse.json({ error: 'Invalid input', details: parseResult.error.errors }, { status: 400 })
+    }
+    const { content, postId } = parseResult.data
 
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
@@ -26,15 +36,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
 
-    const like = await Like.findOneAndDelete({ postId, userId })
+    // new comment
+    await Comment.create({ userId, postId, content })
+    await Post.findByIdAndUpdate(postId, { $inc: { comments: 1 } }) // Increment the comment count
 
-    if (!like) {
-      return NextResponse.json({ error: 'Like not found' }, { status: 404 })
-    }
-
-    await Post.findByIdAndUpdate(postId, { $inc: { likes: -1 } })
-
-    return NextResponse.json({ status: 200, message: 'Post deleted successfully' })
+    return NextResponse.json({ status: 200, message: 'Comment added successfully' })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
