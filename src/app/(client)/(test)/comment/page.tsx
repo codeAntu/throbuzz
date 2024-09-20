@@ -7,23 +7,37 @@ import { useState } from 'react'
 export default function CommentPage() {
   const [content, setContent] = useState('')
   const postId = '66ed3abd503db1b8ccac0e4b'
+  const commentId = '66edb30ea16250bcfa06e392'
+
   async function handleComment(content: string, postId: string) {
-    if (!content) {
-      console.log('Content is required')
-
-      return
-    }
-
-    if (!postId) {
-      console.log('PostId is required')
-
-      return
-    }
-
+    if (!content || !postId) return
     try {
-      const response = await axios.post('/api/activity/comment', {
+      const response = await axios.post('/api/activity/comment/createComment', {
         content,
         postId,
+      })
+      console.log(response.data)
+    } catch (error: any) {
+      console.error(error)
+    }
+  }
+
+  async function handleDeleteComment(commentId: string) {
+    try {
+      const response = await axios.post('/api/activity/comment/deleteComment', {
+        commentId,
+      })
+      console.log(response.data)
+    } catch (error: any) {
+      console.error(error)
+    }
+  }
+
+  async function handleEditComment(content: string, commentId: string) {
+    try {
+      const response = await axios.post('/api/activity/comment/editComment', {
+        content,
+        commentId,
       })
       console.log(response.data)
     } catch (error: any) {
@@ -43,6 +57,8 @@ export default function CommentPage() {
         onChange={(e) => setContent(e.target.value)}
       ></textarea>
       <Button onClick={() => handleComment(content, postId)} title='Comment' />
+      <Button onClick={() => handleDeleteComment(commentId)} title='Delete Comment' />
+      <Button onClick={() => handleEditComment(content, commentId)} title='Edit Comment' />
     </Screen>
   )
 }
