@@ -3,34 +3,17 @@ import { string } from 'zod'
 
 interface commentReplyT extends Document {
   userId: Schema.Types.ObjectId
-  postId: Schema.Types.ObjectId
   commentId: Schema.Types.ObjectId
   content: string
-  replyTo: string
+  likes: number
 }
 
 const commentReplySchema: Schema<commentReplyT> = new mongoose.Schema(
   {
-    postId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Post',
-    },
-    commentId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Comment',
-    },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
-    content: {
-      type: String,
-      required: true,
-    },
-    replyTo: {
-      type: String,
-      required: true,
-    },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    commentId: { type: Schema.Types.ObjectId, ref: 'Comment', required: true },
+    content: { type: String, required: true },
+    likes: { type: Number, default: 0 },
   },
   { timestamps: true },
 )

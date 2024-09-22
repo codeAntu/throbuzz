@@ -11,7 +11,6 @@ import * as z from 'zod'
 const dataZ = z.object({
   content: z.string().min(1).max(500),
   commentId: z.string(),
-  replyTo: z.string().min(3).max(50),
 })
 
 connect()
@@ -31,7 +30,7 @@ export async function POST(request: NextRequest) {
     if (!parseResult.success) {
       return NextResponse.json({ error: 'Invalid input', details: parseResult.error.errors }, { status: 400 })
     }
-    const { content, commentId, replyTo } = parseResult.data
+    const { content, commentId } = parseResult.data
 
     const comment = await Comment.findById(commentId)
 
@@ -41,24 +40,13 @@ export async function POST(request: NextRequest) {
 
     const postId = comment.postId
 
-    console.log('commentId', commentId)
-    console.log('postId', postId)
-    console.log('userId', userId)
-    console.log('content', content)
-    console.log('replyTo', replyTo)
-
-    const user = await User.findOne({ username: replyTo, verified: true })
-    console.log('user', user)
-
-    const newCommentReply = new CommentReply({
-      user: userId,
-      postId,
+    const commentReply = new CommentReply({
+      userId,
       commentId,
       content,
-      replyTo,
     })
 
-    await newCommentReply.save()
+    // await commentReply.save()
 
     await Comment.findByIdAndUpdate(commentId, { $inc: { comments: 1 } }) // Increment the comment count
     await Post.findByIdAndUpdate(postId, { $inc: { comments: 1 } }) // Increment the comment count

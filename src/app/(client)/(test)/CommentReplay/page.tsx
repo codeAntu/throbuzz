@@ -5,21 +5,20 @@ import axios from 'axios'
 import { useState } from 'react'
 
 export default function CommentReplay() {
-  const [content, setContent] = useState('This is the replay')
+  const [content, setContent] = useState('This is the nwe   replay  ')
   const commentId = '66edb30ea16250bcfa06e392'
   const replyTo = 'codeAntu'
 
   async function replayComment() {
     try {
-      const response = await axios.post('/api/activity/commentReply/createCommentReplySchema', {
+      const response = await axios.post('/api/activity/commentReply/createCommentReply', {
         content,
         commentId,
-        replyTo,
       })
 
       console.log(response.data)
     } catch (error: any) {
-      console.error(error.message)
+      console.error(error)
     }
   }
 
