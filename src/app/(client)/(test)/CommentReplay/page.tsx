@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 export default function CommentReplay() {
   const [content, setContent] = useState('This is the nwe   replay  , edited  ')
-  const commentId = '66f10f2d0fcaad9981af8556'
+  const commentId = '66edb30ea16250bcfa06e392'
   const replyTo = 'codeAntu'
   const commentReplyId = '66f05d5ff37ab0c3fcd63b37'
 
@@ -26,8 +26,8 @@ export default function CommentReplay() {
   async function editCommentReply() {
     try {
       const response = await axios.post('/api/activity/commentReply/editCommentReplay', {
-        content,
-        commentReplyId,
+        content: 'This is the edited comment reply nnnnnnnnnnnnnnnnnnnnn',
+        commentReplyId: '66f11a690fcaad9981af85a9',
       })
 
       console.log(response.data)
@@ -39,7 +39,7 @@ export default function CommentReplay() {
   async function deleteCommentReply() {
     try {
       const response = await axios.post('/api/activity/commentReply/deleteCommentReplay', {
-        commentReplyId: '66f10f9d0fcaad9981af856f',
+        commentReplyId: '66f11a680fcaad9981af85a4',
       })
 
       console.log(response.data)

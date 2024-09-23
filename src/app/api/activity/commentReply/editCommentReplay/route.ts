@@ -8,8 +8,8 @@ import CommentReply from '@/models/commentReplyModel'
 connect()
 
 const dataZ = z.object({
-  content: z.string().nonempty(),
-  commentReplyId: z.string().nonempty(),
+  content: z.string(),
+  commentReplyId: z.string(),
 })
 
 export async function POST(request: NextRequest) {
@@ -31,11 +31,18 @@ export async function POST(request: NextRequest) {
 
     const { content, commentReplyId } = parseResult.data
 
-    const commentReply = await CommentReply.findByIdAndUpdate(commentReplyId, { content })
+    const commentReply = await CommentReply.findById(commentReplyId)
 
     if (!commentReply) {
       return NextResponse.json({ error: 'Comment reply not found' }, { status: 404 })
     }
+
+    if (commentReply.userId.toString() !== userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    commentReply.content = content
+    await commentReply.save()
 
     return NextResponse.json({ message: 'Comment reply updated successfully', commentReply }, { status: 200 })
   } catch (error: any) {
