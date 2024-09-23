@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import Comment from '@/models/commentModel'
 import Post from '@/models/postModel'
+import CommentReply from '@/models/commentReplyModel'
 
 connect()
 
@@ -28,11 +29,12 @@ export async function POST(request: NextRequest) {
 
     const postId = comment.postId
 
-    const post = await Post.findByIdAndUpdate(postId, { $inc: { comments: -1 } })
+    // delete all the comment replies on that comment
 
-    if (!post) {
-      return NextResponse.json({ message: 'Post not found' }, { status: 404 })
-    }
+    await CommentReply.deleteMany({ commentId })
+
+    // update the comments count on the post
+    await Post.findByIdAndUpdate(postId, { $inc: { comments: -(comment.comments + 1) } })
 
     return NextResponse.json({ message: 'Comment deleted successfully' })
   } catch (error: any) {

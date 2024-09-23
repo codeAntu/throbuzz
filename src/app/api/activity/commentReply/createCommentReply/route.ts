@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       content,
     })
 
-    // await commentReply.save()
+    await commentReply.save()
 
     await Comment.findByIdAndUpdate(commentId, { $inc: { comments: 1 } }) // Increment the comment count
     await Post.findByIdAndUpdate(postId, { $inc: { comments: 1 } }) // Increment the comment count

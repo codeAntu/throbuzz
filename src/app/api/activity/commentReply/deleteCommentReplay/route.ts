@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
 import CommentReply from '@/models/commentReplyModel'
+import Comment from '@/models/commentModel'
+import Post from '@/models/postModel'
 connect()
 
 const dataZ = z.object({
@@ -31,9 +33,17 @@ export async function POST(request: NextRequest) {
 
     const commentReply = await CommentReply.findByIdAndDelete(commentReplyId)
 
+    console.log(commentReply)
+
     if (!commentReply) {
       return NextResponse.json({ error: 'Comment reply not found' }, { status: 404 })
     }
+
+    const commentId = commentReply.commentId
+
+    const comment = await Comment.findByIdAndUpdate(commentId, { $inc: { comments: -1 } })
+    const postId = comment?.postId
+    await Post.findByIdAndUpdate(postId, { $inc: { comments: -1 } }) // Increment the comment count
 
     return NextResponse.json({ message: 'Comment reply deleted successfully', commentReply }, { status: 200 })
   } catch (error: any) {
