@@ -21,10 +21,14 @@ export async function POST(request: NextRequest) {
 
     const userId = tokenData.id
 
-    const comment = await Comment.findOneAndDelete({ _id: commentId, userId })
+    const comment = await Comment.findById(commentId)
 
     if (!comment) {
       return NextResponse.json({ message: 'Comment not found' }, { status: 404 })
+    }
+
+    if (comment.userId.toString() !== userId) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
     const postId = comment.postId
@@ -35,6 +39,9 @@ export async function POST(request: NextRequest) {
 
     // update the comments count on the post
     await Post.findByIdAndUpdate(postId, { $inc: { comments: -(comment.comments + 1) } })
+
+    // delete the comment
+    await Comment.findByIdAndDelete(commentId)
 
     return NextResponse.json({ message: 'Comment deleted successfully' })
   } catch (error: any) {

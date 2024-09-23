@@ -14,8 +14,6 @@ const dataZ = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const { commentId, content } = await request.json()
-
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
@@ -25,11 +23,26 @@ export async function POST(request: NextRequest) {
 
     const userId = tokenData.id
 
-    const comment = await Comment.findOneAndUpdate({ _id: commentId, userId }, { content })
+    const parseResult = dataZ.safeParse(await request.json())
+
+    if (!parseResult.success) {
+      return NextResponse.json({ message: 'Invalid input', details: parseResult.error.errors }, { status: 400 })
+    }
+
+    const { content, commentId } = parseResult.data
+
+    const comment = await Comment.findById(commentId)
 
     if (!comment) {
       return NextResponse.json({ message: 'Comment not found' }, { status: 404 })
     }
+
+    if (comment.userId.toString() !== userId) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
+    comment.content = content
+    await comment.save()
 
     return NextResponse.json({ message: 'Comment updated successfully' })
   } catch (error: any) {

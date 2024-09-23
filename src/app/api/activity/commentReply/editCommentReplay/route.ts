@@ -8,7 +8,7 @@ import CommentReply from '@/models/commentReplyModel'
 connect()
 
 const dataZ = z.object({
-  content: z.string(),
+  content: z.string().min(1).max(500),
   commentReplyId: z.string(),
 })
 
