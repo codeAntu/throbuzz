@@ -10,7 +10,11 @@ interface LikeOnCommentT extends Document {
 const likeOnCommentSchema: Schema<LikeOnCommentT> = new mongoose.Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    reaction: { type: String, required: true },
+    reaction: {
+      type: String,
+      enum: ['like', 'love', 'haha', 'wow', 'sad', 'angry'],
+      default: 'like',
+    },
     commentId: { type: Schema.Types.ObjectId, ref: 'Comment', required: true },
   },
   { timestamps: true },
