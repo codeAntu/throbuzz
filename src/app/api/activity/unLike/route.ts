@@ -26,11 +26,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
 
-    const like = await Like.findOneAndDelete({ postId, userId })
+    const like = await Like.findById({ postId })
 
     if (!like) {
       return NextResponse.json({ error: 'Like not found' }, { status: 404 })
     }
+
+    if (like.userId.toString() !== userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    await Like.findByIdAndDelete(like._id)
 
     await Post.findByIdAndUpdate(postId, { $inc: { likes: -1 } })
 

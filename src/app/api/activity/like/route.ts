@@ -30,8 +30,11 @@ export async function POST(request: NextRequest) {
       like.reaction = reaction
       await like.save()
     } else {
+      const post = await Post.findByIdAndUpdate(postId, { $inc: { likes: 1 } }) // Increment the like count
+      if (!post) {
+        return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+      }
       await Like.create({ postId, userId, reaction })
-      await Post.findByIdAndUpdate(postId, { $inc: { likes: 1 } }) // Increment the like count
     }
 
     return NextResponse.json({ status: 200, message: 'Like added successfully' })
