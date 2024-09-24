@@ -4,7 +4,7 @@ import { Screen } from '@/components/Screen'
 import axios from 'axios'
 
 export default function Page() {
-  const commentReplyId = '66f258b70a11405088989159'
+  const commentReplyId = '66f2627a31d50ccb18115b46'
 
   async function likeOnCommentReply() {
     try {

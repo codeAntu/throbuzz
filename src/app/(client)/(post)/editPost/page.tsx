@@ -11,7 +11,7 @@ export default function EditPostPage() {
   const [images, setImages] = useState<FileList | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const postId = '66f17f81ff2e6862a6700710'
+  const postId = '66f258800a11405088989155'
   const [postImages, setPostImages] = useState<string[]>([])
 
   async function getPost(postId: string) {
@@ -28,8 +28,6 @@ export default function EditPostPage() {
       console.log('error', error)
     }
   }
-
-  console.log(visibility)
 
   async function editPost({ text, visibility, postId }: { text: string; visibility: string; postId: string }) {
     try {
@@ -48,7 +46,7 @@ export default function EditPostPage() {
   async function deletePost(postId: string) {
     try {
       const response = await axios.post('/api/post/deletePost', {
-        postId,
+        postId: '66f2697fdbb5e1ae7c5a2e26',
       })
       console.log(response.data)
     } catch (error) {

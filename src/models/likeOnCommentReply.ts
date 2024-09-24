@@ -16,6 +16,7 @@ const likeOnCommentReplySchema: Schema<LikeOnCommentReplyT> = new mongoose.Schem
       default: 'like',
     },
     commentReplyId: { type: Schema.Types.ObjectId, ref: 'CommentReply', required: true },
+    postId: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
   },
   { timestamps: true },
 )
