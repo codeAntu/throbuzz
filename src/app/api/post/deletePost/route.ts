@@ -8,6 +8,7 @@ import LikeOnComment from '@/models/likeOnCommentModel'
 import Comment from '@/models/commentModel'
 import LikeOnCommentReply from '@/models/likeOnCommentReply'
 import CommentReply from '@/models/commentReplyModel'
+import User from '@/models/userModel'
 
 connect()
 
@@ -53,6 +54,10 @@ export async function POST(request: NextRequest) {
 
     // delete the post
     await Post.deleteOne({ _id: postId })
+
+    // update the user's post count
+
+    await User.findByIdAndUpdate(userId, { $inc: { postsCount: -1 } })
 
     return NextResponse.json({ status: 200, message: 'Post deleted successfully' })
   } catch (error: any) {

@@ -70,6 +70,9 @@ export async function GET(request: NextRequest, response: NextResponse) {
     const hasNextPage = page < totalPages
     const nextPageUrl = hasNextPage ? `${request.nextUrl.pathname}?page=${page + 1}&limit=${limit}` : null
 
+    const newFriendsRequestCount = user.newFriendsRequestCount > 20 ? user.newFriendsRequestCount - 20 : 0
+    await User.findByIdAndUpdate(user._id, { newFriendsRequestCount })
+
     return NextResponse.json(
       {
         data: friends,

@@ -3,11 +3,11 @@ import { parseJson } from '@/utils/utils'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import Friend from '@/models/friends'
+import User from '@/models/userModel'
 
 export async function DELETE(request: NextRequest, response: NextResponse) {
   try {
     const { friendRequestId } = await parseJson(request)
-    console.log('friendRequestId', friendRequestId)
 
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
@@ -30,18 +30,13 @@ export async function DELETE(request: NextRequest, response: NextResponse) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const deletedFriendRequest = {
-      _id: friendRequest._id,
-      sender: friendRequest.sender,
-      receiver: friendRequest.receiver,
-    }
+    await User.findByIdAndUpdate(friendRequest.sender, { $inc: { friendRequestSentCount: -1 } })
 
-    await friendRequest.deleteOne()
+    await User.findByIdAndUpdate(friendRequest.receiver, { $inc: { friendRequestsCount: -1 } })
 
-    return NextResponse.json(
-      { message: 'Friend request deleted', deletedFriendRequest: deletedFriendRequest },
-      { status: 200 },
-    )
+    await Friend.deleteOne({ _id: friendRequestId })
+
+    return NextResponse.json({ message: 'Friend request deleted' }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }

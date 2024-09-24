@@ -74,6 +74,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'You are already friends' }, { status: 400 })
     }
 
+    // update sender friend request count
+
+    await User.findByIdAndUpdate(sender._id, { $inc: { friendRequestSentCount: 1 } })
+
+    // update receiver friend request count
+
+    await User.findByIdAndUpdate(receiver._id, { $inc: { friendRequestsCount: 1 } })
+
     const newFriend = new Friend({
       sender: sender._id,
       senderUsername: sender.username,

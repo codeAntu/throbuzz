@@ -52,6 +52,18 @@ export default function FriendRequest() {
     }
   }
 
+  async function deleteFriendRequest(friendRequestId: string) {
+    try {
+      const response = await axios.delete('/api/user/deleteFriendRequest', {
+        data: { friendRequestId },
+      })
+      console.log(response.data)
+      setFriendRequests(friendRequests.filter((friendRequest) => friendRequest._id !== friendRequestId))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     getFriendRequests()
   }, [])
@@ -66,6 +78,9 @@ export default function FriendRequest() {
       ))}
       <Button onClick={() => getNextFriendRequests(nextPage)} title='get'>
         Refresh
+      </Button>
+      <Button onClick={() => deleteFriendRequest('66dc03dcec7713f7fd2dfa50')} title='delete'>
+        Delete
       </Button>
     </Screen>
   )

@@ -7,6 +7,7 @@ import { z } from 'zod'
 import imageUpload from '@/cloudinary/cloudinaryUploadImage'
 import Post from '@/models/postModel'
 import { errorToJSON } from 'next/dist/server/render'
+import User from '@/models/userModel'
 
 connect()
 
@@ -65,6 +66,10 @@ export async function POST(request: NextRequest, response: NextResponse) {
     })
 
     await post.save()
+
+    // update user's post count
+
+    await User.findByIdAndUpdate(tokenData.id, { $inc: { postsCount: 1 } })
 
     return NextResponse.json(
       {

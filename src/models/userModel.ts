@@ -7,6 +7,7 @@ interface UserT extends Document {
   password: string
   isVerified: boolean
   isAdmin: boolean
+  phone: string
   birthday: Date
   facebook: string
   twitter: string
@@ -20,8 +21,6 @@ interface UserT extends Document {
   forgotPasswordExpires: Date
   verificationCode: string
   verificationCodeExpires: Date
-  createdAt: Date
-  updatedAt: Date
   profilePic: {
     imageUrl: string
     publicId: string
@@ -32,19 +31,12 @@ interface UserT extends Document {
   }
   bio: string
   about: string
-  friends: [Schema.Types.ObjectId]
   friendsCount: number
-  friendRequests: []
+  friendRequestSentCount: number
   friendRequestsCount: number
-  following: []
-  followingCount: number
-  followers: []
-  followersCount: number
-  projects: []
-  notifications: []
-  posts: []
+  newFriendsRequestCount: number
   postsCount: number
-  phone: string
+  newNotificationsCount: number
   deActivated: boolean
   deactivatedAt: Date
 }
@@ -76,6 +68,10 @@ const userSchema: Schema<UserT> = new mongoose.Schema(
     isAdmin: {
       type: Boolean,
       default: false,
+    },
+    phone: {
+      type: String,
+      default: '',
     },
     birthday: {
       type: Date,
@@ -154,58 +150,29 @@ const userSchema: Schema<UserT> = new mongoose.Schema(
       type: String,
       default: '',
     },
-    friends: {
-      type: [Schema.Types.ObjectId],
-      // type : [ FriendsSchema]
-      default: [],
-    },
     friendsCount: {
       type: Number,
       default: 0,
-    },
-    friendRequests: {
-      type: [Schema.Types.ObjectId],
-      default: [],
     },
     friendRequestsCount: {
       type: Number,
       default: 0,
     },
-    following: {
-      type: [Schema.Types.ObjectId],
-      default: [],
-    },
-    followingCount: {
+    newFriendsRequestCount: {
       type: Number,
       default: 0,
     },
-    followers: {
-      type: [Schema.Types.ObjectId],
-      default: [],
-    },
-    followersCount: {
+    friendRequestSentCount: {
       type: Number,
       default: 0,
-    },
-    projects: {
-      type: [Schema.Types.ObjectId],
-      default: [],
-    },
-    notifications: {
-      type: [Schema.Types.ObjectId],
-      default: [],
-    },
-    posts: {
-      type: [Schema.Types.ObjectId],
-      default: [],
     },
     postsCount: {
       type: Number,
       default: 0,
     },
-    phone: {
-      type: String,
-      default: '',
+    newNotificationsCount: {
+      type: Number,
+      default: 0,
     },
     deActivated: {
       type: Boolean,
