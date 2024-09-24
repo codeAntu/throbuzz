@@ -108,9 +108,7 @@ export async function POST(request: NextRequest) {
     const expiryDate = new Date()
     expiryDate.setHours(expiryDate.getHours() + 1)
 
-    // const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
-
-    const verificationCode = '123456'
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
 
     if (userByEmil && !userByEmil.isVerified) {
       userByEmil.name = name
@@ -135,6 +133,7 @@ export async function POST(request: NextRequest) {
     const htmlToSend = EmailComponent.generateEmailHtml({
       name,
       OTP: verificationCode,
+      message: 'Verify your account , verify your email withing 1 hour',
     })
 
     await sendEmail({

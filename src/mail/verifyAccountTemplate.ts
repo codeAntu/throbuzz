@@ -1,5 +1,5 @@
 export default class EmailComponent {
-  static generateEmailHtml({ name, OTP }: { name: string; OTP: string }): string {
+  static generateEmailHtml({ name, OTP, message }: { name: string; OTP: string; message: string }): string {
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -9,8 +9,9 @@ export default class EmailComponent {
         </title>
       </head>
       <body>
-         <h1>Welcome, ${name}!</h1>
-    <p>Your OTP is: ${OTP}</p>
+        <h1>Welcome, ${name}!</h1>
+        <h3>Your OTP is: ${OTP}</h3>
+        <p>${message}</p>
       </body>
       </html>
     `
