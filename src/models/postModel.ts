@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose'
 
 interface PostT extends Document {
-  user: Schema.Types.ObjectId
+  userId: Schema.Types.ObjectId
   text: string
   visibility: string
   publicIds: string[]
@@ -11,7 +11,7 @@ interface PostT extends Document {
 
 const postSchema: Schema<PostT> = new mongoose.Schema(
   {
-    user: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'User is required'],

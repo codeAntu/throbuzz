@@ -60,7 +60,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
       text: validatedText,
       visibility: validatedVisibility,
       publicIds: publicIds,
-      user: tokenData.id,
+      userId: tokenData.id,
       temp: 'temp1',
     })
 

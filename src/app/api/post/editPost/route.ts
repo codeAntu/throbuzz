@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
 
-    if (post.user.toString() !== userId) {
+    if (post.userId.toString() !== userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
