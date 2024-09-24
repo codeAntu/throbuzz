@@ -29,8 +29,6 @@ export async function GET(req: NextRequest) {
       about: user.about,
       profilePic: user.profilePic.imageUrl,
       coverPic: user.coverPic.imageUrl,
-      followers: user.followers,
-      following: user.following,
     }
 
     return NextResponse.json({ user: resUser }, { status: 200 })

@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Username is required' }, { status: 400 })
     }
 
-    const sender = await User.findOne({ _id: tokenData.id })
+    const sender = await User.findOne({ _id: tokenData.id, isVerified: true })
 
     if (!sender) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })

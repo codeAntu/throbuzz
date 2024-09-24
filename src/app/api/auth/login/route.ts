@@ -139,7 +139,9 @@ export async function POST(request: NextRequest) {
     })
 
     await notification.save()
-    console.log('token', token)
+
+    // update newNotificationsCount for user
+    await User.findByIdAndUpdate(user._id, { $inc: { newNotificationsCount: 1 } })
 
     return response
   } catch (error: any) {

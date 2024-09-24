@@ -149,6 +149,9 @@ export async function POST(request: NextRequest) {
 
     await notification.save()
 
+    // update the user's new notification count
+    await User.findByIdAndUpdate(user._id, { $inc: { newNotificationsCount: 1 } })
+
     return response
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })

@@ -16,14 +16,14 @@ export async function GET(request: NextRequest, response: NextResponse) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const user = await User.findOne({ _id: tokenData.id })
+    const user = await User.findById(tokenData.id)
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     const page = parseInt(request.nextUrl.searchParams.get('page') || '1', 10)
-    const limit = parseInt(request.nextUrl.searchParams.get('limit') || '5', 10)
+    const limit = parseInt(request.nextUrl.searchParams.get('limit') || '20', 10)
     const skip = (page - 1) * limit
 
     const results = await Friend.aggregate([
@@ -70,8 +70,10 @@ export async function GET(request: NextRequest, response: NextResponse) {
     const hasNextPage = page < totalPages
     const nextPageUrl = hasNextPage ? `${request.nextUrl.pathname}?page=${page + 1}&limit=${limit}` : null
 
-    const newFriendsRequestCount = user.newFriendsRequestCount > 20 ? user.newFriendsRequestCount - 20 : 0
-    await User.findByIdAndUpdate(user._id, { newFriendsRequestCount })
+    const newFriendsRequestCount = user.newFriendsRequestCount - friends.length
+    user.newFriendsRequestCount = newFriendsRequestCount > 0 ? newFriendsRequestCount : 0
+
+    await user.save()
 
     return NextResponse.json(
       {

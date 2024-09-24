@@ -39,7 +39,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       )
     }
 
-    const user = await User.findOne({ _id: tokenData.id })
+    const user = await User.findById(tokenData.id)
 
     if (!user) {
       return NextResponse.json(
