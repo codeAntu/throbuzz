@@ -1,8 +1,8 @@
+import { connect } from '@/dbConfig/dbConfig'
 import { TokenDataT } from '@/lib/types'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import Notification from '@/models/notificationModel'
-import { connect } from '@/dbConfig/dbConfig'
 
 connect()
 
@@ -17,9 +17,22 @@ export async function POST(request: NextRequest) {
 
     const userId = tokenData.id
 
-    const notifications = await Notification.find({ userId: userId })
+    // Parse query parameters for pagination
+    const url = new URL(request.url)
+    const page = parseInt(url.searchParams.get('page') || '1', 10)
+    const limit = parseInt(url.searchParams.get('limit') || '20', 10)
+    const skip = (page - 1) * limit
 
-    return NextResponse.json({ notifications, success: true }, { status: 200 })
+    // Fetch notifications with pagination
+    const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).skip(skip).limit(limit)
+
+    // Check if there are more notifications to load
+    const totalNotifications = await Notification.countDocuments({ userId })
+    const hasNextPage = skip + notifications.length < totalNotifications
+    const nextPage = hasNextPage ? page + 1 : null
+    const nextLink = hasNextPage ? `${url.origin}${url.pathname}?page=${nextPage}&limit=${limit}` : null
+
+    return NextResponse.json({ notifications, nextLink, success: true }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json(
       {

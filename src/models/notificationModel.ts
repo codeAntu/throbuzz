@@ -35,6 +35,8 @@ const notificationSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
+notificationSchema.index({ readAt: 1 }, { expireAfterSeconds: 7 * 24 * 60 * 60 })
+
 const Notification =
   (mongoose.models.Notification as mongoose.Model<Notification>) ||
   mongoose.model<Notification>('Notification', notificationSchema)
