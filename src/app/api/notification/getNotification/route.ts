@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     const userId = tokenData.id
 
-    const notifications = await Notification.find({ user: userId })
+    const notifications = await Notification.find({ userId: userId })
 
     return NextResponse.json({ notifications, success: true }, { status: 200 })
   } catch (error: any) {

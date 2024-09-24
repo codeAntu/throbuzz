@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 export default function CommentPage() {
   const [content, setContent] = useState('')
-  const postId = '66f2697fdbb5e1ae7c5a2e26'
+  const postId = '66f2e42e108a3040e088d114'
   const commentId = '66edb30ea16250bcfa06e392'
 
   async function handleComment(content: string, postId: string) {

@@ -5,6 +5,7 @@ import { z } from 'zod'
 import jwt from 'jsonwebtoken'
 import CommentReply from '@/models/commentReplyModel'
 import LikeOnCommentReply from '@/models/likeOnCommentReply'
+import Notification from '@/models/notificationModel'
 
 connect()
 
@@ -54,6 +55,17 @@ export async function POST(request: NextRequest) {
 
       await likeOnComment.save()
     }
+
+    // Send notification to the comment owner
+
+    const notification = new Notification({
+      userId: comment.userId,
+      title: 'Comment Reply Like',
+      message: `${tokenData.username} liked your comment: "${comment.content.slice(0, 20)}..."`,
+      read: false,
+      readAt: null,
+      url: `/post/${comment.postId}`,
+    })
 
     return NextResponse.json({ status: 200, message: 'Like added successfully' })
   } catch (error: any) {

@@ -6,7 +6,7 @@ import axios from 'axios'
 import { useState } from 'react'
 
 export default function LikePage() {
-  const postId = '66f258800a11405088989155'
+  const postId = '66f2e42e108a3040e088d114'
   const [text, setText] = useState('Text')
 
   async function getPost(postId: string) {

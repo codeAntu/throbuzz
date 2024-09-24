@@ -143,9 +143,11 @@ export async function POST(request: NextRequest) {
       title: 'User verified',
       message: 'welcome to the Throbuzz , your account is verified',
       read: false,
-      readAt: new Date(),
+      readAt: null,
       url: '',
     })
+
+    await notification.save()
 
     return response
   } catch (error: any) {

@@ -1,4 +1,5 @@
 import { connect } from '@/dbConfig/dbConfig'
+import Notification from '@/models/notificationModel'
 import User from '@/models/userModel'
 import { parseJson } from '@/utils/utils'
 import bcryptjs from 'bcryptjs'
@@ -126,8 +127,18 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
     })
 
-    // create a notification that user has logged in that device
+    const userAgent = request.headers.get('user-agent') || 'Unknown device'
 
+    const notification = new Notification({
+      userId: user._id,
+      title: 'User logged in',
+      message: `User has logged in from device: ${userAgent}`,
+      read: false,
+      readAt: new Date(),
+      url: '',
+    })
+
+    await notification.save()
     console.log('token', token)
 
     return response

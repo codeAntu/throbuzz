@@ -2,6 +2,7 @@ import { connect } from '@/dbConfig/dbConfig'
 import { TokenDataT } from '@/lib/types'
 import Comment from '@/models/commentModel' // Ensure Comment model is imported
 import CommentReply from '@/models/commentReplyModel'
+import Notification from '@/models/notificationModel'
 import Post from '@/models/postModel'
 import User from '@/models/userModel'
 import jwt from 'jsonwebtoken'
@@ -50,6 +51,17 @@ export async function POST(request: NextRequest) {
 
     await Comment.findByIdAndUpdate(commentId, { $inc: { comments: 1 } }) // Increment the comment count
     await Post.findByIdAndUpdate(postId, { $inc: { comments: 1 } }) // Increment the comment count
+
+    // Send notification to the comment owner
+
+    const notification = new Notification({
+      userId: comment.userId,
+      title: 'Comment Reply',
+      message: `${tokenData.username} replied to your comment: "${comment.content.slice(0, 20)}..."`,
+      read: false,
+      readAt: null,
+      url: `/post/${postId}`,
+    })
 
     return NextResponse.json({ message: 'Comment reply added successfully' }, { status: 200 })
   } catch (error: any) {

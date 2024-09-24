@@ -1,6 +1,7 @@
 import { connect } from '@/dbConfig/dbConfig'
 import { TokenDataT } from '@/lib/types'
 import Like from '@/models/likeModel'
+import Notification from '@/models/notificationModel'
 import Post from '@/models/postModel'
 import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
@@ -36,6 +37,21 @@ export async function POST(request: NextRequest) {
       }
       await Like.create({ postId, userId, reaction })
     }
+
+    // Send notification to the post owner
+
+    console.log('post.userId', post.userId)
+
+    const notification = new Notification({
+      userId: post.userId,
+      title: 'Like',
+      message: `${tokenData.username} liked your post: "${post.text.slice(0, 20)}..."`,
+      read: false,
+      readAt: null,
+      url: `/post/${postId}`,
+    })
+
+    await notification.save()
 
     return NextResponse.json({ status: 200, message: 'Like added successfully' })
   } catch (error: any) {
