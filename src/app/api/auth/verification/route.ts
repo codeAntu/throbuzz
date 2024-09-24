@@ -5,6 +5,7 @@ import { title } from 'process'
 import { ResponseT } from '@/lib/types'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
+import Notification from '@/models/notificationModel'
 
 const userLoginValid = z
   .object({
@@ -135,7 +136,16 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
     })
 
-    console.log('token', token)
+    // notification
+
+    const notification = new Notification({
+      userId: user._id,
+      title: 'User verified',
+      message: 'welcome to the Throbuzz , your account is verified',
+      read: false,
+      readAt: new Date(),
+      url: '',
+    })
 
     return response
   } catch (error: any) {

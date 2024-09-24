@@ -126,6 +126,8 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
     })
 
+    // create a notification that user has logged in that device
+
     console.log('token', token)
 
     return response
