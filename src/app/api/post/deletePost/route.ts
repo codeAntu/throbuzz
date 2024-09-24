@@ -14,24 +14,10 @@ export async function POST(request: NextRequest) {
     const tokenData = jwt.decode(token) as TokenDataT
 
     if (!tokenData) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        {
-          status: 401,
-        },
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const post = await Post.findByIdAndDelete(postId)
-
-    if (!post) {
-      return NextResponse.json(
-        { error: 'Post not found' },
-        {
-          status: 404,
-        },
-      )
-    }
+    const userId = tokenData.id
 
     return NextResponse.json({ status: 200, message: 'Post deleted successfully' })
   } catch (error: any) {

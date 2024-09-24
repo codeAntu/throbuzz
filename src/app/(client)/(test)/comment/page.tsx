@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 export default function CommentPage() {
   const [content, setContent] = useState('')
-  const postId = '66f10efe0fcaad9981af8553'
+  const postId = '66f258800a11405088989155'
   const commentId = '66edb30ea16250bcfa06e392'
 
   async function handleComment(content: string, postId: string) {
@@ -25,7 +25,7 @@ export default function CommentPage() {
   async function handleDeleteComment(commentId: string) {
     try {
       const response = await axios.post('/api/activity/comment/deleteComment', {
-        commentId: '66f10f2d0fcaad9981af8556',
+        commentId: '66edb30ea16250bcfa06e392',
       })
       console.log(response.data)
     } catch (error: any) {
@@ -37,7 +37,7 @@ export default function CommentPage() {
     try {
       const response = await axios.post('/api/activity/comment/editComment', {
         content,
-        commentId,
+        commentId: '66f17d3814fc5db0aef96c1d',
       })
       console.log(response.data)
     } catch (error: any) {

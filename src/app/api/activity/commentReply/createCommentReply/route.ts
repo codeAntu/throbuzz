@@ -37,7 +37,6 @@ export async function POST(request: NextRequest) {
     if (!comment) {
       return NextResponse.json({ error: 'Comment not found' }, { status: 404 })
     }
-
     const postId = comment.postId
 
     const commentReply = new CommentReply({

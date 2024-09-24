@@ -11,7 +11,7 @@ export default function EditPostPage() {
   const [images, setImages] = useState<FileList | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const postId = '66ed34c0203ebd6aa6304ae7'
+  const postId = '66f17f81ff2e6862a6700710'
   const [postImages, setPostImages] = useState<string[]>([])
 
   async function getPost(postId: string) {
@@ -98,7 +98,7 @@ export default function EditPostPage() {
         title='Load Post '
       />
 
-      {/* <Button
+      <Button
         className='w-full'
         onClick={() => {
           console.log('clicked')
@@ -118,7 +118,7 @@ export default function EditPostPage() {
           deletePost('66ed1a49c55a10fe7d426dab')
         }}
         title='Delete Post'
-      /> */}
+      />
     </Screen>
   )
 }

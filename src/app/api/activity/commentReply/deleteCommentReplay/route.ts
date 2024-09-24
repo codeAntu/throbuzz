@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken'
 import CommentReply from '@/models/commentReplyModel'
 import Comment from '@/models/commentModel'
 import Post from '@/models/postModel'
+import LikeOnCommentReply from '@/models/likeOnCommentReply'
 
 connect()
 
@@ -50,7 +51,9 @@ export async function POST(request: NextRequest) {
     const postId = comment?.postId
     await Post.findByIdAndUpdate(postId, { $inc: { comments: -1 } }) // Increment the comment count
 
-    //  delete the comment reply
+    // delete all the likes on the comment reply
+
+    const likeOnCommentReply = await LikeOnCommentReply.deleteMany({ commentReplyId })
 
     await CommentReply.findByIdAndDelete(commentReplyId)
 

@@ -26,27 +26,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
+    const userId = tokenData.id
+
     const validData = dataZ.safeParse(body)
 
     if (!validData.success) {
       return NextResponse.json({ error: validData.error }, { status: 400 })
     }
-
     const { text, visibility, postId } = validData.data
 
-    console.log({ text, visibility, postId })
-
-    const post = await Post.findOneAndUpdate(
-      { _id: postId },
-      {
-        text,
-        visibility,
-      },
-    )
+    const post = await Post.findById(postId)
 
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
+
+    if (post.user.toString() !== userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    if (text) {
+      post.text = text
+    }
+
+    if (visibility) {
+      post.visibility = visibility
+    }
+
+    await post.save()
 
     return NextResponse.json({ status: 200, message: 'Post updated successfully' })
   } catch (error: any) {
