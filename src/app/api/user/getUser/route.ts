@@ -42,8 +42,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
       about: user.about,
       profilePic: user.profilePic.imageUrl,
       coverPic: user.coverPic.imageUrl,
-      followers: user.followers,
-      following: user.following,
+      followers: user.friendsCount + user.friendRequestsCount,
+      following: user.friendsCount + user.friendRequestSentCount,
       isMe: tokenData.id === user._id.toString(),
       friendStatus,
     }

@@ -1,7 +1,9 @@
 import { connect } from '@/dbConfig/dbConfig'
+import { TokenDataT } from '@/lib/types'
 import { sendEmail } from '@/mail/mailer'
 import EmailComponent from '@/mail/verifyAccountTemplate'
 import User from '@/models/userModel'
+import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
@@ -18,6 +20,13 @@ connect()
 
 export async function POST(request: NextRequest) {
   try {
+    const token = (await request.cookies.get('token')?.value) || ''
+    const tokenData = jwt.decode(token) as TokenDataT
+
+    if (tokenData && tokenData.isVerified) {
+      return NextResponse.json({ error: 'User already logged in' }, { status: 400 })
+    }
+
     const parseResult = dataZ.safeParse(await request.json())
 
     if (!parseResult.success) {
@@ -63,7 +72,22 @@ export async function POST(request: NextRequest) {
       html: htmlToSend,
     })
 
-    return NextResponse.json({ message: 'Verification code sent to your email' }, { status: 200 })
+    const response = NextResponse.json({ message: 'Verification code sent to your email' }, { status: 200 })
+
+    const tokenDataNew = {
+      email: user.email,
+      username: user.username,
+      id: user._id,
+      isVerified: false,
+    }
+
+    const newToken = jwt.sign(tokenDataNew, process.env.JWT_SECRET as string, { expiresIn: '30m' })
+
+    response.cookies.set('token', newToken, {
+      httpOnly: true,
+    })
+
+    return response
   } catch (error: any) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
