@@ -39,6 +39,7 @@ export default function UserProfile({ params }: { params: any }) {
 
   useEffect(() => {
     getUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function getUser() {
