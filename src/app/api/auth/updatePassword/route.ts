@@ -52,6 +52,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Incorrect password' }, { status: 400 })
     }
 
+    if (password === newPassword) {
+      return NextResponse.json({ error: 'New password cannot be the same as the old password' }, { status: 400 })
+    }
+
     // hash new password
     const salt = await bcryptjs.genSalt(10)
     const hashedPassword = await bcryptjs.hash(newPassword, salt)

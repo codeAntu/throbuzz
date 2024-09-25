@@ -72,9 +72,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Passwords do not match' }, { status: 400 })
     }
 
-    const isPasswordCorrect = await bcryptjs.compare(newPassword, user.password)
+    const isSamePassword = await bcryptjs.compare(newPassword, user.password)
 
-    if (isPasswordCorrect) {
+    if (isSamePassword) {
       return NextResponse.json({ error: 'New password cannot be the same as the old password' }, { status: 400 })
     }
 

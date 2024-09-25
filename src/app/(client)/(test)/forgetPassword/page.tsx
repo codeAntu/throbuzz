@@ -5,7 +5,7 @@ import { Screen } from '@/components/Screen'
 import axios from 'axios'
 
 export default function ForgetPasswordPage() {
-  const password = '123456789'
+  const password = '12345678'
 
   async function forgetPassword() {
     try {
@@ -22,9 +22,23 @@ export default function ForgetPasswordPage() {
   async function forgetPasswordVerify() {
     try {
       const response = await axios.post('/api/auth/forgetPasswordVerify', {
-        OTP: '727935',
+        OTP: '411714',
         newPassword: password,
         confirmPassword: password,
+      })
+
+      console.log(response.data)
+    } catch (error: any) {
+      console.log(error)
+    }
+  }
+
+  async function updatePassword() {
+    try {
+      const response = await axios.post('/api/auth/updatePassword', {
+        password: password,
+        newPassword: 'asdfghjk',
+        confirmPassword: 'asdfghjk',
       })
 
       console.log(response.data)
@@ -40,6 +54,7 @@ export default function ForgetPasswordPage() {
       </div>
       <Button onClick={forgetPassword} title='Forget Password' />
       <Button onClick={forgetPasswordVerify} title='Forget Password Verify' />
+      <Button onClick={updatePassword} title='Update Password' />
     </Screen>
   )
 }
