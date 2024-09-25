@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    if (!tokenData) {
+    if (!tokenData || !tokenData.isVerified) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -40,6 +40,16 @@ export async function POST(request: NextRequest) {
     }
     const postId = comment.postId
 
+    const post = await Post.findById(postId)
+
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    if (post.visibility === 'private' && post.userId.toString() !== userId) {
+      return NextResponse.json({ error: 'The post is private' }, { status: 401 })
+    }
+
     const commentReply = new CommentReply({
       userId,
       commentId,
@@ -49,8 +59,11 @@ export async function POST(request: NextRequest) {
 
     await commentReply.save()
 
-    await Comment.findByIdAndUpdate(commentId, { $inc: { comments: 1 } }) // Increment the comment count
-    await Post.findByIdAndUpdate(postId, { $inc: { comments: 1 } }) // Increment the comment count
+    comment.comments = comment.comments + 1
+    await comment.save()
+
+    post.comments = post.comments + 1
+    await post.save()
 
     // Send notification to the comment owner
 

@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    if (!tokenData) {
+    if (!tokenData || !tokenData.isVerified) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
@@ -28,20 +28,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Comment not found' }, { status: 404 })
     }
 
+    const postId = comment.postId
+
+    const post = await Post.findById(postId)
+
+    if (!post) {
+      return NextResponse.json({ message: 'Post not found' }, { status: 404 })
+    }
+
+    if (post.visibility === 'private' && post.userId.toString() !== userId) {
+      return NextResponse.json({ error: 'The post is Privet' }, { status: 401 })
+    }
+
     if (comment.userId.toString() !== userId) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
-
-    const postId = comment.postId
-
-    // delete all the comment replies on that comment
 
     await CommentReply.deleteMany({ commentId })
 
     await LikeOnComment.deleteMany({ commentId })
 
     // update the comments count on the post
-    await Post.findByIdAndUpdate(postId, { $inc: { comments: -(comment.comments + 1) } })
+    post.comments = post.comments - 1
+    await post.save()
 
     // delete the comment
     await Comment.findByIdAndDelete(commentId)

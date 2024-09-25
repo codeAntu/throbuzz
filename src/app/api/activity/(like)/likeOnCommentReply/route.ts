@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken'
 import CommentReply from '@/models/commentReplyModel'
 import LikeOnCommentReply from '@/models/likeOnCommentReply'
 import Notification from '@/models/notificationModel'
+import Post from '@/models/postModel'
 
 connect()
 
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    if (!tokenData) {
+    if (!tokenData || !tokenData.isVerified) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     const userId = tokenData.id
@@ -36,6 +37,18 @@ export async function POST(request: NextRequest) {
 
     if (!comment) {
       return NextResponse.json({ error: 'Comment not found' }, { status: 404 })
+    }
+
+    const postId = comment.postId
+
+    const post = await Post.findById(postId)
+
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    if (post.visibility === 'private' && post.userId.toString() !== userId) {
+      return NextResponse.json({ error: 'The post is private' }, { status: 401 })
     }
 
     const like = await LikeOnCommentReply.findOne({ commentReplyId, userId })

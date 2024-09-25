@@ -13,6 +13,8 @@ export async function POST(request: NextRequest) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
+    // check if the post is public or private
+
     if (!tokenData) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

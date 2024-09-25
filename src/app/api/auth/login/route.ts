@@ -15,8 +15,7 @@ const userLoginValid = z
       .trim()
       .min(3, { message: 'Email must be at least 5 characters long' })
       .max(100, { message: 'Email must be at most 100 characters long' })
-      .toLowerCase()
-      .optional(),
+      .toLowerCase(),
     password: z
       .string({ required_error: 'Password is required' })
       .trim()
@@ -65,7 +64,10 @@ export async function POST(request: NextRequest) {
     // todo :  check if user exists
 
     const user = await User.findOne({
-      $or: [{ email }, { username, isVerified: true }],
+      $or: [
+        { email, isVerified: true },
+        { username, isVerified: true },
+      ],
     })
 
     console.log('user', user)
@@ -141,7 +143,9 @@ export async function POST(request: NextRequest) {
     await notification.save()
 
     // update newNotificationsCount for user
-    await User.findByIdAndUpdate(user._id, { $inc: { newNotificationsCount: 1 } })
+
+    user.newNotificationsCount += 1
+    await user.save()
 
     return response
   } catch (error: any) {

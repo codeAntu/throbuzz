@@ -2,6 +2,7 @@ import { connect } from '@/dbConfig/dbConfig'
 import { TokenDataT } from '@/lib/types'
 import CommentReply from '@/models/commentReplyModel'
 import LikeOnCommentReply from '@/models/likeOnCommentReply'
+import Post from '@/models/postModel'
 import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    if (!tokenData) {
+    if (!tokenData || !tokenData.isVerified) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -35,6 +36,16 @@ export async function POST(request: NextRequest) {
 
     if (!likeOnCommentReply) {
       return NextResponse.json({ error: 'Like on Comment Reply not found' }, { status: 404 })
+    }
+
+    const post = await Post.findById(likeOnCommentReply.postId)
+
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    if (post.visibility === 'private' && post.userId.toString() !== userId) {
+      return NextResponse.json({ error: 'The post is private' }, { status: 401 })
     }
 
     if (likeOnCommentReply.userId.toString() !== userId) {

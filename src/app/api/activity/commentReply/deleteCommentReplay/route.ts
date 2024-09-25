@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    if (!tokenData) {
+    if (!tokenData || !tokenData.isVerified) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -39,7 +39,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Comment reply not found' }, { status: 404 })
     }
 
-    console.log(commentReply.userId.toString())
+    const postId = commentReply.postId
+
+    const post = await Post.findById(postId)
+
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    if (post.visibility === 'private' && post.userId.toString() !== userId) {
+      return NextResponse.json({ error: 'The post is private' }, { status: 401 })
+    }
 
     if (commentReply.userId.toString() !== userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -48,10 +58,9 @@ export async function POST(request: NextRequest) {
     const commentId = commentReply.commentId
 
     const comment = await Comment.findByIdAndUpdate(commentId, { $inc: { comments: -1 } })
-    const postId = comment?.postId
-    await Post.findByIdAndUpdate(postId, { $inc: { comments: -1 } }) // Increment the comment count
 
-    // delete all the likes on the comment reply
+    const postComments = post.comments - 1
+    await post.save()
 
     const likeOnCommentReply = await LikeOnCommentReply.deleteMany({ commentReplyId })
 

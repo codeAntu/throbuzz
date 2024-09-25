@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import Comment from '@/models/commentModel'
 import z from 'zod'
+import Post from '@/models/postModel'
 
 connect()
 
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    if (!tokenData) {
+    if (!tokenData || !tokenData.isVerified) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
@@ -35,6 +36,18 @@ export async function POST(request: NextRequest) {
 
     if (!comment) {
       return NextResponse.json({ message: 'Comment not found' }, { status: 404 })
+    }
+
+    const postId = comment.postId
+
+    const post = await Post.findById(postId)
+
+    if (!post) {
+      return NextResponse.json({ message: 'Post not found' }, { status: 404 })
+    }
+
+    if (post.visibility === 'private' && post.userId.toString() !== userId) {
+      return NextResponse.json({ error: 'The post is Privet' }, { status: 401 })
     }
 
     if (comment.userId.toString() !== userId) {

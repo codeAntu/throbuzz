@@ -11,7 +11,7 @@ export default function EditPostPage() {
   const [images, setImages] = useState<FileList | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const postId = '66f258800a11405088989155'
+  const postId = '66f2e42e108a3040e088d114'
   const [postImages, setPostImages] = useState<string[]>([])
 
   async function getPost(postId: string) {

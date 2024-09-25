@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    if (!tokenData) {
+    if (!tokenData || !tokenData.isVerified) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -24,6 +24,12 @@ export async function POST(request: NextRequest) {
 
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    // if the post is private
+
+    if (post.visibility === 'private' && post.userId.toString() !== userId) {
+      return NextResponse.json({ error: 'The post id Privet' }, { status: 401 })
     }
 
     const like = await Like.findById({ postId })
