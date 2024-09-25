@@ -5,16 +5,14 @@ import Continue from '@/components/Continue'
 import Error from '@/components/Error'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
-import Input from '@/components/Input'
 import OTPInput from '@/components/OTPInput'
 import { Screen } from '@/components/Screen'
 import TAndC from '@/components/T&C'
 import useUserStore from '@/store/store'
 import axios from 'axios'
 import { LoaderCircle, LogIn } from 'lucide-react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
-// import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export default function Verification() {
   const router = useRouter()
@@ -23,7 +21,7 @@ export default function Verification() {
   const [error, setError] = useState('')
   const setSavedUser = useUserStore((state: any) => state.setSavedUser)
 
-  async function onVerify() {
+  async function onVerify(): Promise<void> {
     if (!otp) {
       setError('Please fill all the fields')
       return
@@ -43,15 +41,16 @@ export default function Verification() {
   return (
     <Screen className='justify-center gap-12 pt-8'>
       <Hero />
-      <div className='flex flex-col gap-7'>
+      <div className='flex flex-col gap-7 md:gap-12'>
         <div>
           <h1 className='text-center text-lg font-semibold text-black/70 dark:text-white/70'>Verify your email</h1>
           <p className='text-center text-xs text-black/40 dark:text-white/40'>
             We have sent an OTP to your email address .
           </p>
         </div>
-
-        <OTPInput length={6} getOTp={(otp: string) => setOtp(otp)} />
+        <div className='px-4'>
+          <OTPInput length={6} getOTp={(otp: string) => setOtp(otp)} />
+        </div>
 
         {error && <Error error={error} />}
 

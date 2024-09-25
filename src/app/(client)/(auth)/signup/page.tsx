@@ -32,6 +32,7 @@ export default function SignUpPage() {
       checkUsername()
     }, 300)
     return () => clearTimeout(timeout)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username])
 
   useEffect(() => {
@@ -63,6 +64,7 @@ export default function SignUpPage() {
     }
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   async function checkUsername() {
     if (username.length < 3) {
       setIsUsernameAvailable(false)
@@ -146,27 +148,7 @@ export default function SignUpPage() {
             name='password'
             placeholder='Enter your password'
             leftIcon={<Ic Icon={KeyRound} />}
-            rightIcon={
-              hidePassword ? (
-                <Ic
-                  Icon={Eye}
-                  onClick={() => {
-                    setHidePassword(false)
-                    focusPassword()
-                  }}
-                  className='cursor-pointer'
-                />
-              ) : (
-                <Ic
-                  Icon={EyeOff}
-                  onClick={() => {
-                    setHidePassword(true)
-                    focusPassword()
-                  }}
-                  className='cursor-pointer'
-                />
-              )
-            }
+            rightIcon={togglePasswordVisibility(hidePassword, setHidePassword, focusPassword)}
             value={user.password}
             onChange={(e: any) => {
               setUser({ ...user, password: e.target.value })
@@ -176,9 +158,7 @@ export default function SignUpPage() {
         </div>
         <Button
           title='Create new account'
-          onClick={() => {
-            onSignUp()
-          }}
+          onClick={onSignUp}
           leftIcon={
             loading ? (
               <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
@@ -198,5 +178,30 @@ export default function SignUpPage() {
         <TAndC />
       </div>
     </Screen>
+  )
+}
+function togglePasswordVisibility(
+  hidePassword: boolean,
+  setHidePassword: React.Dispatch<React.SetStateAction<boolean>>,
+  focusPassword: () => void,
+): React.ReactNode {
+  return hidePassword ? (
+    <Ic
+      Icon={Eye}
+      onClick={() => {
+        setHidePassword(false)
+        focusPassword()
+      }}
+      className='cursor-pointer'
+    />
+  ) : (
+    <Ic
+      Icon={EyeOff}
+      onClick={() => {
+        setHidePassword(true)
+        focusPassword()
+      }}
+      className='cursor-pointer'
+    />
   )
 }

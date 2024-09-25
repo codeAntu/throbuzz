@@ -9,19 +9,15 @@ import TAndC from '@/components/T&C'
 import axios from 'axios'
 import { Eye, EyeOff, KeyRound, LoaderCircle, LogIn, Mail } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { SetStateAction, useEffect, useRef, useState } from 'react'
 import Input from '@/components/Input'
 import Error from '@/components/Error'
 import useUserStore from '@/store/store'
 
 export default function Login() {
   const router = useRouter()
-
   const savedUser = useUserStore((state) => state.savedUser)
   const setSavedUser = useUserStore((state) => state.setSavedUser)
-
-  console.log('savedUser', savedUser)
-
   const [user, setUser] = useState({
     searchKey: '',
     password: '',
@@ -86,27 +82,7 @@ export default function Login() {
             name='password'
             placeholder='Enter your password'
             leftIcon={<Ic Icon={KeyRound} />}
-            rightIcon={
-              hidePassword ? (
-                <Ic
-                  Icon={Eye}
-                  onClick={() => {
-                    setHidePassword(false)
-                    focusPassword()
-                  }}
-                  className='cursor-pointer'
-                />
-              ) : (
-                <Ic
-                  Icon={EyeOff}
-                  onClick={() => {
-                    setHidePassword(true)
-                    focusPassword()
-                  }}
-                  className='cursor-pointer'
-                />
-              )
-            }
+            rightIcon={togglePasswordVisibility(hidePassword, setHidePassword, focusPassword)}
             value={user.password}
             onChange={(e: any) => {
               setUser({ ...user, password: e.target.value })
@@ -141,5 +117,30 @@ export default function Login() {
         <TAndC />
       </div>
     </Screen>
+  )
+}
+function togglePasswordVisibility(
+  hidePassword: boolean,
+  setHidePassword: { (value: SetStateAction<boolean>): void; (arg0: boolean): void },
+  focusPassword: () => void,
+) {
+  return hidePassword ? (
+    <Ic
+      Icon={Eye}
+      onClick={() => {
+        setHidePassword(false)
+        focusPassword()
+      }}
+      className='cursor-pointer'
+    />
+  ) : (
+    <Ic
+      Icon={EyeOff}
+      onClick={() => {
+        setHidePassword(true)
+        focusPassword()
+      }}
+      className='cursor-pointer'
+    />
   )
 }
