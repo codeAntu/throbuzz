@@ -23,7 +23,7 @@ export function Button({ className, children, variant = 'accent', ...rest }: but
     <motion.button
       whileTap={{ scale: 0.95 }}
       className={cn(
-        'flex items-center justify-center gap-2.5 rounded-[14px] text-sm font-semibold duration-100 hover:scale-[0.99] ' +
+        'flex select-none items-center justify-center gap-2.5 rounded-[14px] text-sm font-semibold duration-100 hover:scale-[0.99] ' +
           ' ' +
           variants[variant] +
           ' ' +

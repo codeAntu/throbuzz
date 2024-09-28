@@ -2,35 +2,39 @@
 'use client'
 import { Button } from '@/components/Button'
 import { Screen0 } from '@/components/Screen'
+import { nFormatter } from '@/lib/utils'
 import {
   Calendar,
   ChevronLeft,
+  Ellipsis,
   EllipsisVertical,
-  Github,
+  GithubIcon,
   Heart,
   Instagram,
   Link,
-  Linkedin,
+  LinkedinIcon,
   Mail,
   MapPin,
+  MessageCircleMore,
   MessageSquareText,
+  Pencil,
   Phone,
   Twitter,
+  UserPlus,
 } from 'lucide-react'
+import { useState } from 'react'
 
-interface UserResponseT {
-  _id: string
-  name: string
-  username: string
-  bio: string
-  about: string
-  profilePic: string
-  coverPic: string
-  followers: number
-  following: number
-  isMe: boolean
+const Icons = {
+  instagram: Instagram,
+  twitter: Twitter,
+  mail: Mail,
+  phone: Phone,
+  mapPin: MapPin,
+  github: GithubIcon, // Add appropriate icons for these keys
+  linkedin: LinkedinIcon,
+  website: Link,
+  dob: Calendar,
 }
-
 export default function UserProfile({
   params,
 }: {
@@ -60,96 +64,124 @@ function Header() {
       </Button>
       <div className='text-[15px] font-semibold'>Profile</div>
       <Button variant='icon'>
-        <EllipsisVertical size={28} />
+        <Ellipsis size={28} />
       </Button>
     </div>
   )
 }
 
 function Profile() {
+  const user: User = {
+    _id: '1',
+    name: 'Ananta Karmakar',
+    username: 'codeAntu',
+    bio: 'Frontend Developer | React & Next.js | Freelancer | JS | Competitive Programmer',
+    profilePic: '/images/profile.jpg',
+    followers: 5400000,
+    following: 2000,
+    posts: 560,
+    isMe: false,
+    about: {
+      mail: 'codeantu@gmailcom',
+      phone: '9800211400',
+      mapPin: 'Mogra , Bankura',
+      instagram: '@codeAntu',
+      twitter: '@codeAntu',
+      github: '@codeAntu',
+      linkedin: '@codeAntu',
+      website: '@codeAntu',
+      dob: '11 October 2003',
+    },
+  }
+
+  interface User {
+    _id: string
+    name: string
+    username: string
+    bio: string
+    profilePic: string
+    followers: number
+    following: number
+    posts: number
+    isMe: boolean
+    about: Record<string, string>
+  }
+
+  const [showMore, setShowMore] = useState(false)
+
   return (
     <div className='flex flex-col gap-5 py-4'>
       <div className='flex w-full items-center gap-5'>
         <div>
-          <img src='/images/profile.jpg' alt='' className='w-28 rounded-full' />
+          <img src={user.profilePic} alt='' className='w-28 rounded-full' />
         </div>
         <div className='grid flex-grow gap-5 py-4'>
           <div>
-            <div className='line-clamp-1 text-base font-semibold leading-none'>Ananta Karmakar</div>
-            <div className='line-clamp-1 text-sm'>@codeAntu</div>
+            <div className='line-clamp-1 text-base font-semibold leading-none'>{user.name}</div>
+            <div className='line-clamp-1 text-sm'>{user.username}</div>
           </div>
           <div className='flex w-full items-center gap-8 text-center'>
             <div>
-              <div className='text-sm font-semibold leading-tight'>2.3k</div>
+              <div className='text-sm font-semibold leading-tight'>{nFormatter(user.followers)}</div>
               <div className='text-xs text-neutral-500'>Posts</div>
             </div>
             <div>
-              <div className='text-sm font-semibold leading-tight'>5.4k</div>
+              <div className='text-sm font-semibold leading-tight'>{nFormatter(user.following)}</div>
               <div className='text-xs text-neutral-500'>Followers</div>
             </div>
             <div>
-              <div className='text-sm font-semibold leading-tight'>2k</div>
+              <div className='text-sm font-semibold leading-tight'>{nFormatter(user.posts)}</div>
               <div className='text-xs text-neutral-500'>Following</div>
             </div>
           </div>
         </div>
       </div>
       <div className='flex gap-4'>
-        {/* <Button className='border-2 border-black bg-black py-3 font-medium text-white'>Edit Profile</Button> */}
-        <Button className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'>
-          Follow
-        </Button>
-        <Button variant='outline' className='border-2 border-black py-2.5 font-medium text-black'>
-          Message
-        </Button>
+        {user.isMe ? (
+          <Button variant='filled' className='border-2 border-black bg-black py-3.5 font-medium text-white'>
+            <Pencil size={16} className='' />
+            Edit Profile
+          </Button>
+        ) : (
+          <>
+            <Button className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'>
+              <UserPlus size={18} className='' />
+              <span>Follow</span>
+            </Button>
+            <Button variant='outline' className='border-2 border-black py-2.5 font-medium text-black'>
+              <MessageCircleMore size={18} className='' />
+              <span>Message</span>
+            </Button>
+          </>
+        )}
       </div>
       <div className='space-y-1'>
         <div className='text-base font-semibold'>About</div>
         <div className='space-y-2'>
-          <div className='text-[13px]'>
-            Frontend Developer | React & Next.js | Freelancer | JS | Competitive Programmer
-          </div>
-          <div className='flex items-center gap-2'>
-            <Mail size={20} className='text-black' />
-            <p className='text-[13px] text-black/80'>codeAntu@gmail.com</p>
-          </div>
-          <div className='flex items-center gap-2'>
-            <Phone size={20} className='text-black' />
-            <p className='text-xs'>9800211400</p>
-          </div>
-          <div className='flex items-center gap-2'>
-            <MapPin size={20} className='text-black' />
-            <p className='text-xs'>Mogra , Bankura </p>
-          </div>
-          <div className='flex items-center gap-2'>
-            <Instagram size={20} className='text-black' />
-            <p className='text-xs'>@codeAntu</p>
-          </div>
-          <div className='flex items-center gap-2'>
-            <Twitter size={20} className='text-black' />
-            <p className='text-xs'>@codeAntu</p>
-          </div>{' '}
-          {/* <div className='flex items-center gap-2'>
-            <Linkedin size={20} className='text-black' />
-            <p className='text-xs'>@codeAntu</p>
-          </div>{' '}
-          <div className='flex items-center gap-2'>
-            <Github size={20} className='text-black' />
-            <p className='text-xs'>@codeAntu</p>
-          </div>{' '}
-          <div className='flex items-center gap-2'>
-            <Link size={20} className='text-black' />
-            <p className='text-xs'>@codeAntu</p>
-          </div>
-          <div className='flex items-center gap-2'>
-            <Calendar size={20} className='text-black' />
-            <p className='text-xs'>11 October 2003</p>
-          </div> */}
+          <div className='text-[13px]'>{user.bio}</div>
+
+          {user.about &&
+            Object.entries(user.about).map(([key, value], index) => {
+              if (!showMore && index >= 4) return null
+              const Icon = Icons[key as keyof typeof Icons]
+              return (
+                <div key={key} className='flex items-center gap-3'>
+                  {Icon && <Icon size={16} className='text-black dark:text-white' />}
+                  <p className='text-xs font-medium'>{value}</p>
+                </div>
+              )
+            })}
+          {!showMore && Object.entries(user.about).length > 4 && (
+            <button onClick={() => setShowMore(true)} className='px-0.5 text-xs text-accent'>
+              More...
+            </button>
+          )}
         </div>
       </div>
     </div>
   )
 }
+
 function Posts() {
   return (
     <>
