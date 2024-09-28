@@ -7,6 +7,8 @@ interface UserT extends Document {
   password: string
   isVerified: boolean
   isAdmin: boolean
+  bio: string
+  about: string
   phone: string
   birthday: Date
   facebook: string
@@ -17,6 +19,10 @@ interface UserT extends Document {
   website: string
   skills: string
   interests: string
+  isBirthdayPrivate: boolean
+  isEmailPrivate: boolean
+  isPhonePrivate: boolean
+  isProfilePrivate: boolean
   forgotPassword: string
   forgotPasswordExpires: Date
   verificationCode: string
@@ -29,8 +35,6 @@ interface UserT extends Document {
     imageUrl: string
     publicId: string
   }
-  bio: string
-  about: string
   friendsCount: number
   friendRequestSentCount: number
   friendRequestsCount: number
