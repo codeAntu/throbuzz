@@ -56,9 +56,9 @@ export default function CommentPage() {
         value={content}
         onChange={(e) => setContent(e.target.value)}
       ></textarea>
-      <Button onClick={() => handleComment(content, postId)} title='Comment' />
-      <Button onClick={() => handleDeleteComment(commentId)} title='Delete Comment' />
-      <Button onClick={() => handleEditComment(content, commentId)} title='Edit Comment' />
+      {/* <Button onClick={() => handleComment(content, postId)} title='Comment' /> */}
+      {/* <Button onClick={() => handleDeleteComment(commentId)} title='Delete Comment' /> */}
+      {/* <Button onClick={() => handleEditComment(content, commentId)} title='Edit Comment' /> */}
     </Screen>
   )
 }

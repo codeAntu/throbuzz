@@ -201,7 +201,7 @@ export default function Edit() {
             {error && <Error error={error} />}
           </div>
         </div>
-        <Button
+        {/* <Button
           title='Save'
           className='w-full'
           onClick={() => updateUser()}
@@ -215,7 +215,7 @@ export default function Edit() {
           disabled={loading}
         >
           Save
-        </Button>
+        </Button> */}
       </div>
       {/* <Button title='Save' onClick={() => getMe()} /> */}
     </Screen>

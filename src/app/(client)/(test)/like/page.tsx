@@ -51,16 +51,16 @@ export default function LikePage() {
         <h1>Like Page</h1>
       </div>
       {text}
-      <Button onClick={() => likePost(postId)} title='Like' />
-      <Button onClick={() => unLikePost(postId)} title='Unlike' />
-      <Button
+      {/* <Button onClick={() => likePost(postId)} title='Like' /> */}
+      {/* <Button onClick={() => unLikePost(postId)} title='Unlike' /> */}
+      {/* <Button
         className='w-full'
         onClick={() => {
           console.log('clicked')
           getPost(postId)
         }}
         title='Load Post '
-      />
+      /> */}
     </Screen>
   )
 }

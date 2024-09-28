@@ -52,9 +52,9 @@ export default function ForgetPasswordPage() {
       <div>
         <h1>Forget Password</h1>
       </div>
-      <Button onClick={forgetPassword} title='Forget Password' />
-      <Button onClick={forgetPasswordVerify} title='Forget Password Verify' />
-      <Button onClick={updatePassword} title='Update Password' />
+      {/* <Button onClick={forgetPassword} title='Forget Password' /> */}
+      {/* <Button onClick={forgetPasswordVerify} title='Forget Password Verify' /> */}
+      {/* <Button onClick={updatePassword} title='Update Password' /> */}
     </Screen>
   )
 }

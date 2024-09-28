@@ -31,8 +31,8 @@ export default function Page() {
 
   return (
     <Screen>
-      <Button onClick={likeOnCommentReply} title='Like on Comment Reply'></Button>
-      <Button onClick={unLikeOnCommentReply} title='Unlike on Comment Reply'></Button>
+      {/* <Button onClick={likeOnCommentReply} title='Like on Comment Reply'></Button> */}
+      {/* <Button onClick={unLikeOnCommentReply} title='Unlike on Comment Reply'></Button> */}
     </Screen>
   )
 }

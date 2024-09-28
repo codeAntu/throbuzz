@@ -1,13 +1,11 @@
 'use client'
 
 import { Button } from '@/components/Button'
-import Continue from '@/components/Continue'
 import Error from '@/components/Error'
 import Hero from '@/components/Hero'
 import { Ic } from '@/components/Icon'
 import OTPInput from '@/components/OTPInput'
 import { Screen } from '@/components/Screen'
-import TAndC from '@/components/T&C'
 import useUserStore from '@/store/store'
 import axios from 'axios'
 import { LoaderCircle, LogIn } from 'lucide-react'
@@ -39,16 +37,16 @@ export default function Verification() {
   }
 
   return (
-    <Screen className='justify-center gap-12 pt-8'>
+    <Screen className='gap-12 pt-12'>
       <Hero />
-      <div className='flex flex-col gap-7 md:gap-12'>
+      <div className='flex flex-col gap-7 py-10 md:gap-12'>
         <div>
           <h1 className='text-center text-lg font-semibold text-black/70 dark:text-white/70'>Verify your email</h1>
           <p className='text-center text-xs text-black/40 dark:text-white/40'>
             We have sent an OTP to your email address .
           </p>
         </div>
-        <div className='px-4'>
+        <div className=''>
           <OTPInput length={6} getOTp={(otp: string) => setOtp(otp)} />
         </div>
 
@@ -59,15 +57,16 @@ export default function Verification() {
           onClick={() => {
             onVerify()
           }}
-          leftIcon={
-            loading ? (
-              <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
-            ) : (
-              <Ic Icon={LogIn} className='text-white dark:text-black' />
-            )
-          }
           disabled={loading}
-        />
+        >
+          {loading ? (
+            <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
+          ) : (
+            <Ic Icon={LogIn} className='text-white dark:text-black' />
+          )}
+          <span className=''>Verify</span>
+        </Button>
+
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Do not have an account?{'  '}
           <button
@@ -79,8 +78,8 @@ export default function Verification() {
             Sign up
           </button>
         </div>
-        <Continue />
-        <TAndC />
+        {/* <Continue /> */}
+        {/* <TAndC /> */}
       </div>
     </Screen>
   )

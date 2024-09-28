@@ -90,18 +90,14 @@ export default function Login() {
           />
           {Error && <Error error={error} />}
         </div>
-        <Button
-          title='Login'
-          onClick={() => onLogin()}
-          leftIcon={
-            loading ? (
-              <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
-            ) : (
-              <Ic Icon={LogIn} className='text-white dark:text-black' />
-            )
-          }
-          disabled={loading}
-        />
+        <Button variant='accent' title='Login' onClick={() => onLogin()} disabled={loading}>
+          {loading ? (
+            <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
+          ) : (
+            <Ic Icon={LogIn} className='text-white dark:text-black' />
+          )}
+          <span>Login</span>
+        </Button>
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Do not have an account?{'  '}
           <button

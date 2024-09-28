@@ -64,7 +64,7 @@ export default function OTPInput({ length = 6, getOTp }: { length?: number; getO
           onChange={(e) => handleOtpChange(e, i)}
           onKeyDown={(e) => handleOtpKeyDown(e, i)}
           onPaste={handlePaste}
-          className='aspect-square w-12 rounded-lg border border-black/10 text-center text-lg font-medium text-black caret-transparent'
+          className='aspect-square w-14 rounded-lg border border-black/10 text-center text-lg font-medium text-black caret-transparent dark:border-white/10 dark:bg-black dark:text-white'
         />
       ))}
     </div>

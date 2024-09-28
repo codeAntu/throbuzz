@@ -156,18 +156,14 @@ export default function SignUpPage() {
           />
           {error && <Error error={error} />}
         </div>
-        <Button
-          title='Create new account'
-          onClick={onSignUp}
-          leftIcon={
-            loading ? (
-              <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
-            ) : (
-              <Ic Icon={Sparkles} className='text-white dark:text-black' />
-            )
-          }
-          disabled={loading || !isUsernameAvailable}
-        />
+        <Button variant='accent' onClick={onSignUp} disabled={loading || !isUsernameAvailable}>
+          {loading ? (
+            <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
+          ) : (
+            <Ic Icon={Sparkles} className='text-white dark:text-black' />
+          )}
+          <span>Create new account</span>
+        </Button>
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Already have an account?{' '}
           <button className='font-semibold text-accent' onClick={() => router.push('/login')}>

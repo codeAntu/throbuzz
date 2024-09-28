@@ -23,6 +23,13 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 input[type='number'] {
-  -moz-appearance: textfield; 
-  appearance: none; 
+  -moz-appearance: textfield;
+  appearance: none;
+}
+
+/* tailwind css */
+@layer components {
+  .text-50 {
+    @apply text-gray-50;
+  }
 }
