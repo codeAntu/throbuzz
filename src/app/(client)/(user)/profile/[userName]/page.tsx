@@ -2,6 +2,7 @@
 'use client'
 import { Button } from '@/components/Button'
 import { Screen0 } from '@/components/Screen'
+import { colors, socialMediaUrls } from '@/lib/const'
 import { nFormatter } from '@/lib/utils'
 import {
   Calendar,
@@ -30,11 +31,12 @@ const Icons = {
   mail: Mail,
   phone: Phone,
   mapPin: MapPin,
-  github: GithubIcon, // Add appropriate icons for these keys
+  github: GithubIcon,
   linkedin: LinkedinIcon,
   website: Link,
   dob: Calendar,
 }
+
 export default function UserProfile({
   params,
 }: {
@@ -48,8 +50,9 @@ export default function UserProfile({
   return (
     <Screen0>
       <Header />
-      <div className='w-full px-5'>
+      <div className='w-full'>
         <Profile />
+        <hr />
         <Posts />
       </div>
     </Screen0>
@@ -85,11 +88,11 @@ function Profile() {
       mail: 'codeantu@gmailcom',
       phone: '9800211400',
       mapPin: 'Mogra , Bankura',
-      instagram: '@codeAntu',
-      twitter: '@codeAntu',
-      github: '@codeAntu',
-      linkedin: '@codeAntu',
-      website: '@codeAntu',
+      instagram: 'codeAntu',
+      twitter: 'codeAntu',
+      github: 'codeAntu',
+      linkedin: 'codeAntu',
+      website: 'codeAntu',
       dob: '11 October 2003',
     },
   }
@@ -110,7 +113,7 @@ function Profile() {
   const [showMore, setShowMore] = useState(false)
 
   return (
-    <div className='flex flex-col gap-5 py-4'>
+    <div className='flex flex-col gap-5 px-5 py-4'>
       <div className='flex w-full items-center gap-5'>
         <div>
           <img src={user.profilePic} alt='' className='w-28 rounded-full' />
@@ -164,10 +167,24 @@ function Profile() {
             Object.entries(user.about).map(([key, value], index) => {
               if (!showMore && index >= 4) return null
               const Icon = Icons[key as keyof typeof Icons]
+              const isSocialMedia = key in socialMediaUrls
+              const url = isSocialMedia ? socialMediaUrls[key as keyof typeof socialMediaUrls] + value : ''
+
               return (
                 <div key={key} className='flex items-center gap-3'>
                   {Icon && <Icon size={16} className='text-black dark:text-white' />}
-                  <p className='text-xs font-medium'>{value}</p>
+                  {isSocialMedia ? (
+                    <a
+                      href={url}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='text-xs font-medium underline hover:text-accent'
+                    >
+                      @{value}
+                    </a>
+                  ) : (
+                    <p className='text-xs font-medium'>{value}</p>
+                  )}
                 </div>
               )
             })}
@@ -182,58 +199,139 @@ function Profile() {
   )
 }
 
+interface PostInt {
+  id: string
+  name: string
+  username: string
+  profilePic: string
+  time: string
+  content: string
+  image: string
+  likes: number
+  comments: number
+  color:
+    | 'slate'
+    | 'stone'
+    | 'red'
+    | 'orange'
+    | 'amber'
+    | 'yellow'
+    | 'lime'
+    | 'green'
+    | 'emerald'
+    | 'teal'
+    | 'cyan'
+    | 'sky'
+    | 'blue'
+    | 'indigo'
+    | 'violet'
+    | 'purple'
+    | 'pink'
+    | 'fuchsia'
+}
+
 function Posts() {
+  const colors = [
+    'stone',
+    'slate',
+    'orange',
+    'amber',
+    // 'yellow',
+    'lime',
+    'green',
+    'emerald',
+    'teal',
+    'cyan',
+    'sky',
+    'blue',
+    'indigo',
+    'violet',
+    'purple',
+    'fuchsia',
+    'pink',
+    'red',
+  ]
+
+  const samplePost: PostInt = {
+    id: '1',
+    name: 'Ananta Karmanar',
+    username: 'codeAntu',
+    profilePic: '/images/profile.jpg',
+    time: '2 hours ago',
+    content:
+      'Hi everyone, I am a frontend developer. I am currently working on a project. I am looking for a job. If you have any job opportunity, please let me know. Thank you.',
+    image: '/images/image.3.png',
+    likes: 5382,
+    comments: 5382,
+    color: 'red',
+  }
+
+  function generatePosts(): PostInt[] {
+    return colors.map((color, index) => ({
+      ...samplePost,
+      id: (index + 1).toString(),
+      content: `This is a post with the color ${color}.`,
+      color: color as PostInt['color'],
+    }))
+  }
+
+  const posts = generatePosts()
+
   return (
     <>
-      <div className='space-y-3'>
-        {/* <div className='text-base font-semibold'>Posts</div> */}
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
+      <div className='space-y-3 px-3.5 py-4'>
+        {posts.map((post) => (
+          <Post key={post.id} post={post} />
+        ))}
       </div>
     </>
   )
 }
 
-function Post() {
+function Post({ post }: { post: PostInt }) {
+  const col = colors[post.color as keyof typeof colors].text.split('-')[1]
+  const border = 'border-' + col + '-500'
+
+  console.log(border)
+
   return (
-    <div className='flex flex-col gap-2 rounded-3xl bg-purple-300/40 p-4'>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-3'>
-          <>
-            <img src='/images/profile.jpg' alt='' className='aspect-square w-14 rounded-full' />
-          </>
+    <div
+      className={`flex flex-col gap-2 rounded-3xl border border-slate-400/50 p-4 text-black ${colors[post.color as keyof typeof colors].card}`}
+    >
+      <div className='flex items-start gap-3'>
+        <>
+          <img src='/images/profile.jpg' alt='' className='aspect-square w-12 rounded-full' />
+        </>
+        <div className='flex flex-grow items-center justify-between'>
           <div>
             <h1 className='text-sm font-semibold leading-tight'>Ananta Karmakar</h1>
-            <p className='text-xs text-transparent/50'>2 hours ago</p>
+            <p className='text-xs text-black/50 md:text-black/80'>2 hours ago</p>
           </div>
+          <Button variant='icon' className='px-2 py-2'>
+            <EllipsisVertical size={20} className='text-black' />
+          </Button>
         </div>
-        <>
-          <EllipsisVertical size={22} />
-        </>
       </div>
-      <div className='line-clamp-2 text-[13px] font-medium'>
-        Hi everyone, I am a frontend developer. I am currently working on a project. I am looking for a job. If you have
-        any job opportunity, please let me know. Thank you.
+      <div className='line-clamp-2 px-1 text-xs font-medium text-black/80 sm:text-sm md:font-medium'>
+        {post.content}
       </div>
-      <div className='py-1.5'>
+      <div className='py-1'>
         <img src='/images/image.3.png' alt='' className='rounded-xl' />
       </div>
-      <div className='flex items-center justify-between gap-5'>
-        <div className='flex flex-grow items-center gap-4'>
+      <div className='flex items-center justify-between gap-5 px-1'>
+        <div className='flex flex-grow items-center gap-4 text-sm font-medium text-black/50 md:text-black/50'>
           <div className='flex items-center gap-1.5'>
-            <Heart size={22} className='font-semibold text-red-500 text-transparent/50' />
-            <p className='text-sm font-semibold text-transparent/50'>5382</p>
+            <Heart size={20} className='' />
+            <p className=''>5382</p>
           </div>
           <div className='flex items-center gap-1.5'>
-            <MessageSquareText size={20} className='font-semibold text-transparent/50' />
-            <p className='text-sm font-semibold text-transparent/50'>5382</p>
+            <MessageSquareText size={20} className='' />
+            <p className=''>5382</p>
           </div>
         </div>
-        <div className='rounded-full border bg-purple-300/50 px-5 py-2 text-xs font-semibold text-transparent/50'>
+        <div
+          className={`rounded-full border border-black/10 px-5 py-2 text-xs font-semibold ${colors[post.color as keyof typeof colors].button} text-black/45`}
+        >
           set reaction
         </div>
       </div>
