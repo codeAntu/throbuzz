@@ -204,7 +204,7 @@ interface PostInt {
   name: string
   username: string
   profilePic: string
-  time: string
+  time: number
   content: string
   image: string
   likes: number
@@ -257,7 +257,7 @@ function Posts() {
     name: 'Ananta Karmanar',
     username: 'codeAntu',
     profilePic: '/images/profile.jpg',
-    time: '2 hours ago',
+    time: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).getTime(),
     content:
       'Hi everyone, I am a frontend developer. I am currently working on a project. I am looking for a job. If you have any job opportunity, please let me know. Thank you.',
     image: '/images/image.3.png',
@@ -289,14 +289,9 @@ function Posts() {
 }
 
 function Post({ post }: { post: PostInt }) {
-  const col = colors[post.color as keyof typeof colors].text.split('-')[1]
-  const border = 'border-' + col + '-500'
-
-  console.log(border)
-
   return (
     <div
-      className={`flex flex-col gap-2 rounded-3xl border border-slate-400/50 p-4 text-black ${colors[post.color as keyof typeof colors].card}`}
+      className={`flex flex-col gap-2 rounded-3xl border border-slate-400/5 p-4 text-black ${colors[post.color as keyof typeof colors].card}`}
     >
       <div className='flex items-start gap-3'>
         <>
@@ -304,8 +299,8 @@ function Post({ post }: { post: PostInt }) {
         </>
         <div className='flex flex-grow items-center justify-between'>
           <div>
-            <h1 className='text-sm font-semibold leading-tight'>Ananta Karmakar</h1>
-            <p className='text-xs text-black/50 md:text-black/80'>2 hours ago</p>
+            <h1 className='text-sm font-semibold leading-tight'>{post.name}</h1>
+            <p className='text-xs text-black/50 md:text-black/80'>{post.time}</p>
           </div>
           <Button variant='icon' className='px-2 py-2'>
             <EllipsisVertical size={20} className='text-black' />
@@ -315,22 +310,22 @@ function Post({ post }: { post: PostInt }) {
       <div className='line-clamp-2 px-1 text-xs font-medium text-black/80 sm:text-sm md:font-medium'>
         {post.content}
       </div>
-      <div className='py-1'>
-        <img src='/images/image.3.png' alt='' className='rounded-xl' />
+      <div className='max-h-80 overflow-hidden rounded-xl object-contain'>
+        <img src='/images/image.3.png' alt='' className='' />
       </div>
       <div className='flex items-center justify-between gap-5 px-1'>
         <div className='flex flex-grow items-center gap-4 text-sm font-medium text-black/50 md:text-black/50'>
-          <div className='flex items-center gap-1.5'>
+          <div className='flex cursor-pointer items-center gap-1.5'>
             <Heart size={20} className='' />
-            <p className=''>5382</p>
+            <p className=''>{nFormatter(post.likes)}</p>
           </div>
-          <div className='flex items-center gap-1.5'>
+          <div className='flex cursor-pointer items-center gap-1.5'>
             <MessageSquareText size={20} className='' />
-            <p className=''>5382</p>
+            <p className=''>{nFormatter(post.comments)}</p>
           </div>
         </div>
         <div
-          className={`rounded-full border border-black/10 px-5 py-2 text-xs font-semibold ${colors[post.color as keyof typeof colors].button} text-black/45`}
+          className={`cursor-pointer select-none rounded-full border-[0.5px] border-black/5 px-5 py-2 text-xs font-semibold ${colors[post.color as keyof typeof colors].button} text-black/45`}
         >
           set reaction
         </div>
