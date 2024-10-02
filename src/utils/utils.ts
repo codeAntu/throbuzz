@@ -7,3 +7,8 @@ export async function parseJson(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 }
+
+export function nFormatter(num: number) {
+  let formatter = Intl.NumberFormat('en', { notation: 'compact' })
+  return formatter.format(num)
+}

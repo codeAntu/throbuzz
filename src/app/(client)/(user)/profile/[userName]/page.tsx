@@ -3,7 +3,8 @@
 import { Button } from '@/components/Button'
 import { Screen0 } from '@/components/Screen'
 import { colors, socialMediaUrls } from '@/lib/const'
-import { nFormatter } from '@/lib/utils'
+import { nFormatter } from '@/utils/utils'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   Calendar,
   ChevronLeft,
@@ -126,28 +127,31 @@ function Profile() {
           <div className='flex w-full items-center gap-8 text-center'>
             <div>
               <div className='text-sm font-semibold leading-tight'>{nFormatter(user.followers)}</div>
-              <div className='text-xs text-neutral-500'>Posts</div>
-            </div>
-            <div>
-              <div className='text-sm font-semibold leading-tight'>{nFormatter(user.following)}</div>
               <div className='text-xs text-neutral-500'>Followers</div>
             </div>
             <div>
-              <div className='text-sm font-semibold leading-tight'>{nFormatter(user.posts)}</div>
+              <div className='text-sm font-semibold leading-tight'>{nFormatter(user.following)}</div>
               <div className='text-xs text-neutral-500'>Following</div>
+            </div>
+            <div>
+              <div className='text-sm font-semibold leading-tight'>{nFormatter(user.posts)}</div>
+              <div className='text-xs text-neutral-500'>Posts</div>
             </div>
           </div>
         </div>
       </div>
       <div className='flex gap-4'>
         {user.isMe ? (
-          <Button variant='filled' className='border-2 border-black bg-black py-3.5 font-medium text-white'>
+          <Button variant='filled' className='border-2 border-black bg-black py-3 font-medium text-white'>
             <Pencil size={16} className='' />
             Edit Profile
           </Button>
         ) : (
           <>
-            <Button className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'>
+            <Button
+              variant='filled'
+              className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
+            >
               <UserPlus size={18} className='' />
               <span>Follow</span>
             </Button>
@@ -270,7 +274,7 @@ function Posts() {
     return colors.map((color, index) => ({
       ...samplePost,
       id: (index + 1).toString(),
-      content: `This is a post with the color ${color}.`,
+      content: `This is a post with the color ${color}. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloremque, modi. Et porro libero vitae commodi vel omnis possimus beatae qui aut doloremque temporibus eaque, laboriosam exercitationem at? Minima, error quis?`,
       color: color as PostInt['color'],
     }))
   }
@@ -289,17 +293,31 @@ function Posts() {
 }
 
 function Post({ post }: { post: PostInt }) {
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const toggleContent = () => {
+    setIsExpanded(!isExpanded)
+  }
+
   return (
     <div
-      className={`flex flex-col gap-2 rounded-3xl border border-slate-400/5 p-4 text-black ${colors[post.color as keyof typeof colors].card}`}
+      className={`flex flex-col gap-2 rounded-3xl border border-slate-400/5 px-2.5 py-3.5 pb-2.5 text-black sm:p-4 ${colors[post.color as keyof typeof colors].card}`}
     >
-      <div className='flex items-start gap-3'>
-        <>
+      <div className='flex items-start gap-3 px-0.5'>
+        <Button variant='zero'>
           <img src='/images/profile.jpg' alt='' className='aspect-square w-12 rounded-full' />
-        </>
-        <div className='flex flex-grow items-center justify-between'>
+        </Button>
+        <div className='flex flex-grow select-none items-center justify-between'>
           <div>
-            <h1 className='text-sm font-semibold leading-tight'>{post.name}</h1>
+            <Button
+              variant='zero'
+              className='text-sm font-semibold leading-tight'
+              onClick={() => {
+                console.log('clicked')
+              }}
+            >
+              {post.name}
+            </Button>
             <p className='text-xs text-black/50 md:text-black/80'>{post.time}</p>
           </div>
           <Button variant='icon' className='px-2 py-2'>
@@ -307,28 +325,35 @@ function Post({ post }: { post: PostInt }) {
           </Button>
         </div>
       </div>
-      <div className='line-clamp-2 px-1 text-xs font-medium text-black/80 sm:text-sm md:font-medium'>
+      <div
+        className={`cursor-pointer px-1 text-xs font-medium text-black/80 sm:text-sm md:font-medium ${isExpanded ? '' : 'line-clamp-2'}`}
+        onClick={toggleContent}
+      >
         {post.content}
       </div>
-      <div className='max-h-80 overflow-hidden rounded-xl object-contain'>
-        <img src='/images/image.3.png' alt='' className='' />
+      <div className='max-h-80 w-full overflow-hidden rounded-xl bg-red-300 object-contain sm:max-h-[350px] md:max-h-[500px]'>
+        <img src='/images/image.2.png' alt='' className='w-full' />
       </div>
-      <div className='flex items-center justify-between gap-5 px-1'>
+      <div className='flex select-none items-center justify-between gap-5 pl-1 sm:px-2'>
         <div className='flex flex-grow items-center gap-4 text-sm font-medium text-black/50 md:text-black/50'>
-          <div className='flex cursor-pointer items-center gap-1.5'>
+          <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>
             <Heart size={20} className='' />
             <p className=''>{nFormatter(post.likes)}</p>
-          </div>
-          <div className='flex cursor-pointer items-center gap-1.5'>
+            <p className='hidden md:block'> {post.likes == 1 ? 'Like' : 'Likes'} </p>
+          </Button>
+
+          <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>
             <MessageSquareText size={20} className='' />
             <p className=''>{nFormatter(post.comments)}</p>
-          </div>
+            <p className='hidden md:block'> {post.comments == 1 ? 'Comment' : 'Comments'} </p>
+          </Button>
         </div>
-        <div
+        <Button
+          variant='zero'
           className={`cursor-pointer select-none rounded-full border-[0.5px] border-black/5 px-5 py-2 text-xs font-semibold ${colors[post.color as keyof typeof colors].button} text-black/45`}
         >
           set reaction
-        </div>
+        </Button>
       </div>
     </div>
   )

@@ -5,7 +5,7 @@ import { ComponentProps } from 'react'
 type buttonProps = ComponentProps<'button'> & {
   className?: string
   children: React.ReactNode
-  variant?: 'filled' | 'accent' | 'accentOutline' | 'outline' | 'textAccent' | 'text' | 'icon'
+  variant?: 'filled' | 'accent' | 'accentOutline' | 'outline' | 'textAccent' | 'text' | 'icon' | 'zero'
 }
 
 const variants = {
@@ -16,6 +16,7 @@ const variants = {
   textAccent: 'text-accent dark:text-accent py-2.5',
   text: 'text-black dark:text-white py-2.5',
   icon: 'text-black dark:text-white',
+  zero: '',
 }
 
 export function Button({ className, children, variant = 'accent', ...rest }: buttonProps) {
