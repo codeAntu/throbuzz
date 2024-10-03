@@ -6,14 +6,14 @@ import { EllipsisVertical, Heart, MessageSquareText } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/Button'
 
-export interface PostInt {
+export interface PostT {
   id: string
   name: string
   username: string
   profilePic: string
   time: number
   content: string
-  image: string
+  image: string[]
   likes: number
   comments: number
   color:
@@ -36,7 +36,7 @@ export interface PostInt {
     | 'pink'
     | 'fuchsia'
 }
-export default function Post({ post }: { post: PostInt }) {
+export default function Post({ post }: { post: PostT }) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const toggleContent = () => {
@@ -75,8 +75,16 @@ export default function Post({ post }: { post: PostInt }) {
       >
         {post.content}
       </div>
-      <div className='max-h-80 w-full overflow-hidden rounded-xl bg-red-300 object-contain sm:max-h-[350px] md:max-h-[500px]'>
-        <img src='/images/image.2.png' alt='' className='w-full' />
+      {/* <img src='/images/image.2.png' alt='' className='w-full' /> */}
+      <div className=''>
+        {post.image.map((img, index) => (
+          <div
+            key={index}
+            className='max-h-80 w-full overflow-hidden rounded-xl object-contain sm:max-h-[350px] md:max-h-[500px]'
+          >
+            <img src={img} alt='' className='w-full' />
+          </div>
+        ))}
       </div>
       <div className='flex select-none items-center justify-between gap-5 pl-1 sm:px-2'>
         <div className='flex flex-grow items-center gap-4 text-sm font-medium text-black/50 md:text-black/50'>

@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import {Button } from '@/components/Button'
-import Post, { PostInt } from '@/components/Post'
+import { Button } from '@/components/Button'
+import Post, { PostT } from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
 import { socialMediaUrls } from '@/lib/const'
 import { nFormatter } from '@/utils/utils'
@@ -222,7 +222,7 @@ function Posts() {
     'red',
   ]
 
-  const samplePost: PostInt = {
+  const samplePost: PostT = {
     id: '1',
     name: 'Ananta Karmanar',
     username: 'codeAntu',
@@ -230,18 +230,18 @@ function Posts() {
     time: 1630000000000,
     content:
       'Hi everyone, I am a frontend developer. I am currently working on a project. I am looking for a job. If you have any job opportunity, please let me know. Thank you.',
-    image: '/images/image.3.png',
+    image: ['/images/image.2.png', '/images/image.2.png', '/images/image.2.png'],
     likes: 5382,
     comments: 5382,
     color: 'red',
   }
 
-  function generatePosts(): PostInt[] {
+  function generatePosts(): PostT[] {
     return colors.map((color, index) => ({
       ...samplePost,
       id: (index + 1).toString(),
       content: `This is a post with the color ${color}. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloremque, modi. Et porro libero vitae commodi vel omnis possimus beatae qui aut doloremque temporibus eaque, laboriosam exercitationem at? Minima, error quis?`,
-      color: color as PostInt['color'],
+      color: color as PostT['color'],
     }))
   }
 
