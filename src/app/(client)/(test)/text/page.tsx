@@ -3,7 +3,6 @@
 import { Minus, Plus } from 'lucide-react'
 import * as React from 'react'
 import { Bar, BarChart, ResponsiveContainer } from 'recharts'
-
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
@@ -18,23 +17,49 @@ import {
 } from '@/components/ui/drawer'
 import { Screen } from '@/components/Screen'
 
+import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules'
+
+import { Swiper, SwiperSlide } from 'swiper/react'
+
+// Import Swiper styles
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+import 'swiper/css/scrollbar'
+
 export default function Page() {
   return (
     <Screen>
-      <Drawer>
-        <DrawerTrigger asChild>
-          <Button variant='outline'>Open Drawer</Button>
-        </DrawerTrigger>
-        <DrawerContent>
-          <div className='max-h-[90dvh] min-h-[50dvh] bg-red-400'>
-            <div className='h-[35dvh] bg-blue-300'>Hello </div>
-            <div className='h-[35dvh] bg-blue-300'>Hello </div>
+      <div className='w-full bg-red-200'>
+        <Screen>
+          <div className='bg-red-200'>
+            <Swiper
+              modules={[Navigation, Pagination, Scrollbar, A11y]}
+              spaceBetween={50}
+              slidesPerView={3}
+              navigation
+              pagination={{ clickable: true }}
+              scrollbar={{ draggable: true }}
+              onSlideChange={() => console.log('slide change')}
+              onSwiper={(swiper) => console.log(swiper)}
+            >
+              <SwiperSlide>
+                <div className='h-96 w-full bg-red-400'>Slide 1</div>
+              </SwiperSlide>
+              <SwiperSlide>Slide 2</SwiperSlide>
+              <SwiperSlide>Slide 3</SwiperSlide>
+              <SwiperSlide>Slide 4</SwiperSlide>
+            </Swiper>
           </div>
-        </DrawerContent>
-      </Drawer>
+        </Screen>
+      </div>
     </Screen>
   )
 }
+
+// Import Swiper React components
+
+// Import Swiper styles
 
 // return (
 //   <Drawer>

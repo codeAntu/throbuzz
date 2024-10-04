@@ -5,6 +5,7 @@ import { nFormatter } from '@/utils/utils'
 import { EllipsisVertical, Heart, MessageSquareText } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/Button'
+import { Swiper, SwiperSlide } from 'swiper/react'
 
 export interface PostT {
   id: string
@@ -45,7 +46,7 @@ export default function Post({ post }: { post: PostT }) {
 
   return (
     <div
-      className={`flex flex-col gap-2 rounded-3xl border border-slate-400/5 px-2.5 py-3.5 pb-2.5 text-black sm:p-4 ${colors[post.color as keyof typeof colors].card}`}
+      className={`flex flex-col gap-2 rounded-3xl border border-slate-400/5 px-3.5 py-4 pb-2.5 text-black sm:p-4 ${colors[post.color as keyof typeof colors].card}`}
     >
       <div className='flex items-start gap-3 px-0.5'>
         <Button variant='zero'>
@@ -75,16 +76,30 @@ export default function Post({ post }: { post: PostT }) {
       >
         {post.content}
       </div>
-      {/* <img src='/images/image.2.png' alt='' className='w-full' /> */}
       <div className=''>
-        {post.image.map((img, index) => (
-          <div
-            key={index}
-            className='max-h-80 w-full overflow-hidden rounded-xl object-contain sm:max-h-[350px] md:max-h-[500px]'
-          >
-            <img src={img} alt='' className='w-full' />
-          </div>
-        ))}
+        {/* <Swiper
+          spaceBetween={50}
+          slidesPerView={3}
+          onSlideChange={() => console.log('slide change')}
+          onSwiper={(swiper) => console.log(swiper)}
+        >
+          {post.image.map((img, index) => (
+            <SwiperSlide key={index} className='w-full'>
+              <div className='max-h-80 w-full overflow-hidden rounded-xl object-contain sm:max-h-[350px] md:max-h-[500px]'>
+                <img src={img} alt='' className='w-full' />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper> */}
+        <div>
+          {post.image.map((img, index) => (
+            <SwiperSlide key={index} className='w-full'>
+              <div className='max-h-80 w-full overflow-hidden rounded-xl object-contain sm:max-h-[350px] md:max-h-[500px]'>
+                <img src={img} alt='' className='w-full' />
+              </div>
+            </SwiperSlide>
+          ))}
+        </div>
       </div>
       <div className='flex select-none items-center justify-between gap-5 pl-1 sm:px-2'>
         <div className='flex flex-grow items-center gap-4 text-sm font-medium text-black/50 md:text-black/50'>

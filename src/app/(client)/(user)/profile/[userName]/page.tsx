@@ -230,7 +230,8 @@ function Posts() {
     time: 1630000000000,
     content:
       'Hi everyone, I am a frontend developer. I am currently working on a project. I am looking for a job. If you have any job opportunity, please let me know. Thank you.',
-    image: ['/images/image.2.png', '/images/image.2.png', '/images/image.2.png'],
+    // image: ['/images/image.2.png', '/images/image.2.png'],
+    image: ['/images/image.2.png'],
     likes: 5382,
     comments: 5382,
     color: 'red',

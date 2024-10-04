@@ -1,4 +1,15 @@
 {
-  "cSpell.words": ["Bankura", "cloudinary", "clsx", "codeantu", "gmailcom", "haha", "hugeicons", "signup", "throbuzz"],
+  "cSpell.words": [
+    "Bankura",
+    "cloudinary",
+    "clsx",
+    "codeantu",
+    "gmailcom",
+    "haha",
+    "hugeicons",
+    "signup",
+    "swiper",
+    "throbuzz"
+  ],
   "files.autoSave": "onFocusChange"
 }
