@@ -46,7 +46,7 @@ export default function UserProfile({
   console.log('params', params)
 
   return (
-    <Screen0>
+    <Screen0 className=''>
       <Header />
       <div className='w-full'>
         <Profile />
@@ -230,8 +230,8 @@ function Posts() {
     time: 1630000000000,
     content:
       'Hi everyone, I am a frontend developer. I am currently working on a project. I am looking for a job. If you have any job opportunity, please let me know. Thank you.',
-    // image: ['/images/image.2.png', '/images/image.2.png'],
-    image: ['/images/image.2.png'],
+    image: ['/images/img1.png', '/images/img2.png', '/images/img3.png', '/images/img4.png', '/images/img5.png'],
+    // image: ['/images/img1.png'],
     likes: 5382,
     comments: 5382,
     color: 'red',

@@ -5,7 +5,20 @@ import { nFormatter } from '@/utils/utils'
 import { EllipsisVertical, Heart, MessageSquareText } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/Button'
+import { motion } from 'framer-motion'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerPortal,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
 
 export interface PostT {
   id: string
@@ -46,7 +59,7 @@ export default function Post({ post }: { post: PostT }) {
 
   return (
     <div
-      className={`flex flex-col gap-2 rounded-3xl border border-slate-400/5 px-3.5 py-4 pb-2.5 text-black sm:p-4 ${colors[post.color as keyof typeof colors].card}`}
+      className={`flex flex-col gap-2 rounded-3xl border border-slate-400/5 px-3.5 py-4 pb-2.5 text-black sm:p-4 ${colors[post.color as keyof typeof colors].card} `}
     >
       <div className='flex items-start gap-3 px-0.5'>
         <Button variant='zero'>
@@ -77,29 +90,31 @@ export default function Post({ post }: { post: PostT }) {
         {post.content}
       </div>
       <div className=''>
-        {/* <Swiper
-          spaceBetween={50}
-          slidesPerView={3}
+        <Swiper
+          spaceBetween={12}
+          pagination={{
+            clickable: false,
+          }}
+          autoplay={{
+            delay: 3000,
+          }}
           onSlideChange={() => console.log('slide change')}
           onSwiper={(swiper) => console.log(swiper)}
+          className='rounded-xl'
         >
           {post.image.map((img, index) => (
-            <SwiperSlide key={index} className='w-full'>
-              <div className='max-h-80 w-full overflow-hidden rounded-xl object-contain sm:max-h-[350px] md:max-h-[500px]'>
-                <img src={img} alt='' className='w-full' />
+            <SwiperSlide key={index} className='flex w-full items-center justify-center rounded-full'>
+              <div className='flex w-full items-center justify-center bg-black/5'>
+                <img
+                  src={img}
+                  alt=''
+                  className='aspect-video w-full cursor-pointer rounded-xl object-cover transition-all duration-300 active:object-contain'
+                  onContextMenu={(e: { preventDefault: () => any }) => e.preventDefault()}
+                />
               </div>
             </SwiperSlide>
           ))}
-        </Swiper> */}
-        <div>
-          {post.image.map((img, index) => (
-            <SwiperSlide key={index} className='w-full'>
-              <div className='max-h-80 w-full overflow-hidden rounded-xl object-contain sm:max-h-[350px] md:max-h-[500px]'>
-                <img src={img} alt='' className='w-full' />
-              </div>
-            </SwiperSlide>
-          ))}
-        </div>
+        </Swiper>
       </div>
       <div className='flex select-none items-center justify-between gap-5 pl-1 sm:px-2'>
         <div className='flex flex-grow items-center gap-4 text-sm font-medium text-black/50 md:text-black/50'>
@@ -109,11 +124,18 @@ export default function Post({ post }: { post: PostT }) {
             <p className='hidden md:block'> {post.likes == 1 ? 'Like' : 'Likes'} </p>
           </Button>
 
-          <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>
-            <MessageSquareText size={20} className='' />
-            <p className=''>{nFormatter(post.comments)}</p>
-            <p className='hidden md:block'> {post.comments == 1 ? 'Comment' : 'Comments'} </p>
-          </Button>
+          <Drawer>
+            <DrawerTrigger asChild>
+              <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>
+                <MessageSquareText size={20} className='' />
+                <p className=''>{nFormatter(post.comments)}</p>
+                <p className='hidden md:block'> {post.comments == 1 ? 'Comment' : 'Comments'} </p>
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <Comments />
+            </DrawerContent>
+          </Drawer>
         </div>
         <Button
           variant='zero'
@@ -121,6 +143,74 @@ export default function Post({ post }: { post: PostT }) {
         >
           set reaction
         </Button>
+      </div>
+    </div>
+  )
+}
+
+export function Comments() {
+  return (
+    <div className=''>
+      <div className='z-10 max-h-[90dvh] overflow-auto bg-red-200'>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
+        <div>Hello</div>
       </div>
     </div>
   )
