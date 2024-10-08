@@ -116,14 +116,13 @@ export default function Post({ post }: { post: PostT }) {
           ))}
         </Swiper>
       </div>
-      <div className='flex select-none items-center justify-between gap-5 pl-1 sm:px-2'>
+      <div className='dark flex select-none items-center justify-between gap-5 pl-1 sm:px-2'>
         <div className='flex flex-grow items-center gap-4 text-sm font-medium text-black/50 md:text-black/50'>
           <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>
             <Heart size={20} className='' />
             <p className=''>{nFormatter(post.likes)}</p>
             <p className='hidden md:block'> {post.likes == 1 ? 'Like' : 'Likes'} </p>
           </Button>
-
           <Drawer>
             <DrawerTrigger asChild>
               <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>
@@ -132,7 +131,7 @@ export default function Post({ post }: { post: PostT }) {
                 <p className='hidden md:block'> {post.comments == 1 ? 'Comment' : 'Comments'} </p>
               </Button>
             </DrawerTrigger>
-            <DrawerContent>
+            <DrawerContent className={`wbackdrop-blur-3xl mx-auto max-w-[800px]`}>
               <Comments />
             </DrawerContent>
           </Drawer>
@@ -149,68 +148,48 @@ export default function Post({ post }: { post: PostT }) {
 }
 
 export function Comments() {
+  console.log('comments')
+
   return (
     <div className=''>
-      <div className='z-10 max-h-[90dvh] overflow-auto bg-red-200'>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
-        <div>Hello</div>
+      <div className='grid max-h-[90dvh] gap-5 overflow-auto py-5'>
+        <Comment />
+        <Comment />
+        <Comment />
+        <Comment />
+        <Comment />
+        <Comment />
+      </div>
+    </div>
+  )
+}
+
+export function Comment() {
+  return (
+    <div className='flex items-center gap-3 px-5'>
+      <div className='grid gap-1'>
+        <div className='flex gap-3'>
+          <img src='/images/profile.jpg' alt='' className='aspect-square w-10 rounded-full' />
+          <div className='flex flex-col'>
+            <p className='text-sm font-semibold'>Ananta Karmakar</p>
+            <p className='text-xs text-black/50'>12:20 AM</p>
+          </div>
+        </div>
+        <div className='text-xs font-medium text-black/80'>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis corrupti ipsum officiis fugit eveniet vitae
+          molestiae magni blanditiis repudiandae rem.This is Annata karmakr .
+        </div>
+        <div className=''>
+          <Button variant='zero' className='text-xs font-semibold'>
+            Reply
+          </Button>
+        </div>
+      </div>
+      <div className='flex flex-col items-center justify-start gap-1'>
+        <Button variant='icon' className='text-xs font-semibold'>
+          <Heart size={20} className='' />
+        </Button>
+        <div className='text-xs'>203</div>
       </div>
     </div>
   )
