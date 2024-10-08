@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client '
 import { Button } from '@/components/Button'
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
 import { colors } from '@/lib/const'
 import { nFormatter } from '@/utils/utils'
 import { EllipsisVertical, Heart, MessageSquareText } from 'lucide-react'
@@ -74,7 +74,7 @@ export default function Post({ post }: { post: PostT }) {
                 <EllipsisVertical size={20} className='text-black' />
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end'>
-                <DropdownMenuItem >Edit</DropdownMenuItem>
+                <DropdownMenuItem>Edit</DropdownMenuItem>
                 <DropdownMenuItem>Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -130,6 +130,7 @@ export default function Post({ post }: { post: PostT }) {
               </Button>
             </DrawerTrigger>
             <DrawerContent className={`wbackdrop-blur-3xl mx-auto max-w-[800px]`}>
+              <DrawerHeader className='w-full text-center font-extrabold'>450 Comments</DrawerHeader>
               <Comments />
             </DrawerContent>
           </Drawer>
@@ -150,7 +151,11 @@ export function Comments() {
 
   return (
     <div className=''>
-      <div className='grid max-h-[90dvh] gap-5 overflow-auto py-5'>
+      <div className='grid max-h-[85dvh] gap-5 overflow-auto py-1'>
+        <Comment />
+        <Comment />
+        <Comment />
+        <Comment />
         <Comment />
         <Comment />
         <Comment />
@@ -164,30 +169,66 @@ export function Comments() {
 
 export function Comment() {
   return (
-    <div className='flex items-center gap-3 px-5'>
+    <div className='flex flex-col items-start gap-3 px-5'>
       <div className='grid gap-1'>
-        <div className='flex gap-3'>
-          <img src='/images/profile.jpg' alt='' className='aspect-square w-10 rounded-full' />
-          <div className='flex flex-col'>
-            <p className='text-sm font-semibold'>Ananta Karmakar</p>
-            <p className='text-xs text-black/50'>12:20 AM</p>
-          </div>
-        </div>
-        <div className='text-xs font-medium text-black/80'>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis corrupti ipsum officiis fugit eveniet vitae
-          molestiae magni blanditiis repudiandae rem.This is Annata karmakr .
-        </div>
-        <div className=''>
-          <Button variant='zero' className='text-xs font-semibold'>
+        <CommentContent />
+        <div className='flex items-center justify-normal gap-1.5 px-12'>
+          <Button variant='zero' className='text-xs font-semibold text-black/55 dark:text-white/60'>
             Reply
+          </Button>
+          <p className='leading-none text-black/50'>•</p>
+          <Button variant='zero' className='text-xs font-semibold text-black/55 dark:text-white/60'>
+            See replies
           </Button>
         </div>
       </div>
-      <div className='flex flex-col items-center justify-start gap-1'>
-        <Button variant='icon' className='text-xs font-semibold'>
-          <Heart size={20} className='' />
+      <div className='grid gap-3.5 pb-2 pl-10 pt-0.5'>
+        <CommentReplay />
+        <CommentReplay />
+      </div>
+    </div>
+  )
+}
+
+export function CommentReplay() {
+  return (
+    <div className='grid gap-1'>
+      <CommentContent />
+      <div className='flex items-center justify-normal gap-1.5 px-12'>
+        <Button variant='zero' className='text-xs font-semibold text-black/55 dark:text-white/60'>
+          Reply
         </Button>
-        <div className='text-xs'>203</div>
+      </div>
+    </div>
+  )
+}
+
+function CommentContent() {
+  return (
+    <div className='flex items-start justify-center gap-3'>
+      <div className='w-36 flex-grow-0 pt-1.5 sm:w-20'>
+        <img src='/images/profile.jpg' alt='' className='aspect-square rounded-full' />
+      </div>
+      <div className='flex items-center gap-4 pr-2'>
+        <div className='grid gap-1'>
+          <div className='flex gap-3'>
+            <div className='flex items-center justify-normal gap-1.5 text-xs'>
+              <p className='font-semibold'>Ananta Karmakar</p>
+              <p className='leading-none text-black/50'>•</p>
+              <p className='text-[11px] text-black/50'>12:20 AM</p>
+            </div>
+          </div>
+          <div className='line-clamp-2 cursor-pointer text-xs font-medium text-black/80 hover:line-clamp-none dark:text-white/80 sm:text-sm md:font-medium'>
+            This is a comment on the post. This is a comment on the post. This is a comment on the post. This is a This
+            is a comment on the post. This is a comment on the post. This is a comment on the post. This is a
+          </div>
+        </div>
+        <div className='flex flex-col items-center justify-start gap-1'>
+          <Button variant='icon' className='text-xs font-semibold'>
+            <Heart size={18} className='' />
+          </Button>
+          <div className='text-[11px]'>203</div>
+        </div>
       </div>
     </div>
   )
