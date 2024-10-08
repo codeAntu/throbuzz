@@ -1,24 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 'use client '
+import { Button } from '@/components/Button'
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer'
 import { colors } from '@/lib/const'
 import { nFormatter } from '@/utils/utils'
 import { EllipsisVertical, Heart, MessageSquareText } from 'lucide-react'
 import { useState } from 'react'
-import { Button } from '@/components/Button'
-import { motion } from 'framer-motion'
-import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerPortal,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
 
 export interface PostT {
   id: string
@@ -79,7 +69,15 @@ export default function Post({ post }: { post: PostT }) {
             <p className='text-xs text-black/50 md:text-black/80'>{post.time}</p>
           </div>
           <Button variant='icon' className='px-2 py-2'>
-            <EllipsisVertical size={20} className='text-black' />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <EllipsisVertical size={20} className='text-black' />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end'>
+                <DropdownMenuItem >Edit</DropdownMenuItem>
+                <DropdownMenuItem>Delete</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </Button>
         </div>
       </div>
@@ -116,7 +114,7 @@ export default function Post({ post }: { post: PostT }) {
           ))}
         </Swiper>
       </div>
-      <div className='dark flex select-none items-center justify-between gap-5 pl-1 sm:px-2'>
+      <div className='flex select-none items-center justify-between gap-5 pl-1 sm:px-2'>
         <div className='flex flex-grow items-center gap-4 text-sm font-medium text-black/50 md:text-black/50'>
           <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>
             <Heart size={20} className='' />

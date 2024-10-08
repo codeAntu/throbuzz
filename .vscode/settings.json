@@ -9,7 +9,8 @@
     "hugeicons",
     "signup",
     "swiper",
-    "throbuzz"
+    "throbuzz",
+    "wbackdrop"
   ],
   "files.autoSave": "onFocusChange"
 }
