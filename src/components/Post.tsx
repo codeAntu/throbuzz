@@ -226,7 +226,7 @@ export function Comment() {
   const [showReplies, setShowReplies] = useState(false)
   return (
     <div className='flex flex-col items-start gap-3 px-5'>
-      <div className='grid gap-1.5'>
+      <div className='grid gap-2'>
         <CommentContent />
         <div className='flex items-center justify-normal gap-1.5 px-12'>
           <Button variant='zero' className='text-xs font-semibold text-black/50 dark:text-white/60'>
@@ -238,7 +238,7 @@ export function Comment() {
             className='text-xs font-semibold text-black/50 dark:text-white/60'
             onClick={() => setShowReplies(!showReplies)}
           >
-            See replies
+            {showReplies ? 'Hide Replies' : 'View 2 Replies'}
           </Button>
         </div>
       </div>
@@ -257,7 +257,7 @@ export function CommentReplay() {
     <div className='grid gap-1'>
       <CommentContent />
       <div className='flex items-center justify-normal gap-1.5 px-12'>
-        <Button variant='zero' className='text-xs font-semibold text-black/55 dark:text-white/60'>
+        <Button variant='zero' className='text-xs font-semibold text-black/55 dark:text-white/60' onClick={() => {}}>
           Reply
         </Button>
       </div>
