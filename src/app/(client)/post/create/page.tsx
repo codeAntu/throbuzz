@@ -45,7 +45,7 @@ const colorNames: (keyof typeof colors)[] = [
 export default function Page() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [text, setText] = useState('')
-  const [color, setColor] = useState('orange')
+  const [color, setColor] = useState<keyof typeof colors>('stone')
   const [isPublic, setIsPublic] = useState(true)
 
   console.log('color', color)
@@ -60,8 +60,8 @@ export default function Page() {
   return (
     <Screen0 className='grid'>
       <Header />
-      <Screen className='min-h-[90dvh] justify-between'>
-        <div className='flex flex-col gap-7'>
+      <Screen className='min-h-[90dvh] justify-between py-2'>
+        <div className='flex flex-col gap-6'>
           <div className='grid w-full gap-4'>
             <div className='flex items-center justify-between'>
               <div className='text-base font-semibold'>Add photos </div>
@@ -83,7 +83,7 @@ export default function Page() {
               </div>
               <Button
                 variant='zero'
-                className='flex h-11 w-full items-center justify-center rounded-lg border bg-black/10 dark:bg-white/10'
+                className={`${colors[color].card} flex h-11 w-full items-center justify-center rounded-lg border border-black/5`}
               >
                 <Plus size={24} />
               </Button>
@@ -93,10 +93,12 @@ export default function Page() {
             <textarea
               ref={textareaRef}
               placeholder='Add a comment'
-              className='no-scrollbar max-h-64 w-full rounded-2xl border bg-black/5 px-2 py-3 outline-none dark:bg-white/5 dark:text-white/80 sm:max-h-96'
+              className={`${
+                colors[color].card
+              } no-scrollbar max-h-60 w-full rounded-2xl border border-black/5 px-2 py-3 text-sm text-black/80 outline-none sm:text-base sm:font-extrabold`}
               value={text}
               onChange={(e) => setText(e.target.value)}
-              rows={5}
+              rows={6}
             ></textarea>
             <div className='flex items-start justify-between gap-4 px-2 text-xs font-semibold text-black/80 dark:text-white/80 sm:text-sm sm:font-extrabold'>
               <div className='flex items-center justify-normal gap-5'>
@@ -145,17 +147,18 @@ export default function Page() {
                 <span className={`${text.length > 500 ? 'text-red-500' : ''} `}>{text.length}</span>/ 500
               </div>
             </div>
-            <div className='no-scrollbar flex gap-3 overflow-auto pt-3'>
+            <div className='no-scrollbar flex gap-3 overflow-auto pb-6'>
               {colorNames.map((colorName) => (
-                <div
-                  key={color}
+                <Button
+                  key={colorName}
+                  variant='zero'
                   className={`flex aspect-square size-12 cursor-pointer items-center justify-center gap-2 rounded-full border sm:size-14 ${
                     colors[colorName].card
                   }`}
                   onClick={() => setColor(colorName)}
                 >
                   {color === colorName ? <Check /> : null}
-                </div>
+                </Button>
               ))}
             </div>
           </div>
