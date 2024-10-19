@@ -20,8 +20,6 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-const image = ['/images/img1.png', '/images/img2.png', '/images/img3.png', '/images/img4.png', '/images/img5.png']
-
 const colorNames: (keyof typeof colors)[] = [
   'stone',
   'slate',
@@ -47,6 +45,7 @@ export default function Page() {
   const [text, setText] = useState('')
   const [color, setColor] = useState<keyof typeof colors>('stone')
   const [isPublic, setIsPublic] = useState(true)
+  const [images, setImages] = useState<FileList | null>(null)
 
   console.log('color', color)
 
@@ -57,6 +56,8 @@ export default function Page() {
     }
   }, [text])
 
+  console.log('images', images)
+
   return (
     <Screen0 className='grid'>
       <Header />
@@ -65,37 +66,88 @@ export default function Page() {
           <div className='grid w-full gap-4'>
             <div className='flex items-center justify-between'>
               <div className='text-base font-semibold'>Add photos </div>
-              <div className='text-sm text-black/60 dark:text-white/60'>
-                {false ? 'Add upto 10 photos' : '5 photos added'}
+              <div className='text-xs font-semibold text-black/50 dark:text-white/50'>
+                {images
+                  ? `${images.length > 1 ? `${images.length} photos` : `${images.length} photo`}`
+                  : 'Add upto 5 photos'}
               </div>
             </div>
             <div className='grid w-full gap-4'>
               <div className='no-scrollbar flex gap-3.5 overflow-auto rounded-2xl sm:gap-5'>
-                {image.map((img, index) => (
-                  <img
-                    src={img}
-                    key={index}
-                    alt=''
-                    className='aspect-video h-44 cursor-pointer rounded-2xl object-cover transition-all duration-300 hover:object-contain active:object-contain sm:h-56'
-                    onContextMenu={(e: { preventDefault: () => any }) => e.preventDefault()}
-                  />
-                ))}
+                {images
+                  ? Array.from(images).map((image, index) => (
+                      <div key={index} className='relative aspect-video h-44'>
+                        <img
+                          src={URL.createObjectURL(image)}
+                          className='aspect-video h-44 cursor-pointer rounded-2xl object-cover transition-all duration-300 active:object-contain sm:h-56 md:hover:object-contain'
+                        />
+                        <Button
+                          variant='zero'
+                          className='absolute right-1.5 top-1.5 rounded-full bg-black/50 p-1.5'
+                          onClick={() => {
+                            setImages((prev) => {
+                              if (prev) {
+                                const dataTransfer = new DataTransfer()
+                                Array.from(prev)
+                                  .filter((_, i) => i !== index)
+                                  .forEach((file) => dataTransfer.items.add(file))
+                                const newImages = dataTransfer.files
+                                return newImages
+                              }
+                              return null
+                            })
+                          }}
+                        >
+                          <Trash2 size={16} className='text-white' />
+                        </Button>
+                      </div>
+                    ))
+                  : null}
               </div>
               <Button
                 variant='zero'
                 className={`${colors[color].card} flex h-11 w-full items-center justify-center rounded-lg border border-black/5`}
               >
-                <Plus size={24} />
+                <label htmlFor='img'>
+                  <Plus size={24} className='text-black' />
+                </label>
+                <input
+                  type='file'
+                  multiple
+                  accept='image/*'
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      let files = Array.from(e.target.files)
+                      const totalFiles = files.length + (images ? images.length : 0)
+
+                      if (totalFiles > 5) {
+                        alert('You can only upload a maximum of 5 images.')
+                        files = files.slice(0, 5 - (images ? images.length : 0))
+                      }
+
+                      setImages((prev) => {
+                        const dataTransfer = new DataTransfer()
+                        if (prev) {
+                          Array.from(prev).forEach((file) => dataTransfer.items.add(file))
+                        }
+                        files.forEach((file) => dataTransfer.items.add(file))
+                        return dataTransfer.files
+                      })
+                    }
+                  }}
+                  className='absolute inset-0 cursor-pointer opacity-0'
+                  id='img'
+                />
               </Button>
             </div>
           </div>
           <div className='grid gap-5'>
             <textarea
               ref={textareaRef}
-              placeholder='Add a comment'
+              placeholder='Write something...'
               className={`${
                 colors[color].card
-              } no-scrollbar max-h-60 w-full rounded-2xl border border-black/5 px-2 py-3 text-sm text-black/80 outline-none sm:text-base sm:font-extrabold`}
+              } no-scrollbar max-h-60 w-full rounded-2xl border border-black/5 px-2 py-3 text-sm text-black/80 outline-none placeholder:text-black/50 sm:text-base sm:font-extrabold`}
               value={text}
               onChange={(e) => setText(e.target.value)}
               rows={6}
@@ -177,7 +229,13 @@ export default function Page() {
 function Header() {
   return (
     <div className='sticky top-0 z-10 flex w-full items-center justify-between border-b border-black/5 bg-white/80 px-5 py-0 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
-      <Button variant='icon' className='p-1.5'>
+      <Button
+        variant='icon'
+        className='p-1.5'
+        onClick={() => {
+          window.history.back()
+        }}
+      >
         <ChevronLeft size={24} />
       </Button>
       <div className='text-base font-bold'>Create Post </div>
