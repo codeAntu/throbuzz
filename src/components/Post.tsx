@@ -157,7 +157,7 @@ export default function Post({ post }: { post: PostT }) {
                 <p className='hidden md:block'> {post.comments == 1 ? 'Comment' : 'Comments'} </p>
               </Button>
             </DrawerTrigger>
-            <DrawerContent className={`wbackdrop-blur-3xl mx-auto max-w-[800px]`}>
+            <DrawerContent className={`wbackdrop-blur-3xl mx-auto min-h-[600px] max-w-[800px]`}>
               <DrawerHeader className='w-full text-center font-extrabold'>450 Comments</DrawerHeader>
               <Comments />
             </DrawerContent>

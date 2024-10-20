@@ -1,23 +1,12 @@
-'use client'
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
+'use client'
+
 import { Button } from '@/components/Button'
 import { Screen, Screen0 } from '@/components/Screen'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { colors } from '@/lib/const'
-import {
-  Check,
-  CheckCheck,
-  ChevronDown,
-  ChevronLeft,
-  Earth,
-  EarthLock,
-  EllipsisVertical,
-  Image,
-  Pencil,
-  Plus,
-  Trash2,
-} from 'lucide-react'
+import axios from 'axios'
+import { Check, ChevronDown, ChevronLeft, Earth, EarthLock, Image, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 const colorNames: (keyof typeof colors)[] = [
@@ -40,7 +29,13 @@ const colorNames: (keyof typeof colors)[] = [
   'red',
 ]
 
-export default function Page() {
+export default function EditPostPage() {
+  const [visibility, setVisibility] = useState('public')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const postId = '66f2e42e108a3040e088d114'
+  const [postImages, setPostImages] = useState<string[]>([])
+
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [text, setText] = useState('')
   const [color, setColor] = useState<keyof typeof colors>('stone')
@@ -58,22 +53,63 @@ export default function Page() {
 
   console.log('images', images)
 
+  async function getPost(postId: string) {
+    try {
+      const response = await axios.post('/api/post/getPost', {
+        postId,
+      })
+      console.log(response.data)
+
+      setText(response.data.post.text)
+      setVisibility(response.data.post.visibility)
+      setPostImages(response.data.post.images)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
+  async function editPost({ text, visibility, postId }: { text: string; visibility: string; postId: string }) {
+    try {
+      const response = await axios.post('/api/post/editPost', {
+        text,
+        visibility,
+        postId,
+      })
+
+      console.log('response', response.data)
+    } catch (error) {
+      console.log('error ', error)
+    }
+  }
+
+  async function deletePost(postId: string) {
+    try {
+      const response = await axios.post('/api/post/deletePost', {
+        postId: '66f2697fdbb5e1ae7c5a2e26',
+      })
+      console.log(response.data)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
   return (
     <Screen0 className='grid'>
       <Header />
-      <Screen className='min-h-[90dvh] justify-between py-2'>
+
+      <Screen className='min-h-[93dvh] justify-between py-2'>
         <div className='flex flex-col gap-6'>
           <div className='grid w-full gap-4'>
             <div className='flex items-center justify-between'>
-              <div className='text-base font-semibold'>Add photos </div>
-              <div className='text-xs font-semibold text-black/50 dark:text-white/50'>
+              <div className='text-base font-semibold'>Your photos </div>
+              {/* <div className='text-xs font-semibold text-black/50 dark:text-white/50'>
                 {images
                   ? `${images.length > 1 ? `${images.length} photos` : `${images.length} photo`}`
                   : 'Add upto 5 photos'}
-              </div>
+              </div> */}
             </div>
             <div className='grid w-full gap-4'>
-              <div className='no-scrollbar flex gap-3.5 overflow-auto rounded-2xl sm:gap-5'>
+              {/* <div className='no-scrollbar flex gap-3.5 overflow-auto rounded-2xl sm:gap-5'>
                 {images
                   ? Array.from(images).map((image, index) => (
                       <div key={index} className='relative aspect-video h-44'>
@@ -104,15 +140,16 @@ export default function Page() {
                       </div>
                     ))
                   : null}
-              </div>
+              </div> */}
               <Button
                 variant='zero'
                 className={`${colors[color].card} flex h-11 w-full items-center justify-center rounded-lg border border-black/5`}
               >
-                <label htmlFor='postImages'>
+                <div>You have {postImages.length} images</div>
+                {/* <label htmlFor='postImages'>
                   <Plus size={24} className='text-black' />
-                </label>
-                <input
+                </label> */}
+                {/* <input
                   type='file'
                   multiple
                   accept='image/*'
@@ -136,7 +173,7 @@ export default function Page() {
                   }}
                   className='hidden'
                   id='postImages'
-                />
+                /> */}
               </Button>
             </div>
           </div>
@@ -227,18 +264,21 @@ export default function Page() {
 
 function Header() {
   return (
-    <div className='sticky top-0 z-10 flex w-full items-center justify-between border-b border-black/5 bg-white/80 px-5 py-0 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
+    <div className='z-10 flex min-h-3 w-full items-center justify-between border-b border-black/5 bg-white/80 px-3 py-0 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
       <Button
         variant='icon'
+        className='rounded-full p-3 active:bg-black/10 dark:active:bg-white/10'
         onClick={() => {
           window.history.back()
         }}
       >
         <ChevronLeft size={24} />
       </Button>
-      <div className='text-base font-bold'>Create Post </div>
-      <Button variant='text' className='pl-5 text-base text-accent dark:text-accent'>
-        <div></div>
+      <div className='text-base font-bold'>Edit Post </div>
+      <Button variant='text' className='rounded-full p-3 text-base active:bg-red-100 active:dark:bg-red-900 md:p-3'>
+        <div>
+          <Trash2 size={21} className='text-red-500' />
+        </div>
       </Button>
     </div>
   )
