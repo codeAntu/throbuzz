@@ -1,6 +1,7 @@
 'use client'
 import { Button } from '@/components/Button'
 import { Screen } from '@/components/Screen'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import axios from 'axios'
 import { use, useCallback, useEffect, useState } from 'react'
 
@@ -42,8 +43,20 @@ export default function Post() {
   }, [images, text, visibility])
 
   return (
-    <Screen className='gap-10'>
-      <div>Post</div>
+    <Screen className='relative gap-10'>
+      <div className='absolute'></div>
+      <Sheet>
+        <SheetTrigger>Open</SheetTrigger>
+        <SheetContent side={'left'}>
+          <SheetHeader>
+            <SheetTitle>Are you absolutely sure?</SheetTitle>
+            <SheetDescription>
+              This action cannot be undone. This will permanently delete your account and remove your data from our
+              servers.
+            </SheetDescription>
+          </SheetHeader>
+        </SheetContent>
+      </Sheet>
     </Screen>
   )
 }
