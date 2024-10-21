@@ -7,7 +7,7 @@ import { Button } from './Button'
 import { usePathname, useRouter } from 'next/navigation'
 
 const paths = [
-  { name: 'Home', path: '/', icon: <House size={24} className='' strokeWidth={2.3} /> },
+  { name: 'Home', path: '/', icon: <House size={24} className='' /> },
   { name: 'Notifications', path: '/notifications', icon: <Bell size={24} className='' /> },
   { name: 'Messages', path: '/messages', icon: <Mail size={24} className='' /> },
   { name: 'Friends', path: '/friends', icon: <User size={24} className='' /> },

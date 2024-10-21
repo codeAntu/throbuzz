@@ -3,12 +3,14 @@
 import { Button } from '@/components/Button'
 import Post, { PostT } from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { socialMediaUrls } from '@/lib/const'
 import { nFormatter } from '@/utils/utils'
 import {
   Calendar,
   ChevronLeft,
   Ellipsis,
+  EllipsisVertical,
   GithubIcon,
   Instagram,
   Link,
@@ -18,9 +20,13 @@ import {
   MessageCircleMore,
   Pencil,
   Phone,
+  Settings,
+  Trash2,
   Twitter,
   UserPlus,
 } from 'lucide-react'
+import { routeModule } from 'next/dist/build/templates/app-page'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 const Icons = {
@@ -58,14 +64,41 @@ export default function UserProfile({
 }
 
 function Header() {
+  const router = useRouter()
+
   return (
     <div className='sticky top-0 z-10 flex w-full flex-grow items-center justify-between border-b border-black/5 bg-white/80 px-5 py-3.5 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
-      <Button variant='icon'>
+      <Button
+        variant='icon'
+        onClick={() => {
+          router.back()
+        }}
+      >
         <ChevronLeft size={32} className='-ml-3' />
       </Button>
       <div className='text-[15px] font-semibold'>Profile</div>
       <Button variant='icon'>
-        <Ellipsis size={28} />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className='p-2'>
+            <div>
+              <Ellipsis size={20} className='' />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align='end'
+            className='border border-black/10 bg-white/10 backdrop-blur-md dark:border-white/10 dark:bg-black/25'
+          >
+            <DropdownMenuItem
+              className=''
+              onClick={() => {
+                router.push('/settings')
+              }}
+            >
+              <Settings size={17} className='mr-2' />
+              Setting
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </Button>
     </div>
   )

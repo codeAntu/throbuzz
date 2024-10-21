@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 import { Button } from '@/components/Button'
 import Error from '@/components/Error'
@@ -128,9 +129,6 @@ export default function Edit() {
 
   return (
     <Screen0 className=''>
-      {/* <div className='w-full py-5 text-center text-xl font-medium text-black/70 dark:text-white/70'>
-        Edit Your Profile
-      </div> */}
       <Header />
       <div className='flex flex-grow flex-col justify-between gap-8 px-5 py-6'>
         <div>
@@ -290,35 +288,20 @@ export default function Edit() {
             {error && <Error error={error} />}
           </div>
         </div>
-        {/* <Button
-          title='Save'
-          className='w-full'
-          onClick={() => updateUser()}
-          leftIcon={
-            loading ? (
-              <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
-            ) : (
-              <Ic Icon={LogIn} className='text-white dark:text-black' />
-            )
-          }
-          disabled={loading}
-        >
-          Save
-        </Button> */}
       </div>
-      {/* <Button title='Save' onClick={() => getMe()} /> */}
     </Screen0>
   )
 }
 
 function Header() {
+  const router = useRouter()
   return (
     <div className='z-10 flex min-h-3 w-full items-center justify-between border-b border-black/5 bg-white/80 px-3 py-1.5 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
       <Button
         variant='icon'
         className='rounded-full p-3 active:bg-black/10 dark:active:bg-white/10'
         onClick={() => {
-          window.history.back()
+          router.back()
         }}
       >
         <ChevronLeft size={24} />
@@ -329,7 +312,6 @@ function Header() {
         className='rounded-full p-3 text-sm text-accent active:bg-accent/20 active:dark:bg-accent md:p-3'
       >
         <div>
-          {/* <Trash2 size={21} className='text-red-500' /> */}
           Save
         </div>
       </Button>
