@@ -195,20 +195,99 @@ export default function Edit() {
                 }}
               />
             </div>
-            <div>
-              <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>About</div>
-              <textarea
-                className='h-36 w-full rounded-2xl border border-black/10 bg-black/5 px-4 py-4 text-sm font-medium text-black/60 outline-none dark:border-white/10 dark:bg-white/5 dark:text-white/60'
-                name='about'
-                placeholder='Enter about yourself'
-                // leftIcon={<Ic Icon={User} />}
-                value={updatedUser.about}
-                onChange={(e: any) => {
-                  setUpdatedUser({ ...updatedUser, about: e.target.value })
-                }}
-              />
+            <div className='space-y-2'>
+              <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>About </div>
+              <div className='grid gap-3 rounded-md border-black/10 bg-black/5 px-5 py-4 text-sm font-semibold text-black/75 dark:border-white/10 dark:bg-white/5 dark:text-white/75 sm:font-medium'>
+                <div className='flex items-center justify-normal gap-3'>
+                  <div>Email :</div>
+                  <input
+                    type='text'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    placeholder='example@gmail.com'
+                  />
+                </div>
+                <div className='flex items-center justify-normal gap-3'>
+                  <div>Phone No :</div>
+                  <input
+                    type='text'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    placeholder='9876543210'
+                  />
+                </div>
+                <div className='flex items-center justify-normal gap-3'>
+                  <div>Birthday :</div>
+                  <input
+                    type='text'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    placeholder='11-10-1999'
+                  />
+                </div>
+                <div className='flex items-center justify-normal gap-3'>
+                  <div>Location :</div>
+                  <input
+                    type='text'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    placeholder='Your city'
+                  />
+                </div>
+              </div>
             </div>
+            <div className='space-y-2'>
+              <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>Public Links</div>
+              <div className='grid gap-3 rounded-md border-black/10 bg-black/5 px-5 py-4 text-sm font-semibold text-black/75 dark:border-white/10 dark:bg-white/5 dark:text-white/75 sm:font-medium'>
+                <div className='flex items-center justify-normal gap-3'>
+                  <div>Instagram :</div>
+                  <input
+                    type='text'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    placeholder='insta@1234'
+                  />
+                </div>
+                {/* gittub */}
+                <div className='flex items-center justify-normal gap-3'>
+                  <div>Github :</div>
+                  <input
+                    type='text'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    placeholder='github@1234'
+                  />
+                </div>
 
+                <div className='flex items-center justify-normal gap-3'>
+                  <div>Twitter :</div>
+                  <input
+                    type='text'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    placeholder='twitter@1234'
+                  />
+                </div>
+                <div className='flex items-center justify-normal gap-3'>
+                  <div>Facebook :</div>
+                  <input
+                    type='text'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    placeholder='facebook@1234'
+                  />
+                </div>
+                <div className='flex items-center justify-normal gap-3'>
+                  <div>LinkedIn :</div>
+                  <input
+                    type='text'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    placeholder='linkedin@1234'
+                  />
+                </div>
+
+                <div className='flex items-center justify-normal gap-3'>
+                  <div>Website :</div>
+                  <input
+                    type='text'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    placeholder='www.example.com'
+                  />
+                </div>
+              </div>
+            </div>
             {error && <Error error={error} />}
           </div>
         </div>
