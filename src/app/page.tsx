@@ -5,7 +5,8 @@
 import { Button } from '@/components/Button'
 import Post, { PostT } from '@/components/Post'
 import { Screen } from '@/components/Screen'
-import Slider from '@/components/Slider'
+import Sidebar from '@/components/Sidebar'
+import Slider from '@/components/Sidebar'
 import useStore from '@/store/store'
 import axios from 'axios'
 import { ChevronDown, Earth, Image, ImageUp, Menu } from 'lucide-react'
@@ -69,7 +70,7 @@ export default function Home() {
   return (
     <Screen className='gap-6'>
       <div className='flex w-full items-center justify-between'>
-        <Slider />
+        <Sidebar />
         <div className='flex w-full items-center justify-between'>
           <div className='` text-xl font-bold text-black/90 dark:text-white/90 sm:text-2xl'>Feeds</div>
           <div className='flex items-center justify-end gap-4 rounded-full bg-slate-100 px-5 text-xs dark:bg-zinc-900 dark:text-white'>
