@@ -135,7 +135,7 @@ export default function Edit() {
       <div className='flex flex-grow flex-col justify-between gap-8 px-5 py-6'>
         <div>
           <div className='flex flex-col justify-center gap-2.5'>
-            <div className='flex flex-col items-center justify-center gap-2'>
+            <div className='flex flex-col items-center justify-center gap-2 sm:gap-4'>
               <img src='/images/img1.png' alt='' className='size-36 rounded-full bg-red-500' />
               <input type='file' name='' id='profilePicInput' className='hidden' />
               <label htmlFor='profilePicInput' className=''>
@@ -146,7 +146,7 @@ export default function Edit() {
               </label>
             </div>
             <div>
-              <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>Name</div>
+              <div className='px-1.5 text-base font-medium text-black/80 dark:text-white/80'>Name</div>
               <Input
                 type='text'
                 name='name'
@@ -159,7 +159,7 @@ export default function Edit() {
               />
             </div>
             <div>
-              <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>UserName</div>
+              <div className='px-1.5 text-base font-medium text-black/80 dark:text-white/80'>UserName</div>
 
               <Input
                 type='text'
@@ -184,9 +184,9 @@ export default function Edit() {
               />
             </div>
             <div>
-              <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>Bio</div>
+              <div className='px-1.5 text-base font-medium text-black/80 dark:text-white/80'>Bio</div>
               <textarea
-                className='h-36 w-full rounded-2xl border border-black/10 bg-black/5 px-4 py-4 text-sm font-medium text-black/60 outline-none dark:border-white/10 dark:bg-white/5 dark:text-white/60'
+                className='h-36 w-full rounded-2xl border border-black/5 bg-black/5 px-4 py-4 text-sm font-medium text-black/80 outline-none dark:border-white/5 dark:bg-white/5 dark:text-white/80'
                 name='bio'
                 placeholder='Enter your bio'
                 value={updatedUser.bio}
@@ -196,8 +196,8 @@ export default function Edit() {
               />
             </div>
             <div className='space-y-2'>
-              <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>About </div>
-              <div className='grid gap-3 rounded-md border-black/10 bg-black/5 px-5 py-4 text-sm font-semibold text-black/75 dark:border-white/10 dark:bg-white/5 dark:text-white/75 sm:font-medium'>
+              <div className='px-1.5 text-base font-medium text-black/80 dark:text-white/80'>About </div>
+              <div className='grid gap-3 rounded-md border border-black/5 bg-black/5 px-5 py-4 text-sm font-medium text-black/75 dark:border-white/10 dark:bg-white/5 dark:text-white/75 sm:font-medium'>
                 <div className='flex items-center justify-normal gap-3'>
                   <div>Email :</div>
                   <input
@@ -209,7 +209,7 @@ export default function Edit() {
                 <div className='flex items-center justify-normal gap-3'>
                   <div>Phone No :</div>
                   <input
-                    type='text'
+                    type='number'
                     className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
                     placeholder='9876543210'
                   />
@@ -232,9 +232,9 @@ export default function Edit() {
                 </div>
               </div>
             </div>
-            <div className='space-y-2'>
-              <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>Public Links</div>
-              <div className='grid gap-3 rounded-md border-black/10 bg-black/5 px-5 py-4 text-sm font-semibold text-black/75 dark:border-white/10 dark:bg-white/5 dark:text-white/75 sm:font-medium'>
+            <div className='space-y-2 py-2'>
+              <div className='px-1.5 text-base font-medium text-black/80 dark:text-white/60'>Public Links</div>
+              <div className='grid gap-3 rounded-md border-black/10 bg-black/5 px-5 py-4 text-sm font-medium text-black/75 dark:border-white/10 dark:bg-white/5 dark:text-white/75 sm:font-medium'>
                 <div className='flex items-center justify-normal gap-3'>
                   <div>Instagram :</div>
                   <input
@@ -243,7 +243,6 @@ export default function Edit() {
                     placeholder='insta@1234'
                   />
                 </div>
-                {/* gittub */}
                 <div className='flex items-center justify-normal gap-3'>
                   <div>Github :</div>
                   <input
