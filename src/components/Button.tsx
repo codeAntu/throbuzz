@@ -10,7 +10,8 @@ type buttonProps = ComponentProps<'button'> & {
 
 const variants = {
   accent: ' w-full border-2 border-accent bg-accent px-9 py-3.5 text-white dark:text-black ',
-  filled: ' w-full bg-black px-9 py-2.5 text-white dark:bg-white dark:text-black border-2 ',
+  filled:
+    ' w-full bg-black px-9 py-2.5 text-white dark:bg-white dark:text-black border-2 border-black dark:border-white',
   accentOutline: ' w-full border-2 border-accent text-accent px-9 py-3.5 ',
   outline: ' w-full  border-2 border-black text-black px-9 py-2.5 dark:border-white dark:text-white ',
   textAccent: 'text-accent dark:text-accent py-2.5',

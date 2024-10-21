@@ -10,7 +10,7 @@ const paths = [
   { name: 'Home', path: '/', icon: <House size={24} className='' /> },
   { name: 'Notifications', path: '/notifications', icon: <Bell size={24} className='' /> },
   { name: 'Messages', path: '/messages', icon: <Mail size={24} className='' /> },
-  { name: 'Friends', path: '/friends', icon: <User size={24} className='' /> },
+  { name: 'friend Request', path: '/friendRequests', icon: <User size={24} className='' /> },
   { name: 'Settings', path: '/settings', icon: <Settings size={24} className='' /> },
 ]
 

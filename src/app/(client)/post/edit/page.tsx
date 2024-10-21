@@ -253,7 +253,7 @@ export default function EditPostPage() {
         </div>
 
         <div className=''>
-          <Button variant='accent' className='w-full'>
+          <Button variant='filled' className='w-full py-3'>
             Post
           </Button>
         </div>
