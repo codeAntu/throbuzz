@@ -3,9 +3,9 @@ import { Button } from '@/components/Button'
 import Error from '@/components/Error'
 import { Ic } from '@/components/Icon'
 import Input from '@/components/Input'
-import { Screen } from '@/components/Screen'
+import { Screen0 } from '@/components/Screen'
 import axios from 'axios'
-import { AtSign, Check, LoaderCircle, LogIn, User, X } from 'lucide-react'
+import { AtSign, Check, ChevronLeft, ImagePlus, LoaderCircle, Pen, Pencil, Trash2, User, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -127,13 +127,24 @@ export default function Edit() {
   console.log('updatedUser', updatedUser)
 
   return (
-    <Screen className=''>
-      <div className='w-full py-5 text-center text-xl font-medium text-black/70 dark:text-white/70'>
+    <Screen0 className=''>
+      {/* <div className='w-full py-5 text-center text-xl font-medium text-black/70 dark:text-white/70'>
         Edit Your Profile
-      </div>
-      <div className='flex flex-grow flex-col justify-between gap-8'>
+      </div> */}
+      <Header />
+      <div className='flex flex-grow flex-col justify-between gap-8 px-5 py-6'>
         <div>
           <div className='flex flex-col justify-center gap-2.5'>
+            <div className='flex flex-col items-center justify-center gap-2'>
+              <img src='/images/img1.png' alt='' className='size-36 rounded-full bg-red-500' />
+              <input type='file' name='' id='profilePicInput' className='hidden' />
+              <label htmlFor='profilePicInput' className=''>
+                <Button variant='filled' className='rounded-full border-none px-7 text-xs font-medium'>
+                  <Pencil size={14} className='' />
+                  <span>Edit</span>
+                </Button>
+              </label>
+            </div>
             <div>
               <div className='px-1.5 text-lg font-medium text-black/60 dark:text-white/60'>Name</div>
               <Input
@@ -218,6 +229,32 @@ export default function Edit() {
         </Button> */}
       </div>
       {/* <Button title='Save' onClick={() => getMe()} /> */}
-    </Screen>
+    </Screen0>
+  )
+}
+
+function Header() {
+  return (
+    <div className='z-10 flex min-h-3 w-full items-center justify-between border-b border-black/5 bg-white/80 px-3 py-1.5 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
+      <Button
+        variant='icon'
+        className='rounded-full p-3 active:bg-black/10 dark:active:bg-white/10'
+        onClick={() => {
+          window.history.back()
+        }}
+      >
+        <ChevronLeft size={24} />
+      </Button>
+      <div className='text-base font-bold'>Edit Profile</div>
+      <Button
+        variant='text'
+        className='rounded-full p-3 text-sm text-accent active:bg-accent/20 active:dark:bg-accent md:p-3'
+      >
+        <div>
+          {/* <Trash2 size={21} className='text-red-500' /> */}
+          Save
+        </div>
+      </Button>
+    </div>
   )
 }
