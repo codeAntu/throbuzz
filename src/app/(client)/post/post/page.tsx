@@ -42,21 +42,5 @@ export default function Post() {
     }
   }, [images, text, visibility])
 
-  return (
-    <Screen className='relative gap-10'>
-      <div className='absolute'></div>
-      <Sheet>
-        <SheetTrigger>Open</SheetTrigger>
-        <SheetContent side={'left'}>
-          <SheetHeader>
-            <SheetTitle>Are you absolutely sure?</SheetTitle>
-            <SheetDescription>
-              This action cannot be undone. This will permanently delete your account and remove your data from our
-              servers.
-            </SheetDescription>
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
-    </Screen>
-  )
+  return <Screen className='relative gap-10'>Post</Screen>
 }
