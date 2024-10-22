@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 import { Screen } from '@/components/Screen'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
@@ -10,7 +11,7 @@ const paths = [
   { name: 'Home', path: '/', icon: <House size={24} className='' /> },
   { name: 'Notifications', path: '/notifications', icon: <Bell size={24} className='' /> },
   { name: 'Messages', path: '/messages', icon: <Mail size={24} className='' /> },
-  { name: 'friend Request', path: '/friendRequests', icon: <User size={24} className='' /> },
+  { name: 'Follow Request', path: '/requests', icon: <User size={24} className='' /> },
   { name: 'Settings', path: '/settings', icon: <Settings size={24} className='' /> },
 ]
 

@@ -142,7 +142,7 @@ function Profile() {
   }
 
   const [showMore, setShowMore] = useState(false)
-
+  const router = useRouter()
   return (
     <div className='flex flex-col gap-5 px-5 py-4'>
       <div className='flex w-full items-center gap-5'>
@@ -155,14 +155,26 @@ function Profile() {
             <div className='line-clamp-1 text-sm'>{user.username}</div>
           </div>
           <div className='flex w-full items-center gap-8 text-center'>
-            <div>
+            <Button
+              variant='zero'
+              onClick={() => {
+                router.push(`/profile/${user.username}/followers`)
+              }}
+              className='flex-col gap-0'
+            >
               <div className='text-sm font-semibold leading-tight'>{nFormatter(user.followers)}</div>
-              <div className='text-xs text-neutral-500'>Followers</div>
-            </div>
-            <div>
+              <div className='text-xs font-normal text-neutral-500'>Followers</div>
+            </Button>
+            <Button
+              variant='zero'
+              onClick={() => {
+                router.push(`/profile/${user.username}/following`)
+              }}
+              className='flex-col gap-0'
+            >
               <div className='text-sm font-semibold leading-tight'>{nFormatter(user.following)}</div>
-              <div className='text-xs text-neutral-500'>Following</div>
-            </div>
+              <div className='text-xs font-normal text-neutral-500'>Following</div>
+            </Button>
             <div>
               <div className='text-sm font-semibold leading-tight'>{nFormatter(user.posts)}</div>
               <div className='text-xs text-neutral-500'>Posts</div>
