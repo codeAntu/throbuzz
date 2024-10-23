@@ -7,6 +7,7 @@ import Post, { PostT } from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { socialMediaUrls } from '@/lib/const'
+import { UserT } from '@/lib/types'
 import { nFormatter } from '@/utils/utils'
 import axios from 'axios'
 import {
@@ -28,9 +29,8 @@ import {
   Twitter,
   UserPlus,
 } from 'lucide-react'
-import { routeModule } from 'next/dist/build/templates/app-page'
 import { useRouter } from 'next/navigation'
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const Icons = {
   instagram: Instagram,
@@ -42,29 +42,6 @@ const Icons = {
   linkedin: LinkedinIcon,
   website: Link,
   dob: Calendar,
-}
-
-interface UserT {
-  id: string
-  name: string
-  username: string
-  bio: string
-  profilePic: string
-  followers: number
-  following: number
-  posts: number
-  isMe: boolean
-  about: {
-    email: string
-    phone: string
-    mapPin: string
-    instagram: string
-    twitter: string
-    github: string
-    linkedin: string
-    website: string
-    dob: string
-  }
 }
 
 export default function UserProfile({
@@ -261,51 +238,54 @@ function Profile({ userName }: { userName: string }) {
 }
 
 function Posts({ username }: { username: string }) {
-  const colors = [
-    'stone',
-    'slate',
-    'orange',
-    'amber',
-    'lime',
-    'green',
-    'emerald',
-    'teal',
-    'cyan',
-    'sky',
-    'blue',
-    'indigo',
-    'violet',
-    'purple',
-    'fuchsia',
-    'pink',
-    'red',
-  ]
+  const [posts, setPosts] = useState<PostT[]>()
+  const [nextPage, setNextPage] = useState('')
+  const [loading, setLoading] = useState(true)
 
-  const samplePost: PostT = {
-    id: '1',
-    name: 'Ananta Karmanar',
-    username: 'codeAntu',
-    profilePic: '/images/profile.jpg',
-    time: 1630000000000,
-    content:
-      'Hi everyone, I am a frontend developer. I am currently working on a project. I am looking for a job. If you have any job opportunity, please let me know. Thank you.',
-    image: ['/images/img1.png', '/images/img2.png', '/images/img3.png', '/images/img4.png', '/images/img5.png'],
-    // image: ['/images/img1.png'],
-    likes: 5382,
-    comments: 5382,
-    color: 'red',
+  async function getPosts() {
+    setLoading(true)
+    try {
+      const response = await axios.post('/api/user/getUserPosts', { username })
+      const newPosts = response.data.posts.map((post: any) => ({
+        id: post._id,
+        name: response.data.user.name,
+        username: response.data.user.username,
+        profilePic: response.data.user.profilePic,
+        time: post.createdAt,
+        content: post.text,
+        image: post.publicIds,
+        likes: post.likes,
+        comments: post.comments,
+        color: post.color || 'stone',
+      }))
+
+      setPosts([...(posts || []), ...newPosts])
+
+      setNextPage(response.data.nextPage)
+    } catch (error: any) {
+      console.error(error)
+    }
+    setLoading(false)
   }
 
-  function generatePosts(): PostT[] {
-    return colors.map((color, index) => ({
-      ...samplePost,
-      id: (index + 1).toString(),
-      content: `This is a post with the color ${color}. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloremque, modi. Et porro libero vitae commodi vel omnis possimus beatae qui aut doloremque temporibus eaque, laboriosam exercitationem at? Minima, error quis?`,
-      color: color as PostT['color'],
-    }))
+  useEffect(() => {
+    getPosts()
+  }, [username])
+
+  if (loading) {
+    return (
+      <div className='px-5 py-16 text-center'>
+        <div className='text-lg font-semibold text-black/70 dark:text-white/70'>Loading...</div>
+      </div>
+    )
   }
 
-  const posts = generatePosts()
+  if (!posts)
+    return (
+      <div className='px-5 py-16 text-center'>
+        <div className='text-lg font-semibold text-black/70 dark:text-white/70'>Do not have any posts yet.</div>
+      </div>
+    )
 
   return (
     <>

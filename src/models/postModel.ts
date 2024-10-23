@@ -7,6 +7,7 @@ interface PostT extends Document {
   publicIds: string[]
   likes: number
   comments: number
+  color: string
 }
 
 const postSchema: Schema<PostT> = new mongoose.Schema(
@@ -34,6 +35,29 @@ const postSchema: Schema<PostT> = new mongoose.Schema(
     comments: {
       type: Number,
       default: 0,
+    },
+    color: {
+      type: String,
+      enum: [
+        'stone',
+        'slate',
+        'orange',
+        'amber',
+        'lime',
+        'green',
+        'emerald',
+        'teal',
+        'cyan',
+        'sky',
+        'blue',
+        'indigo',
+        'violet',
+        'purple',
+        'fuchsia',
+        'pink',
+        'red',
+      ],
+      default: 'stone',
     },
   },
   { timestamps: true },

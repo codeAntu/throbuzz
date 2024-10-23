@@ -97,3 +97,23 @@ export const socialMediaUrls = {
   linkedin: 'https://linkedin.com/in/',
   website: '', // Assuming the value is a full URL
 }
+
+const colorNames = [
+  'stone',
+  'slate',
+  'orange',
+  'amber',
+  'lime',
+  'green',
+  'emerald',
+  'teal',
+  'cyan',
+  'sky',
+  'blue',
+  'indigo',
+  'violet',
+  'purple',
+  'fuchsia',
+  'pink',
+  'red',
+]

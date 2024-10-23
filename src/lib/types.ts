@@ -84,3 +84,26 @@ export type CloudinaryVideoResponse = {
   nb_frames: number
   api_key: string
 }
+
+export interface UserT {
+  id: string
+  name: string
+  username: string
+  bio: string
+  profilePic: string
+  followers: number
+  following: number
+  posts: number
+  isMe: boolean
+  about: {
+    email: string
+    phone: string
+    mapPin: string
+    instagram: string
+    twitter: string
+    github: string
+    linkedin: string
+    website: string
+    dob: string
+  }
+}

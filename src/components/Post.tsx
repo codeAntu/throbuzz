@@ -49,6 +49,10 @@ export default function Post({ post }: { post: PostT }) {
     setIsExpanded(!isExpanded)
   }
 
+  console.log(post)
+
+  // return <div>post</div>
+
   return (
     <div
       className={`flex flex-col gap-2 rounded-3xl border border-slate-400/5 px-3.5 py-4 pb-2.5 text-black sm:p-4 ${colors[post.color as keyof typeof colors].card} `}
