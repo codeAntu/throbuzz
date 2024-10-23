@@ -1,11 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 'use client'
 import { Button } from '@/components/Button'
+import Header from '@/components/Header'
 import Post, { PostT } from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { socialMediaUrls } from '@/lib/const'
 import { nFormatter } from '@/utils/utils'
+import axios from 'axios'
 import {
   Calendar,
   ChevronLeft,
@@ -27,18 +30,41 @@ import {
 } from 'lucide-react'
 import { routeModule } from 'next/dist/build/templates/app-page'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { use, useEffect, useState } from 'react'
 
 const Icons = {
   instagram: Instagram,
   twitter: Twitter,
-  mail: Mail,
+  email: Mail,
   phone: Phone,
   mapPin: MapPin,
   github: GithubIcon,
   linkedin: LinkedinIcon,
   website: Link,
   dob: Calendar,
+}
+
+interface UserT {
+  id: string
+  name: string
+  username: string
+  bio: string
+  profilePic: string
+  followers: number
+  following: number
+  posts: number
+  isMe: boolean
+  about: {
+    email: string
+    phone: string
+    mapPin: string
+    instagram: string
+    twitter: string
+    github: string
+    linkedin: string
+    website: string
+    dob: string
+  }
 }
 
 export default function UserProfile({
@@ -49,105 +75,86 @@ export default function UserProfile({
     [key: string]: any
   }
 }) {
-  console.log('params', params)
-
+  const router = useRouter()
   return (
     <Screen0 className=''>
-      <Header />
+      <Header title='Profile'>
+        <Button variant='icon'>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild className='p-2'>
+              <Ellipsis size={20} className='' />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align='end'
+              className='border border-black/10 bg-white/10 backdrop-blur-md dark:border-white/10 dark:bg-black/25'
+            >
+              <DropdownMenuItem
+                className=''
+                onClick={() => {
+                  router.push('/settings')
+                }}
+              >
+                <Settings size={17} className='mr-2' />
+                Setting
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </Button>
+      </Header>
       <div className='w-full'>
-        <Profile />
+        <Profile userName={params.userName} />
         <hr />
-        <Posts />
+        <Posts username={params.userName} />
       </div>
     </Screen0>
   )
 }
 
-function Header() {
-  const router = useRouter()
-
-  return (
-    <div className='sticky top-0 z-10 flex w-full flex-grow items-center justify-between border-b border-black/5 bg-white/80 px-5 py-3.5 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
-      <Button
-        variant='icon'
-        onClick={() => {
-          router.back()
-        }}
-      >
-        <ChevronLeft size={32} className='-ml-3' />
-      </Button>
-      <div className='text-[15px] font-semibold'>Profile</div>
-      <Button variant='icon'>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild className='p-2'>
-            <div>
-              <Ellipsis size={20} className='' />
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align='end'
-            className='border border-black/10 bg-white/10 backdrop-blur-md dark:border-white/10 dark:bg-black/25'
-          >
-            <DropdownMenuItem
-              className=''
-              onClick={() => {
-                router.push('/settings')
-              }}
-            >
-              <Settings size={17} className='mr-2' />
-              Setting
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </Button>
-    </div>
-  )
-}
-
-function Profile() {
-  const user: User = {
-    _id: '1',
-    name: 'Ananta Karmakar',
-    username: 'codeAntu',
-    bio: 'Frontend Developer | React & Next.js | Freelancer | JS | Competitive Programmer',
-    profilePic: '/images/profile.jpg',
-    followers: 5400000,
-    following: 2000,
-    posts: 560,
+function Profile({ userName }: { userName: string }) {
+  const [user, setUser] = useState<UserT>({
+    id: '',
+    name: '',
+    username: '',
+    bio: '',
+    profilePic: '',
+    followers: 0,
+    following: 0,
+    posts: 0,
     isMe: false,
     about: {
-      mail: 'codeantu@gmailcom',
-      phone: '9800211400',
-      mapPin: 'Mogra , Bankura',
-      instagram: 'codeAntu',
-      twitter: 'codeAntu',
-      github: 'codeAntu',
-      linkedin: 'codeAntu',
-      website: 'codeAntu',
-      dob: '11 October 2003',
+      email: '',
+      phone: '',
+      mapPin: '',
+      instagram: '',
+      twitter: '',
+      github: '',
+      linkedin: '',
+      website: '',
+      dob: '',
     },
-  }
-
-  interface User {
-    _id: string
-    name: string
-    username: string
-    bio: string
-    profilePic: string
-    followers: number
-    following: number
-    posts: number
-    isMe: boolean
-    about: Record<string, string>
-  }
-
+  })
   const [showMore, setShowMore] = useState(false)
   const router = useRouter()
+
+  async function getUser() {
+    try {
+      const response = await axios.post('/api/user/getUser', { username: userName })
+      setUser(response.data.user)
+      console.log(response.data)
+    } catch (error: any) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    getUser()
+  }, [])
+
   return (
     <div className='flex flex-col gap-5 px-5 py-4'>
       <div className='flex w-full items-center gap-5'>
         <div>
-          <img src={user.profilePic} alt='' className='w-28 rounded-full' />
+          <img src={user.profilePic} alt='' className='aspect-square w-28 rounded-full' />
         </div>
         <div className='grid flex-grow gap-5 py-4'>
           <div>
@@ -184,7 +191,13 @@ function Profile() {
       </div>
       <div className='flex gap-4'>
         {user.isMe ? (
-          <Button variant='filled' className='border-2 border-black bg-black py-3 font-medium text-white'>
+          <Button
+            variant='filled'
+            className='border-2 border-black bg-black py-3 font-medium text-white'
+            onClick={() => {
+              router.push('/profile/edit')
+            }}
+          >
             <Pencil size={16} className='' />
             Edit Profile
           </Button>
@@ -210,31 +223,33 @@ function Profile() {
           <div className='text-[13px]'>{user.bio}</div>
 
           {user.about &&
-            Object.entries(user.about).map(([key, value], index) => {
-              if (!showMore && index >= 4) return null
-              const Icon = Icons[key as keyof typeof Icons]
-              const isSocialMedia = key in socialMediaUrls
-              const url = isSocialMedia ? socialMediaUrls[key as keyof typeof socialMediaUrls] + value : ''
+            Object.entries(user.about)
+              .filter(([key, value]) => value != '')
+              .map(([key, value], index) => {
+                if (!showMore && index >= 4) return null
+                const Icon = Icons[key as keyof typeof Icons]
+                const isSocialMedia = key in socialMediaUrls
+                const url = isSocialMedia ? socialMediaUrls[key as keyof typeof socialMediaUrls] + value : ''
 
-              return (
-                <div key={key} className='flex items-center gap-3'>
-                  {Icon && <Icon size={16} className='text-black dark:text-white' />}
-                  {isSocialMedia ? (
-                    <a
-                      href={url}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-xs font-medium underline hover:text-accent'
-                    >
-                      @{value}
-                    </a>
-                  ) : (
-                    <p className='text-xs font-medium'>{value}</p>
-                  )}
-                </div>
-              )
-            })}
-          {!showMore && Object.entries(user.about).length > 4 && (
+                return (
+                  <div key={key} className='flex items-center gap-3'>
+                    {Icon && <Icon size={16} className='text-black dark:text-white' />}
+                    {isSocialMedia ? (
+                      <a
+                        href={url}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='text-xs font-medium underline hover:text-accent'
+                      >
+                        @{value}
+                      </a>
+                    ) : (
+                      <p className='text-xs font-medium'>{value}</p>
+                    )}
+                  </div>
+                )
+              })}
+          {!showMore && Object.entries(user.about).filter(([key, value]) => value != '').length > 4 && (
             <button onClick={() => setShowMore(true)} className='px-0.5 text-xs text-accent'>
               More...
             </button>
@@ -245,13 +260,12 @@ function Profile() {
   )
 }
 
-function Posts() {
+function Posts({ username }: { username: string }) {
   const colors = [
     'stone',
     'slate',
     'orange',
     'amber',
-    // 'yellow',
     'lime',
     'green',
     'emerald',

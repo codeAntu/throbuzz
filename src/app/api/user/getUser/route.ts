@@ -35,17 +35,26 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 
     const resUser = {
-      _id: user._id,
+      id: user._id,
       name: user.name,
       username: user.username,
       bio: user.bio,
-      about: user.about,
       profilePic: user.profilePic.imageUrl,
-      coverPic: user.coverPic.imageUrl,
       followers: user.friendsCount + user.friendRequestsCount,
       following: user.friendsCount + user.friendRequestSentCount,
+      posts: user.postsCount,
       isMe: tokenData.id === user._id.toString(),
-      friendStatus,
+      about: {
+        email: user.email,
+        phone: user.phone,
+        mapPin: user.location,
+        instagram: user.instagram,
+        twitter: user.twitter,
+        github: user.github,
+        linkedin: user.linkedin,
+        website: user.website,
+        dob: user.birthday,
+      },
     }
 
     return NextResponse.json({ user: resUser }, { status: 200 })
