@@ -13,6 +13,7 @@ import { SetStateAction, useEffect, useRef, useState } from 'react'
 import Input from '@/components/Input'
 import Error from '@/components/Error'
 import useUserStore from '@/store/store'
+import { togglePasswordVisibility } from '@/components/TogglePasswordVisibility'
 
 export default function Login() {
   const router = useRouter()
@@ -125,30 +126,5 @@ export default function Login() {
         <TAndC />
       </div>
     </Screen>
-  )
-}
-function togglePasswordVisibility(
-  hidePassword: boolean,
-  setHidePassword: { (value: SetStateAction<boolean>): void; (arg0: boolean): void },
-  focusPassword: () => void,
-) {
-  return hidePassword ? (
-    <Ic
-      Icon={Eye}
-      onClick={() => {
-        setHidePassword(false)
-        focusPassword()
-      }}
-      className='cursor-pointer'
-    />
-  ) : (
-    <Ic
-      Icon={EyeOff}
-      onClick={() => {
-        setHidePassword(true)
-        focusPassword()
-      }}
-      className='cursor-pointer'
-    />
   )
 }

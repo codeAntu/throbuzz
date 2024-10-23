@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 const dataZ = z.object({
-  searchKey: z
+  email: z
     .string({ required_error: 'Email is required' }) //
     .trim()
     .min(3, { message: 'Email must be at least 3 characters long' })
@@ -33,15 +33,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid input', details: parseResult.error.errors }, { status: 400 })
     }
 
-    const { searchKey } = parseResult.data
+    const { email } = parseResult.data
 
-    if (!searchKey) {
+    if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
+    console.log('email', email)
+
     // Check if user exists
     const user = await User.findOne({
-      $or: [{ email: searchKey }, { username: searchKey }],
+      $or: [{ email }],
     })
 
     if (!user) {
