@@ -88,8 +88,18 @@ export default function Login() {
               setUser({ ...user, password: e.target.value })
             }}
           />
-          {Error && <Error error={error} />}
+          <div className='w-full'>
+            <button
+              onClick={() => {
+                router.push('/forgetPassword')
+              }}
+              className='w-full text-right text-xs text-accent'
+            >
+              Forget Password?
+            </button>
+          </div>
         </div>
+
         <Button variant='accent' title='Login' onClick={() => onLogin()} disabled={loading}>
           {loading ? (
             <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
@@ -98,6 +108,8 @@ export default function Login() {
           )}
           <span>Login</span>
         </Button>
+        {error && <Error error={error} />}
+
         <div className='text-center text-sm text-black/40 dark:text-white/40'>
           Do not have an account?{'  '}
           <button
