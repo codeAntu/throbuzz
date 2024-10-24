@@ -6,6 +6,7 @@ import Header from '@/components/Header'
 import Post, { PostT } from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { follow } from '@/handelers/user/follow'
 import { socialMediaUrls } from '@/lib/const'
 import { UserT } from '@/lib/types'
 import { nFormatter } from '@/utils/utils'
@@ -27,6 +28,7 @@ import {
   Settings,
   Trash2,
   Twitter,
+  UserCheck,
   UserPlus,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -81,7 +83,7 @@ export default function UserProfile({
       <div className='w-full'>
         <Profile userName={params.userName} />
         <hr />
-        <Posts username={params.userName} />
+        {/* <Posts username={params.userName} /> */}
       </div>
     </Screen0>
   )
@@ -112,8 +114,11 @@ function Profile({ userName }: { userName: string }) {
   })
   const [showMore, setShowMore] = useState(false)
   const router = useRouter()
+  const [loading, setLoading] = useState(true)
+  const [followed, setFollowed] = useState(false)
 
   async function getUser() {
+    setLoading(true)
     try {
       const response = await axios.post('/api/user/getUser', { username: userName })
       setUser(response.data.user)
@@ -121,11 +126,40 @@ function Profile({ userName }: { userName: string }) {
     } catch (error: any) {
       console.error(error)
     }
+    setLoading(false)
   }
 
   useEffect(() => {
     getUser()
   }, [])
+
+  async function handleFollow() {
+    setFollowed(true)
+    const response = await follow(userName)
+    if (response.error) {
+      console.error(response.error)
+      setFollowed(false)
+      return
+    }
+    setFollowed(true)
+    console.log(response)
+  }
+
+  if (loading) {
+    return (
+      <div className='px-5 py-16 text-center'>
+        <div className='text-lg font-semibold text-black/70 dark:text-white/70'>Loading...</div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className='px-5 py-16 text-center'>
+        <div className='text-lg font-semibold text-black/70 dark:text-white/70'>User not found.</div>
+      </div>
+    )
+  }
 
   return (
     <div className='flex flex-col gap-5 px-5 py-4'>
@@ -183,9 +217,17 @@ function Profile({ userName }: { userName: string }) {
             <Button
               variant='filled'
               className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
+              onClick={handleFollow}
             >
-              <UserPlus size={18} className='' />
-              <span>Follow</span>
+              {followed ? (
+                <div className='flex gap-2'>
+                  <UserCheck size={18} className='' /> <span>Followed</span>{' '}
+                </div>
+              ) : (
+                <div className='flex gap-2'>
+                  <UserPlus size={18} className='' /> Follow
+                </div>
+              )}
             </Button>
             <Button variant='outline' className='border-2 border-black py-2.5 font-medium text-black'>
               <MessageCircleMore size={18} className='' />
@@ -228,7 +270,7 @@ function Profile({ userName }: { userName: string }) {
               })}
           {!showMore && Object.entries(user.about).filter(([key, value]) => value != '').length > 4 && (
             <button onClick={() => setShowMore(true)} className='px-0.5 text-xs text-accent'>
-              More...
+              More...x``
             </button>
           )}
         </div>
