@@ -6,7 +6,7 @@ import Header from '@/components/Header'
 import Post, { PostT } from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { follow } from '@/handelers/user/follow'
+import { follow, unfollow } from '@/handelers/user/follow'
 import { socialMediaUrls } from '@/lib/const'
 import { UserT } from '@/lib/types'
 import { nFormatter } from '@/utils/utils'
@@ -83,7 +83,7 @@ export default function UserProfile({
       <div className='w-full'>
         <Profile userName={params.userName} />
         <hr />
-        {/* <Posts username={params.userName} /> */}
+        <Posts username={params.userName} />
       </div>
     </Screen0>
   )
@@ -135,6 +135,7 @@ function Profile({ userName }: { userName: string }) {
 
   async function handleFollow() {
     setFollowed(true)
+
     const response = await follow(userName)
     if (response.error) {
       console.error(response.error)
@@ -143,6 +144,17 @@ function Profile({ userName }: { userName: string }) {
     }
     setFollowed(true)
     console.log(response)
+  }
+
+  async function handleUnfollow() {
+    setFollowed(false)
+    const response = await unfollow(userName)
+    if (response.error) {
+      console.error(response.error)
+      setFollowed(true)
+      return
+    }
+    setFollowed(false)
   }
 
   if (loading) {
@@ -214,21 +226,24 @@ function Profile({ userName }: { userName: string }) {
           </Button>
         ) : (
           <>
-            <Button
-              variant='filled'
-              className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
-              onClick={handleFollow}
-            >
-              {followed ? (
-                <div className='flex gap-2'>
-                  <UserCheck size={18} className='' /> <span>Followed</span>{' '}
-                </div>
-              ) : (
-                <div className='flex gap-2'>
-                  <UserPlus size={18} className='' /> Follow
-                </div>
-              )}
-            </Button>
+            {followed ? (
+              <Button
+                variant='filled'
+                className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
+                onClick={handleUnfollow}
+              >
+                <UserCheck size={18} className='' /> Following
+              </Button>
+            ) : (
+              <Button
+                variant='filled'
+                className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
+                onClick={handleFollow}
+              >
+                <UserPlus size={18} className='' /> Follow
+              </Button>
+            )}
+
             <Button variant='outline' className='border-2 border-black py-2.5 font-medium text-black'>
               <MessageCircleMore size={18} className='' />
               <span>Message</span>
@@ -270,7 +285,7 @@ function Profile({ userName }: { userName: string }) {
               })}
           {!showMore && Object.entries(user.about).filter(([key, value]) => value != '').length > 4 && (
             <button onClick={() => setShowMore(true)} className='px-0.5 text-xs text-accent'>
-              More...x``
+              More...
             </button>
           )}
         </div>
@@ -280,14 +295,14 @@ function Profile({ userName }: { userName: string }) {
 }
 
 function Posts({ username }: { username: string }) {
-  const [posts, setPosts] = useState<PostT[]>()
+  const [posts, setPosts] = useState<PostT[]>([])
   const [nextPage, setNextPage] = useState('')
   const [loading, setLoading] = useState(true)
 
   async function getPosts() {
     setLoading(true)
     try {
-      const response = await axios.post('/api/user/getUserPosts', { username })
+      const response = await axios.post('/api/user/getUserPosts', { username: username.toLowerCase() })
       const newPosts = response.data.posts.map((post: any) => ({
         id: post._id,
         name: response.data.user.name,
@@ -322,16 +337,17 @@ function Posts({ username }: { username: string }) {
     )
   }
 
-  if (!posts)
-    return (
-      <div className='px-5 py-16 text-center'>
-        <div className='text-lg font-semibold text-black/70 dark:text-white/70'>Do not have any posts yet.</div>
-      </div>
-    )
+  // if (!posts)
+  //   return (
+  //     <div className='px-5 py-16 text-center'>
+  //       <div className='text-lg font-semibold text-black/70 dark:text-white/70'>Do not have any posts yet.</div>
+  //     </div>
+  //   )
 
   return (
     <>
       <div className='space-y-3 px-3.5 py-4'>
+        <div>{posts.length}</div>
         {posts.map((post) => (
           <Post key={post.id} post={post} />
         ))}

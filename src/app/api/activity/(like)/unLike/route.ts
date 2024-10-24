@@ -26,13 +26,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
 
-    // if the post is private
-
     if (post.visibility === 'private' && post.userId.toString() !== userId) {
       return NextResponse.json({ error: 'The post id Privet' }, { status: 401 })
     }
 
-    const like = await Like.findById({ postId })
+    const like = await Like.findOne({ postId })
 
     if (!like) {
       return NextResponse.json({ error: 'Like not found' }, { status: 404 })
@@ -46,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     await Post.findByIdAndUpdate(postId, { $inc: { likes: -1 } })
 
-    return NextResponse.json({ status: 200, message: 'Post deleted successfully' })
+    return NextResponse.json({ status: 200, message: 'Like deleted successfully' })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

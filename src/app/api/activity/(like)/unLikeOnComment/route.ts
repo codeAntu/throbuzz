@@ -10,7 +10,7 @@ import { z } from 'zod'
 connect()
 
 const dataZ = z.object({
-  likeOnCommentId: z.string(),
+  commentId: z.string(),
 })
 
 export async function POST(request: NextRequest) {
@@ -30,31 +30,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid input', details: parseResult.error.errors }, { status: 400 })
     }
 
-    const { likeOnCommentId } = parseResult.data
+    const { commentId } = parseResult.data
 
-    const likeOnComment = await LikeOnComment.findById(likeOnCommentId)
-
-    if (!likeOnComment) {
-      return NextResponse.json({ error: 'Like on Comment not found' }, { status: 404 })
+    const comment = await Comment.findById(commentId)
+    if (!comment) {
+      return NextResponse.json({ error: 'Comment not found' }, { status: 404 })
     }
 
-    const post = await Post.findById(likeOnComment.postId)
-
+    const post = await Post.findById(comment.postId)
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
 
-    if (post.visibility === 'private' && post.userId.toString() !== userId) {
-      return NextResponse.json({ error: 'The post is private' }, { status: 401 })
+    if (post.visibility !== 'public') {
+      return NextResponse.json({ error: 'Post is not public' }, { status: 403 })
     }
 
-    if (likeOnComment.userId.toString() !== userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const result = await LikeOnComment.findOneAndDelete({ userId, commentId })
+    if (!result) {
+      return NextResponse.json({ error: 'Like on comment not found' }, { status: 404 })
     }
-
-    const comment = await Comment.findByIdAndUpdate(likeOnComment.commentId, { $inc: { likes: -1 } }) // Decrement the like count
-
-    await likeOnComment.deleteOne()
 
     return NextResponse.json({ status: 200, message: 'Like on Comment removed successfully' })
   } catch (error: any) {

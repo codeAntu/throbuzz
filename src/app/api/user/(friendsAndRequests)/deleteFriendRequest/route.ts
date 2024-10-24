@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 import Friend from '@/models/friends'
 import User from '@/models/userModel'
 
-export async function DELETE(request: NextRequest, response: NextResponse) {
+export async function POST(request: NextRequest, response: NextResponse) {
   try {
     const { friendRequestId } = await parseJson(request)
 

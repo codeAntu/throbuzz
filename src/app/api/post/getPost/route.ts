@@ -15,9 +15,9 @@ export async function POST(request: NextRequest) {
 
     // check if the post is public or private
 
-    if (!tokenData) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    // if (!tokenData) {
+    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // }
 
     const post = await Post.findOne({ _id: postId })
 
