@@ -93,7 +93,7 @@ export default function Home() {
       <div>
         <NewPost />
       </div>
-      <Posts />
+      {/* <Posts /> */}
     </Screen>
   )
 }

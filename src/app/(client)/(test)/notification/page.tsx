@@ -61,6 +61,7 @@ export default function Page() {
   }
 
   console.log(notifications)
+  console.log(nextPage)
 
   return (
     <Screen className='gap-20'>
@@ -68,9 +69,11 @@ export default function Page() {
         <h1 className='text-3xl font-bold'>Notification</h1>
         <p>Page content</p>
       </div>
-      {/* <Button onClick={getNotifications} title='Get Notifications' children={undefined}></Button> */}
-      {/* <Button onClick={createNotification} title='Create Notification'></Button> */}
-      {/* <Button onClick={() => getNextNotifications(nextPage)} title='Get Next Notifications'></Button> */}
+      <Button onClick={getNotifications} title='Get Notifications'>
+        Get Notifications
+      </Button>
+      <Button onClick={createNotification}>Create Notification</Button>
+      <Button onClick={() => getNextNotifications(nextPage)}>Get Next Notifications</Button>
     </Screen>
   )
 }
