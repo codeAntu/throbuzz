@@ -7,7 +7,7 @@ import axios from 'axios'
 import { Bell, EllipsisVertical } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-export interface notificationT {
+export interface NotificationT {
   _id: string
   userId: string
   title: string
@@ -21,10 +21,10 @@ export interface notificationT {
 }
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<notificationT[]>([])
+  const [notifications, setNotifications] = useState<NotificationT[]>([])
   const [nextPage, setNextPage] = useState('')
   const ref = useRef<HTMLDivElement>(null)
-
+  const [newNotificationsCount, setNewNotificationsCount] = useState(0)
   async function createNotification() {
     console.log('Creating notification')
 
@@ -39,6 +39,8 @@ export default function NotificationsPage() {
   async function handleGetNotifications() {
     const response = await gteNotifications()
 
+    console.log(response)
+
     if (response.error) {
       console.log(response.message)
       return
@@ -46,6 +48,7 @@ export default function NotificationsPage() {
 
     setNotifications(response.notifications)
     setNextPage(response.nextLink)
+    setNewNotificationsCount(response.newNotificationsCount)
 
     console.log(response)
   }
@@ -93,11 +96,11 @@ export default function NotificationsPage() {
       <div className='grid gap-4 p-5'>
         <div className='text-lg font-semibold'>
           All Notifications
-          <span className='px-2 text-accent'>120</span>
+          <span className='px-2 text-accent'>{newNotificationsCount > 0 ? newNotificationsCount : ''}</span>
         </div>
         <div className='space-y-5'>
           {notifications.map((notification) => (
-            <Notification key={notification._id} notification={notification.message} />
+            <Notification key={notification._id} notification={notification} />
           ))}
         </div>
         <div ref={ref} className='flex justify-center'></div>
@@ -106,22 +109,23 @@ export default function NotificationsPage() {
   )
 }
 
-function Notification({ notification }: { notification: string }) {
+function Notification({ notification }: { notification: NotificationT }) {
   const [showMore, setShowMore] = useState(false)
 
   return (
-    <div className='flex items-center gap-1'>
+    <div
+      className={`flex items-center gap-1 ${notification.read ? 'bg-black/10 dark:bg-white/10' : ''} rounded-xl py-2 pl-3 pr-3`}
+    >
       <div className='flex flex-grow items-center gap-3'>
         <div className='w-12 flex-grow-0 rounded-full bg-yellow-200 p-3'>
           <Bell size={22} className='text-yellow-500' />
         </div>
         <div className='w-full flex-grow'>
-          {/* <div className='line-clamp-2 '>{notification} </div> */}
           <div
-            className={`cursor-pointer text-sm font-semibold text-black/65 dark:text-white/65 ${showMore ? '' : 'line-clamp-2'}`}
+            className={`cursor-pointer text-sm font-semibold text-black/65 dark:text-white/65 ${showMore ? '' : 'line-clamp-2'} `}
             onClick={() => setShowMore(!showMore)}
           >
-            {notification}
+            {notification.message}
           </div>
         </div>
       </div>

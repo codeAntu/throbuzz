@@ -33,6 +33,10 @@ export async function POST(request: NextRequest) {
     // Fetch notifications with pagination
     const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).skip(skip).limit(limit)
 
+    // Update the read field for the fetched notifications
+    const notificationIds = notifications.map((notification) => notification._id)
+    await Notification.updateMany({ _id: { $in: notificationIds } }, { $set: { read: false, readAt: new Date() } })
+
     // Check if there are more notifications to load
     const totalNotifications = await Notification.countDocuments({ userId })
     const hasNextPage = skip + notifications.length < totalNotifications
@@ -43,7 +47,7 @@ export async function POST(request: NextRequest) {
     user.newNotificationsCount = newNotificationsCount > 0 ? newNotificationsCount : 0
     await user?.save()
 
-    return NextResponse.json({ notifications, nextLink, success: true }, { status: 200 })
+    return NextResponse.json({ notifications, nextLink, newNotificationsCount, success: true }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json(
       {
