@@ -1,19 +1,19 @@
 import { TokenDataT } from '@/lib/types'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
-import { connect } from '@/dbConfig/dbConfig'
-import User from '@/models/userModel'
 import Friend from '@/models/friends'
+import User from '@/models/userModel'
+import { connect } from '@/dbConfig/dbConfig'
 
 connect()
 
-export async function GET(request: NextRequest, response: NextResponse) {
+export async function POST(request: NextRequest) {
   try {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    if (!tokenData || !tokenData.isVerified) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    if (!tokenData) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const user = await User.findById(tokenData.id)
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest, response: NextResponse) {
     const results = await Friend.aggregate([
       {
         $match: {
-          receiver: user._id,
+          sender: user._id,
           status: 'pending',
         },
       },
@@ -42,20 +42,20 @@ export async function GET(request: NextRequest, response: NextResponse) {
             {
               $lookup: {
                 from: 'users',
-                localField: 'sender',
+                localField: 'receiver',
                 foreignField: '_id',
-                as: 'senderDetails',
+                as: 'receiverDetails',
               },
             },
             {
-              $unwind: '$senderDetails',
+              $unwind: '$receiverDetails',
             },
             {
               $project: {
-                'senderDetails.name': 1,
-                'senderDetails.username': 1,
-                'senderDetails.profilePic': 1,
-                'senderDetails.bio': 1,
+                'receiverDetails.name': 1,
+                'receiverDetails.username': 1,
+                'receiverDetails.profilePic': 1,
+                'receiverDetails.bio': 1,
               },
             },
           ],
@@ -63,32 +63,21 @@ export async function GET(request: NextRequest, response: NextResponse) {
       },
     ])
 
+    if (!results.length) {
+      return NextResponse.json({ error: 'Friend requests not found' }, { status: 404 })
+    }
+
     console.log(results)
 
-    const total = results[0].metadata[0] ? results[0].metadata[0].total : 0
-    const friends = results[0].data
+    const totalRequests = results[0].metadata[0]?.total || 0
+    const requests = results[0].data
 
-    const totalPages = Math.ceil(total / limit)
+    const totalPages = Math.ceil(totalRequests / limit)
     const hasNextPage = page < totalPages
     const nextPageUrl = hasNextPage ? `${request.nextUrl.pathname}?page=${page + 1}&limit=${limit}` : null
 
-    const newFriendsRequestCount = user.newFriendsRequestCount - friends.length
-    user.newFriendsRequestCount = newFriendsRequestCount > 0 ? newFriendsRequestCount : 0
-
-    await user.save()
-
-    return NextResponse.json(
-      {
-        friendRequests: friends,
-        total,
-        page,
-        totalPages,
-        nextPage: nextPageUrl,
-      },
-      { status: 200 },
-    )
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
-    return NextResponse.json({ error: errorMessage }, { status: 400 })
+    return NextResponse.json({ sentRequests: requests, nextPageUrl, totalRequests }, { status: 200 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 })
   }
 }

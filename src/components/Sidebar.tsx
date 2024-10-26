@@ -11,7 +11,7 @@ const paths = [
   { name: 'Home', path: '/', icon: <House size={24} className='' /> },
   { name: 'Notifications', path: '/notifications', icon: <Bell size={24} className='' /> },
   { name: 'Messages', path: '/messages', icon: <Mail size={24} className='' /> },
-  { name: 'Follow Request', path: '/requests', icon: <User size={24} className='' /> },
+  { name: 'Social', path: '/social', icon: <User size={24} className='' /> },
   { name: 'Settings', path: '/settings', icon: <Settings size={24} className='' /> },
 ]
 

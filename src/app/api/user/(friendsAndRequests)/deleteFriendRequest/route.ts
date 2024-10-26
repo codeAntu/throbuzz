@@ -4,6 +4,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import Friend from '@/models/friends'
 import User from '@/models/userModel'
+import { connect } from '@/dbConfig/dbConfig'
+
+connect()
 
 export async function POST(request: NextRequest, response: NextResponse) {
   try {
@@ -26,7 +29,10 @@ export async function POST(request: NextRequest, response: NextResponse) {
       return NextResponse.json({ error: 'Friend request already accepted' }, { status: 400 })
     }
 
-    if (friendRequest.receiver.toString() !== tokenData.id.toString()) {
+    if (
+      friendRequest.receiver.toString() !== tokenData.id.toString() &&
+      friendRequest.sender.toString() !== tokenData.id.toString()
+    ) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

@@ -114,7 +114,7 @@ function Notification({ notification }: { notification: NotificationT }) {
 
   return (
     <div
-      className={`flex items-center gap-1 ${notification.read ? 'bg-black/10 dark:bg-white/10' : ''} rounded-xl py-2 pl-3 pr-3`}
+      className={`flex items-center gap-1 ${!notification.read ? 'bg-black/5 dark:bg-white/10' : ''} rounded-xl py-2 pl-3 pr-3`}
     >
       <div className='flex flex-grow items-center gap-3'>
         <div className='w-12 flex-grow-0 rounded-full bg-yellow-200 p-3'>

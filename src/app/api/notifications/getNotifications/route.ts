@@ -35,7 +35,10 @@ export async function POST(request: NextRequest) {
 
     // Update the read field for the fetched notifications
     const notificationIds = notifications.map((notification) => notification._id)
-    await Notification.updateMany({ _id: { $in: notificationIds } }, { $set: { read: false, readAt: new Date() } })
+    await Notification.updateMany(
+      { _id: { $in: notificationIds }, read: false },
+      { $set: { read: true, readAt: new Date() } },
+    )
 
     // Check if there are more notifications to load
     const totalNotifications = await Notification.countDocuments({ userId })
