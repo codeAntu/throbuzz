@@ -130,11 +130,17 @@ function FriendRequests() {
 function FriendRequest({ friendRequest }: { friendRequest: FriendRequest }) {
   const [isAccepted, setIsAccepted] = useState(false)
   const [isDeleted, setIsDeleted] = useState(false)
+  const router = useRouter()
 
   if (isDeleted) return null
 
   return (
-    <div className='flex items-center gap-3'>
+    <div
+      className='flex items-center gap-3'
+      onClick={() => {
+        router.push(`/profile/${friendRequest.senderDetails.username}`)
+      }}
+    >
       <img src={friendRequest.senderDetails.profilePic.imageUrl} alt='' className='size-20 rounded-full sm:size-24' />
       <div className='grid w-full gap-2.5 pt-1'>
         <div className='px-2'>
@@ -153,7 +159,8 @@ function FriendRequest({ friendRequest }: { friendRequest: FriendRequest }) {
               <Button
                 variant='filled'
                 className='rounded-xs py-2 text-xs sm:py-3'
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation()
                   console.log(friendRequest._id)
 
                   handleAcceptRequest(friendRequest._id, setIsAccepted)
@@ -165,7 +172,8 @@ function FriendRequest({ friendRequest }: { friendRequest: FriendRequest }) {
               <Button
                 variant='outline'
                 className='rounded-xs border-[1.5px] py-2 text-xs sm:py-3'
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation()
                   handleDeleteRequest(friendRequest._id, setIsDeleted)
                 }}
                 disabled={isDeleted}
@@ -204,7 +212,13 @@ function People() {
           <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-sm'>codeAntu</div>
         </div>
         <div className='flex w-full items-center justify-between gap-3'>
-          <Button variant='filled' className='rounded-xs py-2 text-xs sm:py-3' onClick={() => {}}>
+          <Button
+            variant='filled'
+            className='rounded-xs py-2 text-xs sm:py-3'
+            onClick={(e) => {
+              e.stopPropagation()
+            }}
+          >
             Follow
           </Button>
           <Button variant='outline' className='rounded-xs border-[1.5px] py-2 text-xs sm:py-3'>
@@ -295,11 +309,17 @@ function SentRequests() {
 function SentRequest({ sentRequest }: { sentRequest: SentRequestT }) {
   console.log(sentRequest)
   const [isDeleted, setIsDeleted] = useState(false)
+  const router = useRouter()
 
   if (isDeleted) return null
 
   return (
-    <div className='flex items-center gap-3'>
+    <div
+      className='flex items-center gap-3'
+      onClick={() => {
+        router.push(`/profile/${sentRequest.receiverDetails.username}`)
+      }}
+    >
       <img src={sentRequest.receiverDetails.profilePic.imageUrl} alt='' className='size-20 rounded-full sm:size-24' />
       <div className='grid w-full gap-2.5 pt-1'>
         <div className='px-2'>
@@ -312,7 +332,8 @@ function SentRequest({ sentRequest }: { sentRequest: SentRequestT }) {
           <Button
             variant='filled'
             className='rounded-xs py-2 text-xs sm:py-3'
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation()
               handleDeleteRequest(sentRequest._id, setIsDeleted)
             }}
           >

@@ -71,10 +71,6 @@ export async function POST(request: NextRequest) {
     const totalFollowers = result[0].metadata[0] ? result[0].metadata[0].total : 0
     const followers = result[0].data
 
-    if (!followers.length) {
-      return NextResponse.json({ message: 'No followers found' }, { status: 200 })
-    }
-
     const totalPages = Math.ceil(totalFollowers / limit)
     const nextPage = page < totalPages ? page + 1 : null
     const nextPageUrl = nextPage ? `${request.nextUrl.pathname}?page=${nextPage}&limit=${limit}` : null

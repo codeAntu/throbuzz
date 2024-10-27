@@ -31,10 +31,13 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
+
+    console.log(user)
+
     const result = await Friend.aggregate([
       {
         $match: {
-          sender: user._id,
+          $or: [{ sender: user._id }, { receiver: user._id, status: 'accepted' }],
         },
       },
       {
@@ -46,27 +49,43 @@ export async function POST(request: NextRequest) {
             {
               $lookup: {
                 from: 'users',
+                localField: 'sender',
+                foreignField: '_id',
+                as: 'senderDetails',
+              },
+            },
+            {
+              $lookup: {
+                from: 'users',
                 localField: 'receiver',
                 foreignField: '_id',
                 as: 'receiverDetails',
               },
             },
             {
-              $unwind: '$receiverDetails',
+              $addFields: {
+                details: {
+                  $cond: {
+                    if: { $eq: ['$sender', user._id] },
+                    then: { $arrayElemAt: ['$receiverDetails', 0] },
+                    else: { $arrayElemAt: ['$senderDetails', 0] },
+                  },
+                },
+              },
             },
             {
               $project: {
-                'receiverDetails.name': 1,
-                'receiverDetails.username': 1,
-                'receiverDetails.profilePic': 1,
-                'receiverDetails.bio': 1,
+                'details.name': 1,
+                'details.username': 1,
+                'details.profilePic': 1,
+                'details.bio': 1,
+                status: 1, // Include the status field
               },
             },
           ],
         },
       },
     ])
-
     const totalFollowing = result[0].metadata[0] ? result[0].metadata[0].total : 0
     const followers = result[0].data
 

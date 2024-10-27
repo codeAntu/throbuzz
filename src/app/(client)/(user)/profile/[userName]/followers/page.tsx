@@ -117,8 +117,14 @@ export default function Followers({
 
 function Follower(props: FollowersT) {
   const [isAccepted, setIsAccepted] = useState(props.status === 'accepted')
+  const router = useRouter()
   return (
-    <div className='flex items-center gap-4'>
+    <div
+      className='flex items-center gap-4'
+      onClick={() => {
+        router.push(`/profile/${props.senderDetails.username}`)
+      }}
+    >
       <img src='/images/img1.png' alt='' className='size-14 rounded-full sm:size-20' />
       <div className='flex w-full justify-between gap-2.5'>
         <div className=''>
@@ -131,7 +137,8 @@ function Follower(props: FollowersT) {
           <Button
             variant='zero'
             className='rounded-[8px] bg-black px-5 py-2 text-xs font-medium text-white dark:bg-white dark:text-black sm:py-2'
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation()
               handleAcceptRequest(props._id, setIsAccepted)
             }}
             disabled={isAccepted}
@@ -158,6 +165,9 @@ function Follower(props: FollowersT) {
                   <Button
                     variant='zero'
                     className='rounded-[8px] px-5 py-1.5 text-xs font-medium text-red-500 sm:py-2 sm:text-base'
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}
                   >
                     Remove
                   </Button>

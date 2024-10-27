@@ -14,7 +14,8 @@ import { useEffect, useRef, useState } from 'react'
 
 export interface FollowingT {
   _id: string
-  receiverDetails: {
+  status: string
+  details: {
     name: string
     username: string
     profilePic: {
@@ -119,16 +120,20 @@ function Following(
     [key: string]: any
   },
 ) {
-  console.log(props)
-
+  const router = useRouter()
   return (
-    <div className='flex items-center gap-4'>
+    <div
+      className='flex items-center gap-4'
+      onClick={() => {
+        router.push(`/profile/${props.details.username}`)
+      }}
+    >
       <img src='/images/img1.png' alt='' className='size-14 rounded-full sm:size-20' />
       <div className='flex w-full justify-between gap-2.5'>
         <div className=''>
-          <div className='text-sm font-semibold sm:text-lg'>{props.receiverDetails.name}</div>
+          <div className='text-sm font-semibold sm:text-lg'>{props.details.name}</div>
           <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-base'>
-            {props.receiverDetails.username}
+            {props.details.username}
           </div>
         </div>
         <div className='flex items-center justify-center gap-2.5'>
