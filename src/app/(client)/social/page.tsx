@@ -5,6 +5,7 @@
 import { Button } from '@/components/Button'
 import Header from '@/components/Header'
 import { Screen0 } from '@/components/Screen'
+import { handleAcceptRequest, handleDeleteRequest } from '@/handelers/helpers/follow'
 import { acceptRequest, deleteRequest, getFriendRequests, getSentRequests } from '@/handelers/social/social'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
@@ -124,26 +125,6 @@ function FriendRequests() {
       <div ref={ref}></div>
     </Screen0>
   )
-}
-
-async function handleAcceptRequest(id: string, setIsAccepted: any) {
-  setIsAccepted(true)
-  const response = await acceptRequest(id)
-  console.log(response)
-  if (response.error) {
-    setIsAccepted(false)
-    return
-  }
-}
-
-async function handleDeleteRequest(id: string, setIsDeleted: any) {
-  setIsDeleted(true)
-  const response = await deleteRequest(id)
-  console.log(response)
-  if (response.error) {
-    setIsDeleted(false)
-    return
-  }
 }
 
 function FriendRequest({ friendRequest }: { friendRequest: FriendRequest }) {

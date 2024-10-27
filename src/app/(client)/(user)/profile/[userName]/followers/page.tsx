@@ -6,6 +6,7 @@ import { Button } from '@/components/Button'
 import Header from '@/components/Header'
 import { Screen0 } from '@/components/Screen'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
+import { handleAcceptRequest } from '@/handelers/helpers/follow'
 import { getFollowers } from '@/handelers/user/follow'
 import axios from 'axios'
 import { EllipsisVertical, Search } from 'lucide-react'
@@ -14,6 +15,7 @@ import { useEffect, useRef, useState } from 'react'
 
 export interface FollowersT {
   _id: string
+  status: string
   senderDetails: {
     name: string
     username: string
@@ -33,7 +35,7 @@ export default function Followers({
     [key: string]: any
   }
 }) {
-  const [Follower, setFollower] = useState<FollowersT[]>([])
+  const [follower, setFollower] = useState<FollowersT[]>([])
   const [nextPageUrl, setNextPageUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [totalFollowers, setTotalFollowers] = useState(0)
@@ -54,13 +56,19 @@ export default function Followers({
   }
 
   async function handleNextPage() {
+    if (!nextPageUrl) {
+      return
+    }
+
+    console.log('next page', nextPageUrl)
+
     try {
       setLoading(true)
       const response = await axios.post(nextPageUrl, {
         username: params.userName,
       })
       console.log(response)
-      setFollower([...Follower, ...response.data.followers])
+      setFollower([...follower, ...response.data.followers])
       setLoading(false)
     } catch (error: any) {
       console.log(error)
@@ -94,15 +102,12 @@ export default function Followers({
         </div>
         <div className='text-lg font-semibold'>
           All Followers
-          <span className='px-2 text-accent'>120</span>
+          <span className='px-2 text-accent'>{totalFollowers}</span>
         </div>
         <div className='grid gap-5 sm:gap-7'>
-          {/* <Friend />
-          <Friend />
-          <Friend />
-          <Friend />
-          <Friend />
-          <Friend /> */}
+          {follower.map((follower) => (
+            <Follower key={follower._id} {...follower} />
+          ))}
         </div>
         <div ref={ref}></div>
       </div>
@@ -110,21 +115,28 @@ export default function Followers({
   )
 }
 
-function Friend() {
+function Follower(props: FollowersT) {
+  const [isAccepted, setIsAccepted] = useState(props.status === 'accepted')
   return (
     <div className='flex items-center gap-4'>
       <img src='/images/img1.png' alt='' className='size-14 rounded-full sm:size-20' />
       <div className='flex w-full justify-between gap-2.5'>
         <div className=''>
-          <div className='text-sm font-semibold sm:text-lg'>Ananta Karmakar</div>
-          <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-base'>codeAntu</div>
+          <div className='text-sm font-semibold sm:text-lg'>{props.senderDetails.name}</div>
+          <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-base'>
+            {props.senderDetails.username}
+          </div>
         </div>
         <div className='flex items-center justify-center gap-2.5'>
           <Button
             variant='zero'
             className='rounded-[8px] bg-black px-5 py-2 text-xs font-medium text-white dark:bg-white dark:text-black sm:py-2'
+            onClick={() => {
+              handleAcceptRequest(props._id, setIsAccepted)
+            }}
+            disabled={isAccepted}
           >
-            Follow
+            {isAccepted ? 'Followed' : 'Follow'}
           </Button>
           <Drawer>
             <DrawerTrigger asChild>

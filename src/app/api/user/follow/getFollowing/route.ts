@@ -1,9 +1,9 @@
 import { connect } from '@/dbConfig/dbConfig'
-import Friend from '@/models/friends'
-import User from '@/models/userModel'
 import { parseJson } from '@/utils/utils'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import Friend from '@/models/friends'
+import User from '@/models/userModel'
 
 connect()
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const result = await Friend.aggregate([
       {
         $match: {
-          receiver: user._id,
+          sender: user._id,
         },
       },
       {
@@ -46,21 +46,20 @@ export async function POST(request: NextRequest) {
             {
               $lookup: {
                 from: 'users',
-                localField: 'sender',
+                localField: 'receiver',
                 foreignField: '_id',
-                as: 'senderDetails',
+                as: 'receiverDetails',
               },
             },
             {
-              $unwind: '$senderDetails',
+              $unwind: '$receiverDetails',
             },
             {
               $project: {
-                'senderDetails.name': 1,
-                'senderDetails.username': 1,
-                'senderDetails.profilePic': 1,
-                'senderDetails.bio': 1,
-                status: 1,
+                'receiverDetails.name': 1,
+                'receiverDetails.username': 1,
+                'receiverDetails.profilePic': 1,
+                'receiverDetails.bio': 1,
               },
             },
           ],
@@ -68,18 +67,14 @@ export async function POST(request: NextRequest) {
       },
     ])
 
-    const totalFollowers = result[0].metadata[0] ? result[0].metadata[0].total : 0
+    const totalFollowing = result[0].metadata[0] ? result[0].metadata[0].total : 0
     const followers = result[0].data
 
-    if (!followers.length) {
-      return NextResponse.json({ message: 'No followers found' }, { status: 200 })
-    }
-
-    const totalPages = Math.ceil(totalFollowers / limit)
+    const totalPages = Math.ceil(totalFollowing / limit)
     const nextPage = page < totalPages ? page + 1 : null
     const nextPageUrl = nextPage ? `${request.nextUrl.pathname}?page=${nextPage}&limit=${limit}` : null
 
-    return NextResponse.json({ followers, nextPageUrl, totalFollowers }, { status: 200 })
+    return NextResponse.json({ followers, nextPageUrl, totalFollowing }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
