@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
@@ -5,12 +6,83 @@ import { Button } from '@/components/Button'
 import Header from '@/components/Header'
 import { Screen0 } from '@/components/Screen'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Ellipsis, EllipsisVertical, Search, Settings } from 'lucide-react'
+import { getFollowers } from '@/handelers/user/follow'
+import axios from 'axios'
+import { EllipsisVertical, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 
-export default function Followers() {
+export interface FollowersT {
+  _id: string
+  senderDetails: {
+    name: string
+    username: string
+    profilePic: {
+      imageUrl: string
+      publicId: string
+    }
+    bio: string
+  }
+}
+
+export default function Followers({
+  params,
+}: {
+  params: {
+    userName: string
+    [key: string]: any
+  }
+}) {
+  const [Follower, setFollower] = useState<FollowersT[]>([])
+  const [nextPageUrl, setNextPageUrl] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [totalFollowers, setTotalFollowers] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
+
+  async function handleGetFollowers() {
+    const response = await getFollowers(params.userName)
+    console.log(response)
+
+    if (response.error) {
+      return
+    }
+
+    setFollower(response.followers)
+    setTotalFollowers(response.totalFollowers)
+    setNextPageUrl(response.nextPageUrl)
+  }
+
+  async function handleNextPage() {
+    try {
+      setLoading(true)
+      const response = await axios.post(nextPageUrl, {
+        username: params.userName,
+      })
+      console.log(response)
+      setFollower([...Follower, ...response.data.followers])
+      setLoading(false)
+    } catch (error: any) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    handleGetFollowers()
+  }, [])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        handleNextPage()
+      }
+    })
+
+    if (ref.current) observer.observe(ref.current)
+  }, [nextPageUrl])
+
+  console.log(Follower)
+  console.log(nextPageUrl)
 
   return (
     <Screen0>
@@ -25,13 +97,14 @@ export default function Followers() {
           <span className='px-2 text-accent'>120</span>
         </div>
         <div className='grid gap-5 sm:gap-7'>
+          {/* <Friend />
           <Friend />
           <Friend />
           <Friend />
           <Friend />
-          <Friend />
-          <Friend />
+          <Friend /> */}
         </div>
+        <div ref={ref}></div>
       </div>
     </Screen0>
   )

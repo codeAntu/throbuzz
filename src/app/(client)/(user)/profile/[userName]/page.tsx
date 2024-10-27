@@ -6,7 +6,6 @@ import Header from '@/components/Header'
 import Post, { PostT } from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { follow, unfollow } from '@/handelers/user/follow'
 import { socialMediaUrls } from '@/lib/const'
 import { UserT } from '@/lib/types'
 import { nFormatter } from '@/utils/utils'
@@ -134,27 +133,26 @@ function Profile({ userName }: { userName: string }) {
   }, [])
 
   async function handleFollow() {
-    setFollowed(true)
-
-    const response = await follow(userName)
-    if (response.error) {
-      console.error(response.error)
-      setFollowed(false)
-      return
-    }
-    setFollowed(true)
-    console.log(response)
+    // setFollowed(true)
+    // const response = await follow(userName)
+    // if (response.error) {
+    //   console.error(response.error)
+    //   setFollowed(false)
+    //   return
+    // }
+    // setFollowed(true)
+    // console.log(response)
   }
 
   async function handleUnfollow() {
-    setFollowed(false)
-    const response = await unfollow(userName)
-    if (response.error) {
-      console.error(response.error)
-      setFollowed(true)
-      return
-    }
-    setFollowed(false)
+    // setFollowed(false)
+    // const response = await unfollow(userName)
+    // if (response.error) {
+    //   console.error(response.error)
+    //   setFollowed(true)
+    //   return
+    // }
+    // setFollowed(false)
   }
 
   if (loading) {

@@ -1,19 +1,15 @@
 import axios from 'axios'
 
-export async function follow(username: string) {
+export async function getFollowers(userName: string) {
   try {
-    const response = await axios.post('/api/user/follow', { username })
+    const response = await axios.post('/api/user/follow/getFollowers', {
+      username: userName,
+    })
+    console.log(response.data)
     return response.data
   } catch (error: any) {
-    return error.response.data
-  }
-}
+    console.log(error)
 
-export async function unfollow(username: string) {
-  try {
-    const response = await axios.post('/api/user/unfollow', { username })
-    return response.data
-  } catch (error: any) {
     return error.response.data
   }
 }
