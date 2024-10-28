@@ -97,7 +97,7 @@ export default function Followings({
   return (
     <Screen0>
       <Header title='Following' />
-      <div className='grid gap-4 px-5 py-4'>
+      <div className='grid select-none gap-4 px-5 py-4'>
         <div className='flex w-full items-center justify-center gap-2 rounded-full bg-black/5 px-3 py-2.5 text-xs text-black/80 dark:bg-white/5 dark:text-white/80'>
           <Search size={20} />
           <input type='text' className='w-full border-none bg-transparent outline-none' placeholder='Search ' />
@@ -123,7 +123,7 @@ function Following(
   const router = useRouter()
   return (
     <div
-      className='flex items-center gap-4'
+      className='flex select-none items-center gap-4'
       onClick={() => {
         router.push(`/profile/${props.details.username}`)
       }}

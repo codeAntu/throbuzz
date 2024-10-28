@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from 'react'
 export interface FollowersT {
   _id: string
   status: string
-  senderDetails: {
+  details: {
     name: string
     username: string
     profilePic: {
@@ -36,11 +36,13 @@ export default function Followers({
   }
 }) {
   const [follower, setFollower] = useState<FollowersT[]>([])
+  const [searchResult, setSearchResult] = useState<FollowersT[]>([])
   const [nextPageUrl, setNextPageUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [totalFollowers, setTotalFollowers] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const [search, setSearch] = useState('')
 
   async function handleGetFollowers() {
     const response = await getFollowers(params.userName)
@@ -59,8 +61,6 @@ export default function Followers({
     if (!nextPageUrl) {
       return
     }
-
-    console.log('next page', nextPageUrl)
 
     try {
       setLoading(true)
@@ -89,16 +89,24 @@ export default function Followers({
     if (ref.current) observer.observe(ref.current)
   }, [nextPageUrl])
 
-  console.log(Follower)
-  console.log(nextPageUrl)
-
   return (
     <Screen0>
       <Header title='Followers' />
-      <div className='grid gap-4 px-5 py-4'>
+      <div className='grid select-none gap-4 px-5 py-4'>
         <div className='flex w-full items-center justify-center gap-2 rounded-full bg-black/5 px-3 py-2.5 text-xs text-black/80 dark:bg-white/5 dark:text-white/80'>
           <Search size={20} />
-          <input type='text' className='w-full border-none bg-transparent outline-none' placeholder='Search ' />
+          <input
+            type='text'
+            className='w-full border-none bg-transparent outline-none'
+            placeholder='Search '
+            onChange={(e) => setSearch(e.target.value)}
+            value={search}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                console.log('search', search)
+              }
+            }}
+          />
         </div>
         <div className='text-lg font-semibold'>
           All Followers
@@ -120,17 +128,17 @@ function Follower(props: FollowersT) {
   const router = useRouter()
   return (
     <div
-      className='flex items-center gap-4'
+      className='flex select-none items-center gap-4'
       onClick={() => {
-        router.push(`/profile/${props.senderDetails.username}`)
+        router.push(`/profile/${props.details.username}`)
       }}
     >
       <img src='/images/img1.png' alt='' className='size-14 rounded-full sm:size-20' />
       <div className='flex w-full justify-between gap-2.5'>
         <div className=''>
-          <div className='text-sm font-semibold sm:text-lg'>{props.senderDetails.name}</div>
+          <div className='text-sm font-semibold sm:text-lg'>{props.details.name}</div>
           <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-base'>
-            {props.senderDetails.username}
+            {props.details.username}
           </div>
         </div>
         <div className='flex items-center justify-center gap-2.5'>

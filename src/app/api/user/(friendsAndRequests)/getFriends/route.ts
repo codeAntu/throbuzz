@@ -26,11 +26,13 @@ export async function POST(request: NextRequest) {
     const limit = parseInt(request.nextUrl.searchParams.get('limit') || '20', 10)
     const skip = (page - 1) * limit
 
-    const results = await Friend.aggregate([
+    const result = await Friend.aggregate([
       {
         $match: {
-          sender: user._id,
-          status: 'pending',
+          $or: [
+            { receiver: user._id, status: 'accepted' },
+            { sender: user._id, status: 'accepted' },
+          ],
         },
       },
       {
@@ -42,20 +44,37 @@ export async function POST(request: NextRequest) {
             {
               $lookup: {
                 from: 'users',
+                localField: 'sender',
+                foreignField: '_id',
+                as: 'senderDetails',
+              },
+            },
+            {
+              $lookup: {
+                from: 'users',
                 localField: 'receiver',
                 foreignField: '_id',
                 as: 'receiverDetails',
               },
             },
             {
-              $unwind: '$receiverDetails',
+              $addFields: {
+                details: {
+                  $cond: {
+                    if: { $eq: ['$sender', user._id] },
+                    then: { $arrayElemAt: ['$receiverDetails', 0] },
+                    else: { $arrayElemAt: ['$senderDetails', 0] },
+                  },
+                },
+              },
             },
             {
               $project: {
-                'receiverDetails.name': 1,
-                'receiverDetails.username': 1,
-                'receiverDetails.profilePic': 1,
-                'receiverDetails.bio': 1,
+                'details.name': 1,
+                'details.username': 1,
+                'details.profilePic': 1,
+                'details.bio': 1,
+                status: 1, // Include the status field
               },
             },
           ],
@@ -63,21 +82,24 @@ export async function POST(request: NextRequest) {
       },
     ])
 
-    if (!results.length) {
-      return NextResponse.json({ error: 'Friend requests not found' }, { status: 404 })
-    }
+    const totalCount = result[0].metadata[0] ? result[0].metadata[0].total : 0
+    const friends = result[0].data
 
-    const totalRequests = results[0].metadata[0]?.total || 0
-    const requests = results[0].data
+    const totalPages = Math.ceil(totalCount / limit)
+    const nextPage = page < totalPages ? page + 1 : null
+    const nextPageUrl = nextPage ? `${request.nextUrl.pathname}?page=${nextPage}&limit=${limit}` : null
 
-    const totalPages = Math.ceil(totalRequests / limit)
-    const hasNextPage = page < totalPages
-    const nextPageUrl = hasNextPage ? `${request.nextUrl.pathname}?page=${page + 1}&limit=${limit}` : null
-
-    user.friendRequestSentCount = totalRequests
+    user.friendsCount = totalCount
     await user.save()
 
-    return NextResponse.json({ sentRequests: requests, nextPageUrl, totalRequests }, { status: 200 })
+    return NextResponse.json(
+      {
+        friends,
+        total: totalCount,
+        nextPageUrl,
+      },
+      { status: 200 },
+    )
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }

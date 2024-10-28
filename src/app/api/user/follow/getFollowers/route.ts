@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const result = await Friend.aggregate([
       {
         $match: {
-          receiver: user._id,
+          $or: [{ receiver: user._id }, { sender: user._id, status: 'accepted' }],
         },
       },
       {
@@ -52,15 +52,31 @@ export async function POST(request: NextRequest) {
               },
             },
             {
-              $unwind: '$senderDetails',
+              $lookup: {
+                from: 'users',
+                localField: 'receiver',
+                foreignField: '_id',
+                as: 'receiverDetails',
+              },
+            },
+            {
+              $addFields: {
+                details: {
+                  $cond: {
+                    if: { $eq: ['$sender', user._id] },
+                    then: { $arrayElemAt: ['$receiverDetails', 0] },
+                    else: { $arrayElemAt: ['$senderDetails', 0] },
+                  },
+                },
+              },
             },
             {
               $project: {
-                'senderDetails.name': 1,
-                'senderDetails.username': 1,
-                'senderDetails.profilePic': 1,
-                'senderDetails.bio': 1,
-                status: 1,
+                'details.name': 1,
+                'details.username': 1,
+                'details.profilePic': 1,
+                'details.bio': 1,
+                status: 1, // Include the status field
               },
             },
           ],

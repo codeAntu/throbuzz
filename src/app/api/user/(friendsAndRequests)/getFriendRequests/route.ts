@@ -63,8 +63,6 @@ export async function GET(request: NextRequest, response: NextResponse) {
       },
     ])
 
-    console.log(results)
-
     const total = results[0].metadata[0] ? results[0].metadata[0].total : 0
     const friends = results[0].data
 
@@ -74,7 +72,7 @@ export async function GET(request: NextRequest, response: NextResponse) {
 
     const newFriendsRequestCount = user.newFriendsRequestCount - friends.length
     user.newFriendsRequestCount = newFriendsRequestCount > 0 ? newFriendsRequestCount : 0
-
+    user.friendRequestsCount = friends.length
     await user.save()
 
     return NextResponse.json(

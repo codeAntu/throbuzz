@@ -82,7 +82,7 @@ export default function UserProfile({
       <div className='w-full'>
         <Profile userName={params.userName} />
         <hr />
-        <Posts username={params.userName} />
+        {/* <Posts username={params.userName} /> */}
       </div>
     </Screen0>
   )
@@ -115,12 +115,12 @@ function Profile({ userName }: { userName: string }) {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [followed, setFollowed] = useState(false)
-
   async function getUser() {
     setLoading(true)
     try {
       const response = await axios.post('/api/user/getUser', { username: userName })
       setUser(response.data.user)
+      setFollowed(response.data.isFollowing)
       console.log(response.data)
     } catch (error: any) {
       console.error(error)

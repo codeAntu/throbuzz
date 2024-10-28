@@ -1,19 +1,34 @@
 import { connect } from '@/dbConfig/dbConfig'
 import { TokenDataT } from '@/lib/types'
+import Friend from '@/models/friends'
 import User from '@/models/userModel'
-import { NextRequest, NextResponse } from 'next/server'
+import { parseJson } from '@/utils/utils'
+import { request } from 'http'
 import jwt from 'jsonwebtoken'
-import Friend, { FriendT } from '@/models/friends'
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
 connect()
 
-export async function POST(req: NextRequest, res: NextResponse) {
+const userNameValid = z
+  .object({
+    username: z
+      .string({ required_error: 'Username is required' })
+      .trim()
+      .min(3, { message: 'Username must be at least 3 characters long' })
+      .max(100, { message: 'Username must be at most 100 characters long' }),
+  })
+  .strict()
+
+export async function POST(request: NextRequest, result: NextResponse) {
+  const body = await parseJson(request)
+  if (body instanceof NextResponse) return body
   try {
-    const { username } = await req.json()
+    const { username } = userNameValid.parse(body)
 
     const searchBy = username.trim().toLowerCase()
 
-    const token = (await req.cookies.get('token')?.value) || ''
+    const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
     const user = await User.findOne({ username: searchBy, isVerified: true })
@@ -22,15 +37,22 @@ export async function POST(req: NextRequest, res: NextResponse) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    let friendStatus = ''
-    if (!(tokenData.id === user._id.toString())) {
-      const friendExists = await Friend.findOne({
-        sender: tokenData.id,
-        receiver: user._id,
+    let isFollowing = false
+    if (token && !(tokenData.id === user._id.toString())) {
+      const friend = await Friend.findOne({
+        $or: [
+          { $and: [{ sender: tokenData.id }, { receiver: user._id }] },
+          { $and: [{ sender: user._id }, { receiver: tokenData.id }] },
+        ],
       })
 
-      if (friendExists) {
-        friendStatus = friendExists.status
+      if (!friend) {
+        isFollowing = false
+      } else if (
+        friend.status === 'accepted' ||
+        (friend.status === 'pending' && friend.sender.toString() === tokenData.id)
+      ) {
+        isFollowing = true
       }
     }
 
@@ -43,7 +65,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       followers: user.friendsCount + user.friendRequestsCount,
       following: user.friendsCount + user.friendRequestSentCount,
       posts: user.postsCount,
-      isMe: tokenData.id === user._id.toString(),
+      isMe: token ? tokenData.id === user._id.toString() : false,
       about: {
         email: user.email,
         phone: user.phone,
@@ -57,7 +79,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       },
     }
 
-    return NextResponse.json({ user: resUser }, { status: 200 })
+    return NextResponse.json({ user: resUser, isFollowing }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json({ error: error.response.data }, { status: 400 })
   }

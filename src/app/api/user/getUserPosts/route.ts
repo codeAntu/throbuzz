@@ -20,8 +20,6 @@ const userNameValid = z
   .strict()
 
 export async function POST(request: NextRequest, response: NextResponse) {
-  console.log('GET /api/user/getUserPosts')
-
   const body = await parseJson(request)
   if (body instanceof NextResponse) return body
 
@@ -38,8 +36,6 @@ export async function POST(request: NextRequest, response: NextResponse) {
     let query = {}
     let totalPosts = 0
     let user = null
-
-    console.log(tokenData)
 
     if (tokenData && tokenData.username === username) {
       const foundUser = await User.findById(tokenData.id).select('username name profilePic')
