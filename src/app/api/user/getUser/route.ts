@@ -1,6 +1,6 @@
 import { connect } from '@/dbConfig/dbConfig'
 import { TokenDataT } from '@/lib/types'
-import Friend from '@/models/friends'
+import Follow from '@/models/follows'
 import User from '@/models/userModel'
 import { parseJson } from '@/utils/utils'
 import { request } from 'http'
@@ -38,20 +38,12 @@ export async function POST(request: NextRequest, result: NextResponse) {
     }
 
     let isFollowing = false
-    if (token && !(tokenData.id === user._id.toString())) {
-      const friend = await Friend.findOne({
-        $or: [
-          { $and: [{ sender: tokenData.id }, { receiver: user._id }] },
-          { $and: [{ sender: user._id }, { receiver: tokenData.id }] },
-        ],
-      })
 
-      if (!friend) {
-        isFollowing = false
-      } else if (
-        friend.status === 'accepted' ||
-        (friend.status === 'pending' && friend.sender.toString() === tokenData.id)
-      ) {
+    if (token) {
+      const currentUserId = tokenData.id
+      const following = await Follow.findOne({ follower: currentUserId, following: user._id })
+
+      if (following) {
         isFollowing = true
       }
     }
@@ -62,10 +54,11 @@ export async function POST(request: NextRequest, result: NextResponse) {
       username: user.username,
       bio: user.bio,
       profilePic: user.profilePic.imageUrl,
-      followers: user.friendsCount + user.friendRequestsCount,
-      following: user.friendsCount + user.friendRequestSentCount,
+      followers: user.followers,
+      following: user.following,
       posts: user.postsCount,
       isMe: token ? tokenData.id === user._id.toString() : false,
+      isFollowing,
       about: {
         email: user.email,
         phone: user.phone,

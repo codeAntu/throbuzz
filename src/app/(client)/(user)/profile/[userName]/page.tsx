@@ -91,32 +91,12 @@ export default function UserProfile({
 }
 
 function Profile({ userName }: { userName: string }) {
-  const [user, setUser] = useState<UserT>({
-    id: '',
-    name: '',
-    username: '',
-    bio: '',
-    profilePic: '',
-    followers: 0,
-    following: 0,
-    posts: 0,
-    isMe: false,
-    about: {
-      email: '',
-      phone: '',
-      mapPin: '',
-      instagram: '',
-      twitter: '',
-      github: '',
-      linkedin: '',
-      website: '',
-      dob: '',
-    },
-  })
+  const [user, setUser] = useState<UserT | null>(null)
   const [showMore, setShowMore] = useState(false)
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [followed, setFollowed] = useState(false)
+
   async function getUser() {
     setLoading(true)
     try {
@@ -133,17 +113,6 @@ function Profile({ userName }: { userName: string }) {
   useEffect(() => {
     getUser()
   }, [])
-
-  // async function handleUnfollow() {
-  //   // setFollowed(false)
-  //   // const response = await unfollow(userName)
-  //   // if (response.error) {
-  //   //   console.error(response.error)
-  //   //   setFollowed(true)
-  //   //   return
-  //   // }
-  //   // setFollowed(false)
-  // }
 
   if (loading) {
     return (

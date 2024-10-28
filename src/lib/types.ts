@@ -95,6 +95,7 @@ export interface UserT {
   following: number
   posts: number
   isMe: boolean
+  isFollowing: boolean
   about: {
     email: string
     phone: string

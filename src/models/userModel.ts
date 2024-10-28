@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose'
+import { number } from 'zod'
 
 interface UserT extends Document {
   name: string
@@ -35,10 +36,8 @@ interface UserT extends Document {
     imageUrl: string
     publicId: string
   }
-  friendsCount: number
-  friendRequestSentCount: number
-  friendRequestsCount: number
-  newFriendsRequestCount: number
+  followers: number
+  following: number
   postsCount: number
   newNotificationsCount: number
   deActivated: boolean
@@ -77,8 +76,20 @@ const userSchema: Schema<UserT> = new mongoose.Schema(
       type: String,
       default: '',
     },
+    isPhonePrivate: {
+      type: Boolean,
+      default: false,
+    },
     birthday: {
       type: Date,
+    },
+    isBirthdayPrivate: {
+      type: Boolean,
+      default: false,
+    },
+    isEmailPrivate: {
+      type: Boolean,
+      default: false,
     },
     facebook: {
       type: String,
@@ -154,19 +165,15 @@ const userSchema: Schema<UserT> = new mongoose.Schema(
       type: String,
       default: '',
     },
-    friendsCount: {
+    isProfilePrivate: {
+      type: Boolean,
+      default: false,
+    },
+    followers: {
       type: Number,
       default: 0,
     },
-    friendRequestsCount: {
-      type: Number,
-      default: 0,
-    },
-    newFriendsRequestCount: {
-      type: Number,
-      default: 0,
-    },
-    friendRequestSentCount: {
+    following: {
       type: Number,
       default: 0,
     },
