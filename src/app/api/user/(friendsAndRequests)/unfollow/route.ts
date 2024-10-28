@@ -26,11 +26,8 @@ connect()
 export async function POST(request: NextRequest) {
   const body = await parseJson(request)
   if (body instanceof NextResponse) return body
-
   try {
     const { username } = await userName.parse(body)
-
-    console.log(username, 'hello')
 
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
@@ -48,9 +45,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const receiver = await User.findOne({ username })
-
-    console.log(receiver, 'receiver')
+    const receiver = await User.findOne({ username, isVerified: true })
 
     if (!receiver) {
       return NextResponse.json({ error: 'Receiver not found' }, { status: 404 })
@@ -60,47 +55,47 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'You cannot send friend request to yourself' }, { status: 400 })
     }
 
-    // check if friend request already exists
-
-    const friendExists = await Friend.findOne({
-      sender: sender._id,
-      receiver: receiver._id,
+    const friendRequest = await Friend.findOne({
+      $or: [
+        { sender: sender._id, receiver: receiver._id },
+        { sender: receiver._id, receiver: sender._id },
+      ],
     })
 
-    if (friendExists?.status === 'pending') {
-      return NextResponse.json({ error: 'Friend request already sent' }, { status: 400 })
+    console.log(friendRequest)
+
+    if (!friendRequest) {
+      return NextResponse.json({ error: 'Friend request not found' }, { status: 404 })
     }
 
-    if (friendExists?.status === 'accepted') {
-      return NextResponse.json({ error: 'You are already friends' }, { status: 400 })
+    if (friendRequest.status === 'accepted') {
+      friendRequest.status = 'pending'
+      sender.friendsCount -= 1
+      receiver.friendsCount -= 1
+      friendRequest.sender = receiver._id as any
+      friendRequest.receiver = sender._id as any
+      receiver.friendRequestSentCount += 1
+      sender.friendRequestsCount += 1
+      await friendRequest.save()
+    }
+    if (friendRequest.status === 'pending') {
+      // update sender friend request count
+      if (friendRequest.sender.toString() === sender._id.toString()) {
+        sender.friendRequestSentCount -= 1
+        receiver.friendRequestsCount -= 1
+      } else {
+        sender.friendRequestsCount -= 1
+        receiver.friendRequestSentCount -= 1
+      }
+      await Friend.findByIdAndDelete(friendRequest._id)
     }
 
-    // update sender friend request count
+    await sender.save()
+    await receiver.save()
 
-    await User.findByIdAndUpdate(sender._id, { $inc: { friendRequestSentCount: 1 } })
+    // deleteRequest
 
-    // update receiver friend request count
-
-    await User.findByIdAndUpdate(receiver._id, { $inc: { friendRequestsCount: 1 } })
-
-    const newFriend = new Friend({
-      sender: sender._id,
-      senderUsername: sender.username,
-      receiver: receiver._id,
-      receiverUsername: receiver.username,
-      status: 'pending',
-    })
-
-    await newFriend.save()
-
-    return NextResponse.json(
-      {
-        message: 'Friend request sent',
-        sender: sender.username,
-        receiver: receiver.username,
-      },
-      { status: 200 },
-    )
+    return NextResponse.json({ message: 'Friend request deleted' }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }

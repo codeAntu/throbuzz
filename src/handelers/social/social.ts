@@ -38,21 +38,27 @@ export async function deleteRequest(friendRequestId: string) {
 export async function follow(username: string) {
   try {
     const response = await axios.post('/api/user/follow', { username })
+    console.log(response.data)
+
     return response.data
   } catch (error: any) {
+    console.log(error)
+
     return error.response.data
   }
 }
 
-// unfollow and deletedRequest are the same
-// export async function unfollow(username: string) {
-//   try {
-//     const response = await axios.post('/api/user/unfollow', { username })
-//     return response.data
-//   } catch (error: any) {
-//     return error.response.data
-//   }
-// }
+export async function unfollow(username: string) {
+  try {
+    const response = await axios.post('/api/user/unfollow', { username })
+    console.log(response.data)
+
+    return response.data
+  } catch (error: any) {
+    console.log(error)
+    return error.response.data
+  }
+}
 
 export async function getSentRequests() {
   try {

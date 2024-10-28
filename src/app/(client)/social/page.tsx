@@ -34,7 +34,7 @@ export default function Requests() {
   return (
     <Screen0>
       <Header title={page}></Header>
-      <div className='grid w-[100vw] select-none gap-4 px-5 py-4'>
+      <div className='grid select-none gap-4 px-5 py-4'>
         <div className='no-scrollbar grid grid-flow-col gap-2 overflow-scroll'>
           {pages.map((title, index) => (
             <Button

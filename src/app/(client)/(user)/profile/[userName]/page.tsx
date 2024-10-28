@@ -6,6 +6,8 @@ import Header from '@/components/Header'
 import Post, { PostT } from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { handleFollow, handleUnFollow } from '@/handelers/helpers/follow'
+import { follow } from '@/handelers/social/social'
 import { socialMediaUrls } from '@/lib/const'
 import { UserT } from '@/lib/types'
 import { nFormatter } from '@/utils/utils'
@@ -132,28 +134,16 @@ function Profile({ userName }: { userName: string }) {
     getUser()
   }, [])
 
-  async function handleFollow() {
-    // setFollowed(true)
-    // const response = await follow(userName)
-    // if (response.error) {
-    //   console.error(response.error)
-    //   setFollowed(false)
-    //   return
-    // }
-    // setFollowed(true)
-    // console.log(response)
-  }
-
-  async function handleUnfollow() {
-    // setFollowed(false)
-    // const response = await unfollow(userName)
-    // if (response.error) {
-    //   console.error(response.error)
-    //   setFollowed(true)
-    //   return
-    // }
-    // setFollowed(false)
-  }
+  // async function handleUnfollow() {
+  //   // setFollowed(false)
+  //   // const response = await unfollow(userName)
+  //   // if (response.error) {
+  //   //   console.error(response.error)
+  //   //   setFollowed(true)
+  //   //   return
+  //   // }
+  //   // setFollowed(false)
+  // }
 
   if (loading) {
     return (
@@ -228,7 +218,9 @@ function Profile({ userName }: { userName: string }) {
               <Button
                 variant='filled'
                 className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
-                onClick={handleUnfollow}
+                onClick={() => {
+                  handleUnFollow(userName, setFollowed)
+                }}
               >
                 <UserCheck size={18} className='' /> Following
               </Button>
@@ -236,7 +228,11 @@ function Profile({ userName }: { userName: string }) {
               <Button
                 variant='filled'
                 className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
-                onClick={handleFollow}
+                onClick={() => {
+                  console.log(userName)
+
+                  handleFollow(userName, setFollowed)
+                }}
               >
                 <UserPlus size={18} className='' /> Follow
               </Button>
