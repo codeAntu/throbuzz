@@ -1,9 +1,11 @@
 import { connect } from '@/dbConfig/dbConfig'
-import Friend from '@/models/friends'
+import Follow from '@/models/follows'
 import User from '@/models/userModel'
 import { parseJson } from '@/utils/utils'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import jwt from 'jsonwebtoken'
+import { TokenDataT } from '@/lib/types'
 
 connect()
 
@@ -31,11 +33,19 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
-    const result = await Friend.aggregate([
+
+    const token = (await request.cookies.get('token')?.value) || ''
+    const tokenData = jwt.decode(token) as TokenDataT
+
+    if (!tokenData) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const tokenUserId = tokenData.id
+
+    const result = await Follow.aggregate([
       {
-        $match: {
-          $or: [{ receiver: user._id }, { sender: user._id, status: 'accepted' }],
-        },
+        $match: { following: user._id },
       },
       {
         $facet: {
@@ -46,28 +56,33 @@ export async function POST(request: NextRequest) {
             {
               $lookup: {
                 from: 'users',
-                localField: 'sender',
+                localField: 'follower',
                 foreignField: '_id',
-                as: 'senderDetails',
+                as: 'details',
               },
             },
             {
+              $unwind: '$details',
+            },
+            {
               $lookup: {
-                from: 'users',
-                localField: 'receiver',
-                foreignField: '_id',
-                as: 'receiverDetails',
+                from: 'follows',
+                let: { followerId: '$details._id' },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $and: [{ $eq: ['$follower', tokenUserId] }, { $eq: ['$following', '$$followerId'] }],
+                      },
+                    },
+                  },
+                ],
+                as: 'isFollowing',
               },
             },
             {
               $addFields: {
-                details: {
-                  $cond: {
-                    if: { $eq: ['$sender', user._id] },
-                    then: { $arrayElemAt: ['$receiverDetails', 0] },
-                    else: { $arrayElemAt: ['$senderDetails', 0] },
-                  },
-                },
+                isFollowing: { $gt: [{ $size: '$isFollowing' }, 0] },
               },
             },
             {
@@ -76,7 +91,9 @@ export async function POST(request: NextRequest) {
                 'details.username': 1,
                 'details.profilePic': 1,
                 'details.bio': 1,
+                'details._id': 1,
                 status: 1, // Include the status field
+                isFollowing: 1, // Include the isFollowing field
               },
             },
           ],

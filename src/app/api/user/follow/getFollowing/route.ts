@@ -2,8 +2,8 @@ import { connect } from '@/dbConfig/dbConfig'
 import { parseJson } from '@/utils/utils'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import Friend from '@/models/friends'
 import User from '@/models/userModel'
+import Follow from '@/models/follows'
 
 connect()
 
@@ -32,11 +32,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const result = await Friend.aggregate([
+    const result = await Follow.aggregate([
       {
-        $match: {
-          $or: [{ sender: user._id }, { receiver: user._id, status: 'accepted' }],
-        },
+        $match: { follower: user._id },
       },
       {
         $facet: {
@@ -47,29 +45,13 @@ export async function POST(request: NextRequest) {
             {
               $lookup: {
                 from: 'users',
-                localField: 'sender',
+                localField: 'follower',
                 foreignField: '_id',
-                as: 'senderDetails',
+                as: 'details',
               },
             },
             {
-              $lookup: {
-                from: 'users',
-                localField: 'receiver',
-                foreignField: '_id',
-                as: 'receiverDetails',
-              },
-            },
-            {
-              $addFields: {
-                details: {
-                  $cond: {
-                    if: { $eq: ['$sender', user._id] },
-                    then: { $arrayElemAt: ['$receiverDetails', 0] },
-                    else: { $arrayElemAt: ['$senderDetails', 0] },
-                  },
-                },
-              },
+              $unwind: '$details',
             },
             {
               $project: {

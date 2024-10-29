@@ -1,8 +1,8 @@
 import { follow, unfollow } from '../social/social'
 
-export async function handleFollow(username: string, setFollowed: any) {
+export async function handleFollow(id: string, setFollowed: any) {
   setFollowed(true)
-  const response = await follow(username)
+  const response = await follow(id)
   if (response.error) {
     console.error(response.error)
     setFollowed(false)
@@ -12,11 +12,11 @@ export async function handleFollow(username: string, setFollowed: any) {
   console.log(response)
 }
 
-export async function handleUnFollow(username: string, setFollowed: any) {
+export async function handleUnFollow(id: string, setFollowed: any) {
   setFollowed(false)
-  console.log(username)
+  console.log(id)
 
-  const response = await unfollow(username)
+  const response = await unfollow(id)
   if (response.error) {
     console.log(response.error)
     setFollowed(true)

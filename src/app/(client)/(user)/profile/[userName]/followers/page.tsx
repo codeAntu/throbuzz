@@ -6,7 +6,7 @@ import { Button } from '@/components/Button'
 import Header from '@/components/Header'
 import { Screen0 } from '@/components/Screen'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
-import { handleAcceptRequest } from '@/handelers/helpers/follow'
+import { handleFollow, handleUnFollow } from '@/handelers/helpers/follow'
 import { getFollowers } from '@/handelers/user/follow'
 import axios from 'axios'
 import { EllipsisVertical, Search } from 'lucide-react'
@@ -16,7 +16,9 @@ import { useEffect, useRef, useState } from 'react'
 export interface FollowersT {
   _id: string
   status: string
+  isFollowing: boolean
   details: {
+    _id: string
     name: string
     username: string
     profilePic: {
@@ -124,7 +126,7 @@ export default function Followers({
 }
 
 function Follower(props: FollowersT) {
-  const [isAccepted, setIsAccepted] = useState(props.status === 'accepted')
+  const [isFollowing, setIsFollowing] = useState(props.isFollowing)
   const router = useRouter()
   return (
     <div
@@ -142,17 +144,32 @@ function Follower(props: FollowersT) {
           </div>
         </div>
         <div className='flex items-center justify-center gap-2.5'>
-          <Button
-            variant='zero'
-            className='rounded-[8px] bg-black px-5 py-2 text-xs font-medium text-white dark:bg-white dark:text-black sm:py-2'
-            onClick={(e) => {
-              e.stopPropagation()
-              handleAcceptRequest(props._id, setIsAccepted)
-            }}
-            disabled={isAccepted}
-          >
-            {isAccepted ? 'Followed' : 'Follow'}
-          </Button>
+          {!isFollowing ? (
+            <Button
+              variant='zero'
+              className='rounded-[8px] bg-black px-5 py-2 text-xs font-medium text-white dark:bg-white dark:text-black sm:py-2'
+              onClick={(e) => {
+                e.stopPropagation()
+                handleFollow(props.details._id, isFollowing)
+              }}
+              disabled={isFollowing}
+            >
+              Follow
+            </Button>
+          ) : (
+            <Button
+              variant='zero'
+              className='rounded-[8px] bg-black px-5 py-2 text-xs font-medium text-white dark:bg-white dark:text-black sm:py-2'
+              onClick={(e) => {
+                e.stopPropagation()
+                handleUnFollow(props.details._id, isFollowing)
+              }}
+              disabled={!isFollowing}
+            >
+              Unfollow
+            </Button>
+          )}
+
           <Drawer>
             <DrawerTrigger asChild>
               <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>

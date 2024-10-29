@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { root } from 'postcss'
 
-export async function follow(username: string) {
+export async function follow(id: string) {
   try {
-    const response = await axios.post('/api/user/follow/follow', { username })
+    const response = await axios.post('/api/user/follow/follow', { id })
     console.log(response.data)
 
     return response.data
@@ -14,9 +14,9 @@ export async function follow(username: string) {
   }
 }
 
-export async function unfollow(username: string) {
+export async function unfollow(id: string) {
   try {
-    const response = await axios.post('/api/user/follow/unfollow', { username })
+    const response = await axios.post('/api/user/follow/unfollow', { id })
     console.log(response.data)
     return response.data
   } catch (error: any) {

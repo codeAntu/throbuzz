@@ -9,18 +9,15 @@ import { parseJson } from '@/utils/utils'
 import Follow from '@/models/follows'
 import Notification from '@/models/notificationModel'
 
-const userName = z
+const data = z
   .object({
-    username: z
-      .string({ required_error: 'Username is required' }) //
-      .trim()
+    id: z
+      .string()
       .min(3, { message: 'Username must be at least 3 characters long' })
       .max(100, { message: 'Username must be at most 100 characters long' })
-      .toLowerCase()
-      .optional(),
+      .trim(),
   })
-  .strict()
-  .refine((data) => data.username, { message: 'username is required' })
+  .refine((data) => data.id !== '', { message: 'Username is required' })
 
 connect()
 
@@ -29,9 +26,9 @@ export async function POST(request: NextRequest) {
   if (body instanceof NextResponse) return body
 
   try {
-    const { username } = await userName.parse(body)
+    const { id } = await data.parse(body)
 
-    console.log(username, 'hello')
+    console.log(id)
 
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
@@ -39,22 +36,22 @@ export async function POST(request: NextRequest) {
     if (!tokenData) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    if (!username) {
+    if (!id) {
       return NextResponse.json({ error: 'Username is required' }, { status: 400 })
     }
 
     const userId = tokenData.id // Extract user ID from token data
 
-    const follower = await User.findOne({ _id: userId, isVerified: true })
+    const follower = await User.findById(userId)
 
-    if (!follower) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    if (!follower || !follower.isVerified) {
+      return NextResponse.json({ error: 'User 1  not found' }, { status: 404 })
     }
 
-    const following = await User.findOne({ username, isVerified: true })
+    const following = await User.findById(id)
 
-    if (!following) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    if (!following || !following.isVerified) {
+      return NextResponse.json({ error: 'User 2  not found' }, { status: 404 })
     }
 
     const follow = await Follow.findOne({ follower: follower._id, following: following._id })
