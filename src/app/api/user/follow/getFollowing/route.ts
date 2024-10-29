@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import User from '@/models/userModel'
 import Follow from '@/models/follows'
+import { TokenDataT } from '@/lib/types'
+import jwt from 'jsonwebtoken'
 
 connect()
 
@@ -27,9 +29,21 @@ export async function POST(request: NextRequest) {
 
   try {
     const { username } = userNameValid.parse(body)
+    console.log(username)
+
     const user = await User.findOne({ username }).select('_id')
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    const token = (await request.cookies.get('token')?.value) || ''
+    const tokenData = jwt.decode(token) as TokenDataT
+
+    let tokenUserId = null
+
+    if (tokenData) {
+      const extUser = await User.findById(tokenData.id)
+      tokenUserId = extUser?._id || null
     }
 
     const result = await Follow.aggregate([
@@ -45,7 +59,7 @@ export async function POST(request: NextRequest) {
             {
               $lookup: {
                 from: 'users',
-                localField: 'follower',
+                localField: 'following',
                 foreignField: '_id',
                 as: 'details',
               },
@@ -54,12 +68,17 @@ export async function POST(request: NextRequest) {
               $unwind: '$details',
             },
             {
+              $addFields: {
+                isMe: { $eq: [{ $toString: '$details._id' }, { $toString: tokenUserId }] },
+              },
+            },
+            {
               $project: {
                 'details.name': 1,
                 'details.username': 1,
                 'details.profilePic': 1,
                 'details.bio': 1,
-                status: 1, // Include the status field
+                isMe: 1,
               },
             },
           ],

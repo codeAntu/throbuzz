@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const { username } = userNameValid.parse(body)
+
     const user = await User.findOne({ username }).select('_id')
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -37,12 +38,12 @@ export async function POST(request: NextRequest) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    if (!tokenData) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    let tokenUserId = null
+
+    if (tokenData) {
+      const extUser = await User.findById(tokenData.id)
+      tokenUserId = extUser?._id || null
     }
-
-    const tokenUserId = tokenData.id
-
     const result = await Follow.aggregate([
       {
         $match: { following: user._id },
@@ -82,7 +83,14 @@ export async function POST(request: NextRequest) {
             },
             {
               $addFields: {
-                isFollowing: { $gt: [{ $size: '$isFollowing' }, 0] },
+                isFollowing: {
+                  $cond: {
+                    if: { $eq: [tokenUserId, null] },
+                    then: false,
+                    else: { $gt: [{ $size: '$isFollowing' }, 0] },
+                  },
+                },
+                isMe: { $eq: [{ $toString: '$details._id' }, { $toString: tokenUserId }] },
               },
             },
             {
@@ -92,8 +100,8 @@ export async function POST(request: NextRequest) {
                 'details.profilePic': 1,
                 'details.bio': 1,
                 'details._id': 1,
-                status: 1, // Include the status field
                 isFollowing: 1, // Include the isFollowing field
+                isMe: 1, // Include the isMe field
               },
             },
           ],
@@ -101,8 +109,12 @@ export async function POST(request: NextRequest) {
       },
     ])
 
+    console.log(tokenUserId)
+
     const totalFollowers = result[0].metadata[0] ? result[0].metadata[0].total : 0
     const followers = result[0].data
+
+    console.log(followers)
 
     const totalPages = Math.ceil(totalFollowers / limit)
     const nextPage = page < totalPages ? page + 1 : null

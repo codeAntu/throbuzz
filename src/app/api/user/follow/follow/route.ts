@@ -61,6 +61,13 @@ export async function POST(request: NextRequest) {
     }
 
     await Follow.create({ follower: follower._id, following: following._id })
+
+    follower.following += 1
+    following.followers += 1
+
+    await follower.save()
+    await following.save()
+
     const notification = new Notification({
       userId: following._id,
       title: 'Follow',

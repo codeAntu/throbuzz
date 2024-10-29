@@ -55,6 +55,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'You are not following this user' }, { status: 400 })
     }
 
+    follower.following -= 1
+    following.followers -= 1
+
+    await follower.save()
+    await following.save()
+
     return NextResponse.json({ message: 'Unfollowed successfully' }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })

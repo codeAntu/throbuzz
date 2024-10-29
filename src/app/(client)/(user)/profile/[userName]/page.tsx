@@ -188,7 +188,7 @@ function Profile({ userName }: { userName: string }) {
                 variant='filled'
                 className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
                 onClick={() => {
-                  handleUnFollow(userName, setFollowed)
+                  handleUnFollow(user.id, setFollowed)
                 }}
               >
                 <UserCheck size={18} className='' /> Following
@@ -200,7 +200,7 @@ function Profile({ userName }: { userName: string }) {
                 onClick={() => {
                   console.log(userName)
 
-                  handleFollow(userName, setFollowed)
+                  handleFollow(user.id, setFollowed)
                 }}
               >
                 <UserPlus size={18} className='' /> Follow
