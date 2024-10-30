@@ -10,19 +10,42 @@ import { AtSign, Check, ChevronLeft, ImagePlus, LoaderCircle, Pen, Pencil, Trash
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-export default function Edit() {
-  const [user, setUser] = useState({
-    name: '',
-    bio: '',
-    about: '',
-    username: '',
-  })
+export interface MeT {
+  _id: string
+  profilePic: {
+    imageUrl: string
+    publicId: string
+  }
+  name: string
+  username: string
+  bio: string
+  email: string
+  phone: string
+  instagram: string
+  github: string
+  twitter: string
+  facebook: string
+  linkedin: string
+  website: string
+}
 
-  const [updatedUser, setUpdatedUser] = useState({
+export default function Edit() {
+  const [user, setUser] = useState<MeT | null>(null)
+
+  const [updatedUser, setUpdatedUser] = useState<MeT>({
+    _id: '',
+    profilePic: { imageUrl: '', publicId: '' },
     name: '',
-    bio: '',
-    about: '',
     username: '',
+    bio: '',
+    email: '',
+    phone: '',
+    instagram: '',
+    github: '',
+    twitter: '',
+    facebook: '',
+    linkedin: '',
+    website: '',
   })
 
   const [username, setUsername] = useState('')
@@ -33,99 +56,92 @@ export default function Edit() {
 
   const router = useRouter()
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      checkUsername()
-    }, 300)
-    return () => clearTimeout(timeout)
-  }, [username])
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     checkUsername()
+  //   }, 300)
+  //   return () => clearTimeout(timeout)
+  // }, [username])
 
-  useEffect(() => {
-    setError('')
-  }, [updatedUser, username])
+  // useEffect(() => {
+  //   setError('')
+  // }, [updatedUser, username])
+
+  // useEffect(() => {
+  //   getMe()
+  // }, [])
+
+  // async function checkUsername() {
+  //   if (username.length < 3) {
+  //     setIsUsernameAvailable(false)
+  //     return
+  //   }
+  //   setIsUsernameChecking(true)
+
+  //   try {
+  //     const response = await axios.post('/api/auth/check-username', { username: username })
+  //     if (await response.data.success) {
+  //       setIsUsernameAvailable(true)
+  //     } else {
+  //       setIsUsernameAvailable(false)
+  //     }
+  //   } catch (error: any) {
+  //     console.log('error', error.response.data)
+  //   } finally {
+  //     setIsUsernameChecking(false)
+  //   }
+  // }
+
+  // async function updateUser() {
+  //   if (!updatedUser.name || !updatedUser.username) {
+  //     setError('Name and Username are required')
+  //     return
+  //   }
+
+  //   if (
+  //     updatedUser.name === user.name &&
+  //     updatedUser.username === user.username &&
+  //     updatedUser.bio === user.bio &&
+  //     updatedUser.about === user.about
+  //   ) {
+  //     setError('No changes made')
+  //     return
+  //   }
+
+  //   setLoading(true)
+
+  //   try {
+  //     const response = await axios.post('/api/user/updateUser', {
+  //       name: updatedUser.name,
+  //       username: username,
+  //       bio: updatedUser.bio,
+  //       about: updatedUser.about,
+  //     })
+  //     console.log('response', response.data)
+  //     router.push(`/profile/${username}`)
+  //   } catch (error: any) {
+  //     console.log('error', error.response.data)
+  //   }
+  //   setLoading(false)
+  // }
+
+  async function getMe() {
+    try {
+      const response = await axios.get('/api/user/me')
+      console.log('response', response.data)
+      setUser(response.data.user)
+      setUpdatedUser(response.data.user)
+      setUsername(response.data.user.username)
+    } catch (error: any) {
+      console.log('error', error.response.data)
+    }
+  }
 
   useEffect(() => {
     getMe()
   }, [])
 
-  async function checkUsername() {
-    if (username.length < 3) {
-      setIsUsernameAvailable(false)
-      return
-    }
-    setIsUsernameChecking(true)
-
-    try {
-      const response = await axios.post('/api/auth/check-username', { username: username })
-      if (await response.data.success) {
-        setIsUsernameAvailable(true)
-      } else {
-        setIsUsernameAvailable(false)
-      }
-    } catch (error: any) {
-      console.log('error', error.response.data)
-    } finally {
-      setIsUsernameChecking(false)
-    }
-  }
-
-  async function updateUser() {
-    if (!updatedUser.name || !updatedUser.username) {
-      setError('Name and Username are required')
-      return
-    }
-
-    if (
-      updatedUser.name === user.name &&
-      updatedUser.username === user.username &&
-      updatedUser.bio === user.bio &&
-      updatedUser.about === user.about
-    ) {
-      setError('No changes made')
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      const response = await axios.post('/api/user/updateUser', {
-        name: updatedUser.name,
-        username: username,
-        bio: updatedUser.bio,
-        about: updatedUser.about,
-      })
-      console.log('response', response.data)
-      router.push(`/profile/${username}`)
-    } catch (error: any) {
-      console.log('error', error.response.data)
-    }
-    setLoading(false)
-  }
-
-  async function getMe() {
-    try {
-      const response = await axios.get('/api/user/me')
-
-      setUser({
-        name: response.data.user.name,
-        bio: response.data.user.bio,
-        about: response.data.user.about,
-        username: response.data.user.username,
-      })
-
-      setUsername(response.data.user.username)
-      setUpdatedUser({
-        name: response.data.user.name,
-        bio: response.data.user.bio,
-        about: response.data.user.about,
-        username: response.data.user.username,
-      })
-    } catch (error: any) {
-      console.log('error', error.response.data)
-    }
-  }
-
-  console.log('updatedUser', updatedUser)
+  if (!user) return <div>Loading...</div>
 
   return (
     <Screen0 className=''>
@@ -184,7 +200,7 @@ export default function Edit() {
             <div>
               <div className='px-1.5 text-base font-medium text-black/80 dark:text-white/80'>Bio</div>
               <textarea
-                className='h-36 w-full rounded-2xl border border-black/5 bg-black/5 px-4 py-4 text-sm font-medium text-black/80 outline-none dark:border-white/5 dark:bg-white/5 dark:text-white/80'
+                className='h-36 w-full rounded-2xl border border-black/5 bg-black/5 px-4 py-4 text-sm font-medium text-black/80 placeholder-zinc-400/60 outline-none dark:border-white/5 dark:bg-white/5 dark:text-white/80 dark:placeholder-zinc-700'
                 name='bio'
                 placeholder='Enter your bio'
                 value={updatedUser.bio}
@@ -200,24 +216,33 @@ export default function Edit() {
                   <div>Email :</div>
                   <input
                     type='text'
-                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/70 placeholder-zinc-400/60 outline-none dark:text-white/70 dark:placeholder-zinc-700'
                     placeholder='example@gmail.com'
+                    value={updatedUser.email}
+                    onChange={(e: any) => {
+                      setUpdatedUser({ ...updatedUser, email: e.target.value })
+                    }}
                   />
                 </div>
                 <div className='flex items-center justify-normal gap-3'>
                   <div>Phone No :</div>
                   <input
                     type='number'
-                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/70 placeholder-zinc-400/60 outline-none dark:text-white/70 dark:placeholder-zinc-700'
                     placeholder='9876543210'
+                    value={updatedUser.phone}
+                    onChange={(e: any) => {
+                      setUpdatedUser({ ...updatedUser, phone: e.target.value })
+                    }}
                   />
                 </div>
-                <div className='flex items-center justify-normal gap-3'>
+                {/* <div className='flex items-center justify-normal gap-3'>
                   <div>Birthday :</div>
                   <input
                     type='text'
                     className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
                     placeholder='11-10-1999'
+                    
                   />
                 </div>
                 <div className='flex items-center justify-normal gap-3'>
@@ -227,7 +252,7 @@ export default function Edit() {
                     className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
                     placeholder='Your city'
                   />
-                </div>
+                </div> */}
               </div>
             </div>
             <div className='space-y-2 py-2'>
@@ -237,16 +262,24 @@ export default function Edit() {
                   <div>Instagram :</div>
                   <input
                     type='text'
-                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/70 placeholder-zinc-400/60 outline-none dark:text-white/70 dark:placeholder-zinc-700'
                     placeholder='insta@1234'
+                    value={updatedUser.instagram}
+                    onChange={(e: any) => {
+                      setUpdatedUser({ ...updatedUser, instagram: e.target.value })
+                    }}
                   />
                 </div>
                 <div className='flex items-center justify-normal gap-3'>
                   <div>Github :</div>
                   <input
                     type='text'
-                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/70 placeholder-zinc-400/60 outline-none dark:text-white/70 dark:placeholder-zinc-700'
                     placeholder='github@1234'
+                    value={updatedUser.github}
+                    onChange={(e: any) => {
+                      setUpdatedUser({ ...updatedUser, github: e.target.value })
+                    }}
                   />
                 </div>
 
@@ -254,24 +287,36 @@ export default function Edit() {
                   <div>Twitter :</div>
                   <input
                     type='text'
-                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/70 placeholder-zinc-400/60 outline-none dark:text-white/70 dark:placeholder-zinc-700'
                     placeholder='twitter@1234'
+                    value={updatedUser.twitter}
+                    onChange={(e: any) => {
+                      setUpdatedUser({ ...updatedUser, twitter: e.target.value })
+                    }}
                   />
                 </div>
                 <div className='flex items-center justify-normal gap-3'>
                   <div>Facebook :</div>
                   <input
                     type='text'
-                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/70 placeholder-zinc-400/60 outline-none dark:text-white/70 dark:placeholder-zinc-700'
                     placeholder='facebook@1234'
+                    value={updatedUser.facebook}
+                    onChange={(e: any) => {
+                      setUpdatedUser({ ...updatedUser, facebook: e.target.value })
+                    }}
                   />
                 </div>
                 <div className='flex items-center justify-normal gap-3'>
                   <div>LinkedIn :</div>
                   <input
                     type='text'
-                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/70 placeholder-zinc-400/60 outline-none dark:text-white/70 dark:placeholder-zinc-700'
                     placeholder='linkedin@1234'
+                    value={updatedUser.linkedin}
+                    onChange={(e: any) => {
+                      setUpdatedUser({ ...updatedUser, linkedin: e.target.value })
+                    }}
                   />
                 </div>
 
@@ -279,8 +324,12 @@ export default function Edit() {
                   <div>Website :</div>
                   <input
                     type='text'
-                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/50 outline-none dark:text-white/50'
+                    className='w-[70%] bg-transparent px-1 py-1.5 text-black/70 placeholder-zinc-400/60 outline-none dark:text-white/70 dark:placeholder-zinc-700'
                     placeholder='www.example.com'
+                    value={updatedUser.website}
+                    onChange={(e: any) => {
+                      setUpdatedUser({ ...updatedUser, website: e.target.value })
+                    }}
                   />
                 </div>
               </div>
@@ -309,11 +358,9 @@ function Header() {
       <div className='text-base font-bold'>Edit Profile</div>
       <Button
         variant='text'
-        className='rounded-full p-3 text-sm text-accent active:bg-accent/20 active:dark:bg-accent md:p-3'
+        className='rounded-full p-3 text-sm text-accent active:bg-accent/20 dark:text-accent active:dark:bg-accent md:p-3'
       >
-        <div>
-          Save
-        </div>
+        <div>Save</div>
       </Button>
     </div>
   )
