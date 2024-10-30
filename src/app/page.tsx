@@ -7,6 +7,7 @@ import Post, { PostT } from '@/components/Post'
 import { Screen } from '@/components/Screen'
 import Sidebar from '@/components/Sidebar'
 import Slider from '@/components/Sidebar'
+import { logOut } from '@/handelers/helpers/logout'
 import useStore from '@/store/store'
 import axios from 'axios'
 import { ChevronDown, Earth, Image, ImageUp, Menu } from 'lucide-react'
@@ -19,14 +20,9 @@ export default function Home() {
   const savedUser = useStore((state) => state.savedUser)
   const clearSavedUser = useStore((state) => state.clearSavedUser)
 
-  async function onLogOut() {
-    try {
-      const response = await axios.post('/api/auth/logout')
-
-      console.log('response', response.data.message)
-      clearSavedUser()
-      router.push('/login')
-    } catch (error) {}
+  function onLogOut() {
+    clearSavedUser()
+    router.push('/login')
   }
 
   return (

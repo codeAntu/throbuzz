@@ -17,7 +17,7 @@ export default function Img({
   width: number
 }) {
   return (
-    <div>
+    <div className='aspect-square w-full rounded-full'>
       {publicId ? (
         <CldImage
           src={publicId}
@@ -30,6 +30,7 @@ export default function Img({
           // crop='fill'
           // gravity='auto'
           // className='rounded-lg'
+          className='aspect-square w-full rounded-full object-cover'
         />
       ) : (
         <>

@@ -41,7 +41,7 @@ export default function Login() {
     try {
       const response = await axios.post('/api/auth/login', user)
       console.log('response', response.data)
-      setSavedUser(response.data.tokenData)
+      setSavedUser(response.data.user)
 
       router.push('/')
     } catch (error: any) {

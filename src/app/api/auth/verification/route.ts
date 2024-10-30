@@ -129,7 +129,15 @@ export async function POST(request: NextRequest) {
       title: 'Login successful',
       message: 'User Login successful',
       success: true,
-      tokenData,
+      token,
+      user: {
+        email: user.email,
+        name: user.name,
+        username: user.username,
+        isVerified: user.isVerified,
+        profilePic: user.profilePic,
+        id: user._id,
+      },
     })
 
     response.cookies.set('token', token, {

@@ -11,9 +11,14 @@ interface StoreT {
 
 interface savedUserT {
   email: string
+  name: string
   username: string
   id: string
   isVerified: boolean
+  profilePic: {
+    imageUrl: string
+    publicId: string
+  }
 }
 
 const useStore = create<StoreT>((set) => {
@@ -26,7 +31,16 @@ const useStore = create<StoreT>((set) => {
       ls.set('savedUser', JSON.stringify(data))
     },
     clearSavedUser: () => {
-      set({ savedUser: { email: '', username: '', id: '', isVerified: false } })
+      set({
+        savedUser: {
+          email: '',
+          name: '',
+          username: '',
+          id: '',
+          isVerified: false,
+          profilePic: { imageUrl: '', publicId: '' },
+        },
+      })
       ls.clear()
     },
   }

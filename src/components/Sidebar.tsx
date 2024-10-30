@@ -3,7 +3,6 @@
 import { Screen } from '@/components/Screen'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Bell, House, icons, LogOut, Mail, Menu, Settings, User } from 'lucide-react'
-import { use, useCallback, useEffect, useState } from 'react'
 import { Button } from './Button'
 import { usePathname, useRouter } from 'next/navigation'
 import useStore from '@/store/store'
@@ -38,12 +37,12 @@ export default function Sidebar() {
                 router.push(`/profile/${savedUser.username}`)
               }}
             >
-              <div className='aspect-square w-28 overflow-hidden rounded-full sm:w-32'>
-                <Img imageUrl='' publicId='' height={50} width={50} />
+              <div className='aspect-square w-28 overflow-hidden sm:w-32'>
+                <Img imageUrl='' publicId='cld-sample-5' height={500} width={500} />
               </div>
               <div className='text-center'>
-                <div className='text-lg font-semibold'>{savedUser.username}</div>
-                <div className='text-xs font-semibold text-black/60 dark:text-white/60'>{savedUser.email}</div>
+                <div className='text-lg font-semibold'>{savedUser.name}</div>
+                <div className='text-xs font-semibold text-black/60 dark:text-white/60'>{savedUser.username}</div>
               </div>
             </Button>
           </SheetTitle>

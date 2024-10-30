@@ -141,9 +141,9 @@ function Follower(props: FollowersT) {
       >
         <Img
           imageUrl={props.details.profilePic.imageUrl}
-          publicId={props.details.profilePic.publicId}
-          height={50}
-          width={50}
+          publicId={props.details.profilePic.publicId || 'cld-sample-2'}
+          height={100}
+          width={100}
         />
       </div>
       <div className='flex w-full justify-between gap-2.5'>

@@ -28,7 +28,7 @@ export default function Verification() {
     try {
       const response = await axios.post('/api/auth/verification', { otp })
       console.log('response', response.data.message)
-      setSavedUser(response.data.tokenData)
+      setSavedUser(response.data.user)
       router.push('/')
     } catch (error: any) {
       console.log('error', error.response.data.error)
