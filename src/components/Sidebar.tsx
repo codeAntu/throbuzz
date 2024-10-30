@@ -38,7 +38,12 @@ export default function Sidebar() {
               }}
             >
               <div className='aspect-square w-28 overflow-hidden sm:w-32'>
-                <Img imageUrl='' publicId='cld-sample-5' height={500} width={500} />
+                <Img
+                  imageUrl={savedUser.profilePic.imageUrl}
+                  publicId={savedUser.profilePic.publicId}
+                  height={500}
+                  width={500}
+                />
               </div>
               <div className='text-center'>
                 <div className='text-lg font-semibold'>{savedUser.name}</div>

@@ -1,10 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 'use client'
 import { Button } from '@/components/Button'
 import Error from '@/components/Error'
+import Header from '@/components/Header'
 import { Ic } from '@/components/Icon'
 import Input from '@/components/Input'
 import { Screen0 } from '@/components/Screen'
+import useStore from '@/store/store'
 import axios from 'axios'
 import { AtSign, Check, ChevronLeft, ImagePlus, LoaderCircle, Pen, Pencil, Trash2, User, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -48,82 +51,126 @@ export default function Edit() {
     website: '',
   })
 
-  const [username, setUsername] = useState('')
+  const [newUsername, setNewUsername] = useState('')
   const [error, setError] = useState('')
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false)
   const [isUsernameChecking, setIsUsernameChecking] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [profileImage, setProfileImage] = useState<File | null>(null)
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null)
+  const savedUser = useStore((state) => state.savedUser)
+  const setSavedUser = useStore((state) => state.setSavedUser)
 
   const router = useRouter()
 
-  // useEffect(() => {
-  //   const timeout = setTimeout(() => {
-  //     checkUsername()
-  //   }, 300)
-  //   return () => clearTimeout(timeout)
-  // }, [username])
+  async function checkUsername() {
+    if (newUsername.length < 3) {
+      setIsUsernameAvailable(false)
+      return
+    }
+    setIsUsernameChecking(true)
 
-  // useEffect(() => {
-  //   setError('')
-  // }, [updatedUser, username])
+    try {
+      const response = await axios.post('/api/auth/check-username', { username: newUsername })
+      if (await response.data.success) {
+        setIsUsernameAvailable(true)
+      } else {
+        setIsUsernameAvailable(false)
+      }
+    } catch (error: any) {
+      console.log('error', error.response.data)
+    } finally {
+      setIsUsernameChecking(false)
+    }
+  }
 
-  // useEffect(() => {
-  //   getMe()
-  // }, [])
+  async function updateUser() {
+    setLoading(true)
+    console.log('updatedUser', updatedUser)
 
-  // async function checkUsername() {
-  //   if (username.length < 3) {
-  //     setIsUsernameAvailable(false)
-  //     return
-  //   }
-  //   setIsUsernameChecking(true)
+    if (!user || !updatedUser) {
+      console.log('No user found')
+      setLoading(false)
+      return
+    }
 
-  //   try {
-  //     const response = await axios.post('/api/auth/check-username', { username: username })
-  //     if (await response.data.success) {
-  //       setIsUsernameAvailable(true)
-  //     } else {
-  //       setIsUsernameAvailable(false)
-  //     }
-  //   } catch (error: any) {
-  //     console.log('error', error.response.data)
-  //   } finally {
-  //     setIsUsernameChecking(false)
-  //   }
-  // }
+    if (!(isUsernameAvailable || newUsername === user.username)) {
+      console.log('Username is not available')
+      setError('Username is already taken')
+      setLoading(false)
+      return
+    }
 
-  // async function updateUser() {
-  //   if (!updatedUser.name || !updatedUser.username) {
-  //     setError('Name and Username are required')
-  //     return
-  //   }
+    const name = user.name === updatedUser.name ? undefined : updatedUser.name
+    const username = user.username === updatedUser.username ? undefined : updatedUser.username
+    const bio = user.bio === updatedUser.bio ? undefined : updatedUser.bio
+    const phone = user.phone === updatedUser.phone ? undefined : updatedUser.phone
+    const instagram = user.instagram === updatedUser.instagram ? undefined : updatedUser.instagram
+    const github = user.github === updatedUser.github ? undefined : updatedUser.github
+    const twitter = user.twitter === updatedUser.twitter ? undefined : updatedUser.twitter
+    const facebook = user.facebook === updatedUser.facebook ? undefined : updatedUser.facebook
+    const linkedin = user.linkedin === updatedUser.linkedin ? undefined : updatedUser.linkedin
+    const website = user.website === updatedUser.website ? undefined : updatedUser.website
 
-  //   if (
-  //     updatedUser.name === user.name &&
-  //     updatedUser.username === user.username &&
-  //     updatedUser.bio === user.bio &&
-  //     updatedUser.about === user.about
-  //   ) {
-  //     setError('No changes made')
-  //     return
-  //   }
+    if (
+      !name &&
+      !username &&
+      !bio &&
+      !phone &&
+      !instagram &&
+      !github &&
+      !twitter &&
+      !facebook &&
+      !linkedin &&
+      !website &&
+      !profileImage
+    ) {
+      setLoading(false)
+      console.log('No changes made')
 
-  //   setLoading(true)
+      return
+    }
 
-  //   try {
-  //     const response = await axios.post('/api/user/updateUser', {
-  //       name: updatedUser.name,
-  //       username: username,
-  //       bio: updatedUser.bio,
-  //       about: updatedUser.about,
-  //     })
-  //     console.log('response', response.data)
-  //     router.push(`/profile/${username}`)
-  //   } catch (error: any) {
-  //     console.log('error', error.response.data)
-  //   }
-  //   setLoading(false)
-  // }
+    console.log('name', name)
+
+    console.log('here')
+
+    try {
+      const formData = new FormData()
+      if (name) formData.append('name', name)
+      if (username) formData.append('username', username)
+      if (bio) formData.append('bio', bio)
+      if (phone) formData.append('phone', phone)
+      if (instagram) formData.append('instagram', instagram)
+      if (github) formData.append('github', github)
+      if (twitter) formData.append('twitter', twitter)
+      if (facebook) formData.append('facebook', facebook)
+      if (linkedin) formData.append('linkedin', linkedin)
+      if (website) formData.append('website', website)
+      if (profileImage) formData.append('profileImage', profileImage)
+
+      const response = await axios.post('/api/user/updateUser', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      console.log('response', response.data)
+
+      // Update savedUser in the store
+      setSavedUser({
+        email: updatedUser.email,
+        name: updatedUser.name,
+        username: updatedUser.username,
+        id: updatedUser._id,
+        isVerified: true,
+        profilePic: updatedUser.profilePic,
+      })
+      router.push(`/profile/${updatedUser.username}`)
+    } catch (error: any) {
+      console.log('error', error.response)
+    }
+    setLoading(false)
+  }
 
   async function getMe() {
     try {
@@ -131,7 +178,7 @@ export default function Edit() {
       console.log('response', response.data)
       setUser(response.data.user)
       setUpdatedUser(response.data.user)
-      setUsername(response.data.user.username)
+      setNewUsername(response.data.user.username)
     } catch (error: any) {
       console.log('error', error.response.data)
     }
@@ -141,22 +188,60 @@ export default function Edit() {
     getMe()
   }, [])
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      checkUsername()
+    }, 300)
+    return () => clearTimeout(timeout)
+  }, [newUsername])
+
+  useEffect(() => {
+    setError('')
+  }, [updatedUser, newUsername])
+
+  const handleImageChange = (e: any) => {
+    const file = e.target.files[0]
+    setProfileImage(file)
+    setProfileImageUrl(URL.createObjectURL(file))
+  }
+
   if (!user) return <div>Loading...</div>
 
   return (
     <Screen0 className=''>
-      <Header />
+      <Header title='Edit Profile'>
+        <Button
+          variant='text'
+          className='rounded-full p-3 text-sm text-accent active:bg-accent/20 dark:text-accent md:p-3'
+          onClick={() => {
+            updateUser()
+          }}
+        >
+          <div>Save</div>
+        </Button>
+      </Header>
+
       <div className='flex flex-grow flex-col justify-between gap-8 px-5 py-6'>
         <div>
           <div className='flex flex-col justify-center gap-2.5'>
             <div className='flex flex-col items-center justify-center gap-2 sm:gap-4'>
-              <img src='/images/img1.png' alt='' className='size-36 rounded-full bg-red-500' />
-              <input type='file' name='' id='profilePicInput' className='hidden' />
+              <img
+                src={profileImageUrl || user.profilePic.imageUrl || '/images/img1.png'}
+                alt=''
+                className='size-36 rounded-full object-cover'
+              />
+              <input
+                type='file'
+                name='profileImage'
+                id='profilePicInput'
+                className='hidden'
+                onChange={handleImageChange}
+              />
               <label htmlFor='profilePicInput' className=''>
-                <Button variant='filled' className='rounded-full border-none px-7 text-xs font-medium'>
+                <div className='flex w-full gap-2 rounded-full border-2 border-none border-black bg-black px-7 py-2 text-xs font-medium text-white dark:border-white dark:bg-white dark:text-black'>
                   <Pencil size={14} className='' />
                   <span>Edit</span>
-                </Button>
+                </div>
               </label>
             </div>
             <div>
@@ -183,16 +268,15 @@ export default function Edit() {
                 rightIcon={
                   isUsernameChecking ? (
                     <Ic Icon={LoaderCircle} className='animate-spin' />
-                  ) : isUsernameAvailable || username === user.username ? (
+                  ) : isUsernameAvailable || newUsername === user.username ? (
                     <Ic Icon={Check} className='text-green-500' />
                   ) : (
-                    username.length > 3 && <Ic Icon={X} className='text-red-500' />
+                    newUsername.length > 3 && <Ic Icon={X} className='text-red-500' />
                   )
                 }
-                value={username}
+                value={newUsername}
                 onChange={(e: any) => {
-                  setUsername(e.target.value)
-
+                  setNewUsername(e.target.value)
                   setUpdatedUser({ ...updatedUser, username: e.target.value })
                 }}
               />
@@ -339,29 +423,5 @@ export default function Edit() {
         </div>
       </div>
     </Screen0>
-  )
-}
-
-function Header() {
-  const router = useRouter()
-  return (
-    <div className='z-10 flex min-h-3 w-full items-center justify-between border-b border-black/5 bg-white/80 px-3 py-1.5 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
-      <Button
-        variant='icon'
-        className='rounded-full p-3 active:bg-black/10 dark:active:bg-white/10'
-        onClick={() => {
-          router.back()
-        }}
-      >
-        <ChevronLeft size={24} />
-      </Button>
-      <div className='text-base font-bold'>Edit Profile</div>
-      <Button
-        variant='text'
-        className='rounded-full p-3 text-sm text-accent active:bg-accent/20 dark:text-accent active:dark:bg-accent md:p-3'
-      >
-        <div>Save</div>
-      </Button>
-    </div>
   )
 }
