@@ -29,44 +29,6 @@ export default function Home() {
     } catch (error) {}
   }
 
-  async function sendFriendRequest() {
-    try {
-      const response = await axios.post('/api/user/sendFriendRequest', {
-        username: 'codeantu',
-      })
-
-      console.log('response', response.data)
-    } catch (error: any) {
-      console.log('error', error.response.data.error)
-    }
-  }
-
-  async function acceptFriendRequest() {
-    try {
-      const response = await axios.post('/api/user/acceptFriendRequest', {
-        friendRequestId: '66dbfbf268673da73fd26063',
-      })
-
-      console.log('response', response.data)
-    } catch (error) {
-      console.log('error', error)
-    }
-  }
-
-  async function deleteFriendRequest() {
-    try {
-      const response = await axios.delete('/api/user/deleteFriendRequest', {
-        data: {
-          friendRequestId: '66dbfcc5a207e827ae9d3ea2',
-        },
-      })
-
-      console.log('response', response.data)
-    } catch (error) {
-      console.log('error', error)
-    }
-  }
-
   return (
     <Screen className='gap-6'>
       <div className='flex w-full items-center justify-between'>
@@ -99,66 +61,19 @@ export default function Home() {
 }
 
 function Posts() {
-  const colors = [
-    'stone',
-    'slate',
-    'orange',
-    'amber',
-    // 'yellow',
-    'lime',
-    'green',
-    'emerald',
-    'teal',
-    'cyan',
-    'sky',
-    'blue',
-    'indigo',
-    'violet',
-    'purple',
-    'fuchsia',
-    'pink',
-    'red',
-  ]
-
-  const samplePost: PostT = {
-    id: '1',
-    name: 'Ananta Karmanar',
-    username: 'codeAntu',
-    profilePic: '/images/profile.jpg',
-    time: 1630000000000,
-    content:
-      'Hi everyone, I am a frontend developer. I am currently working on a project. I am looking for a job. If you have any job opportunity, please let me know. Thank you.',
-    image: ['/images/img1.png', '/images/img2.png', '/images/img3.png', '/images/img4.png', '/images/img5.png'],
-    // image: ['/images/img1.png'],
-    likes: 5382,
-    comments: 5382,
-    color: 'red',
-  }
-
-  function generatePosts(): PostT[] {
-    return colors.map((color, index) => ({
-      ...samplePost,
-      id: (index + 1).toString(),
-      content: `This is a post with the color ${color}. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloremque, modi. Et porro libero vitae commodi vel omnis possimus beatae qui aut doloremque temporibus eaque, laboriosam exercitationem at? Minima, error quis?`,
-      color: color as PostT['color'],
-    }))
-  }
-
-  const posts = generatePosts()
-
   return (
     <>
-      <div className='space-y-3'>
-        {posts.map((post) => (
-          <Post key={post.id} post={post} />
-        ))}
-      </div>
+      <div className='space-y-3'></div>
     </>
   )
 }
 
 function NewPost() {
   const router = useRouter()
+  // store
+  const savedUser = useStore((state) => state.savedUser)
+
+  console.log('savedUser', savedUser)
 
   return (
     <div
@@ -169,7 +84,9 @@ function NewPost() {
     >
       <div className='flex w-full items-center justify-normal gap-4 rounded-3xl border border-slate-500/5 bg-white dark:bg-zinc-700 dark:text-white'>
         <img src='/images/profile.jpg' alt='' className='aspect-square size-10 rounded-full' />
-        <div className='text-sm font-medium text-black/60 dark:text-white/80'>What is on your mind?</div>
+        <div className='text-sm font-medium text-black/60 dark:text-white/80'>
+          What is on your mind, {savedUser.username} ?
+        </div>
       </div>
       <div className='flex items-center justify-between'>
         <div className='flex items-center justify-center gap-4 text-xs font-semibold text-black/80 dark:text-white/80 sm:text-sm sm:font-extrabold'>

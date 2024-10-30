@@ -3,6 +3,7 @@
 'use client'
 import { Button } from '@/components/Button'
 import Header from '@/components/Header'
+import Img from '@/components/Img'
 import Post, { PostT } from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -133,8 +134,9 @@ function Profile({ userName }: { userName: string }) {
   return (
     <div className='flex flex-col gap-5 px-5 py-4'>
       <div className='flex w-full items-center gap-5'>
-        <div>
-          <img src={user.profilePic} alt='' className='aspect-square w-28 rounded-full' />
+        <div className='size-24 overflow-hidden rounded-full bg-red-300'>
+          {/* <img src={user.profilePic.imageUrl} alt='' className='aspect-square w-28 rounded-full' /> */}
+          <Img imageUrl={user.profilePic.imageUrl} publicId={user.profilePic.publicId} height={100} width={100} />
         </div>
         <div className='grid flex-grow gap-5 py-4'>
           <div>

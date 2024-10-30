@@ -4,6 +4,7 @@
 
 import { Button } from '@/components/Button'
 import Header from '@/components/Header'
+import Img from '@/components/Img'
 import { Screen0 } from '@/components/Screen'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
 import { getFollowing } from '@/handelers/user/follow'
@@ -104,7 +105,7 @@ export default function Followings({
         </div>
         <div className='text-lg font-semibold'>
           All Following
-          <span className='px-2 text-accent'>{totalFollowing}</span>
+          <span className='px-2 text-accent'>{totalFollowing ? totalFollowing : ''}</span>
         </div>
         <div className='grid gap-5 sm:gap-7'>
           {followings && followings.map((following) => <Following key={following._id} {...following} />)}
@@ -122,15 +123,27 @@ function Following(
 ) {
   const router = useRouter()
   return (
-    <div
-      className='flex select-none items-center gap-4'
-      onClick={() => {
-        router.push(`/profile/${props.details.username}`)
-      }}
-    >
-      <img src='/images/img1.png' alt='' className='size-14 rounded-full sm:size-20' />
+    <div className='flex select-none items-center gap-4'>
+      <div
+        className='flex aspect-square w-16 items-center justify-center overflow-hidden rounded-full bg-red-200'
+        onClick={() => {
+          router.push(`/profile/${props.details.username}`)
+        }}
+      >
+        <Img
+          imageUrl={props.details.profilePic.imageUrl}
+          publicId={props.details.profilePic.publicId}
+          height={50}
+          width={50}
+        />
+      </div>
       <div className='flex w-full justify-between gap-2.5'>
-        <div className=''>
+        <div
+          className=''
+          onClick={() => {
+            router.push(`/profile/${props.details.username}`)
+          }}
+        >
           <div className='text-sm font-semibold sm:text-lg'>{props.details.name}</div>
           <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-base'>
             {props.details.username}
@@ -143,35 +156,41 @@ function Following(
           >
             Message
           </Button>
-          <Drawer>
-            <DrawerTrigger asChild>
-              <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>
-                <EllipsisVertical size={26} strokeWidth={1} />
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent className={`wbackdrop-blur-3xl mx-auto max-w-[800px]`}>
-              <DrawerHeader className='w-full text-center font-extrabold'>Unfollow This account ?</DrawerHeader>
-              <div className='px-5 pb-10 pr-8'>
-                <div className='flex items-center gap-4'>
-                  <img src='/images/img1.png' alt='' className='size-14 rounded-full sm:size-20' />
-                  <div className='flex w-full justify-between gap-2.5'>
-                    <div className=''>
-                      <div className='text-sm font-semibold sm:text-lg'>Ananta Karmakar</div>
-                      <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-base'>codeAntu</div>
-                    </div>
-                  </div>
-                  <Button
-                    variant='zero'
-                    className='rounded-[8px] px-5 py-1.5 text-xs font-medium text-red-500 sm:py-2 sm:text-base'
-                  >
-                    Unfollow
-                  </Button>
-                </div>
-              </div>
-            </DrawerContent>
-          </Drawer>
+          <MyDrawer />
         </div>
       </div>
     </div>
+  )
+}
+
+function MyDrawer() {
+  return (
+    <Drawer>
+      <DrawerTrigger asChild>
+        <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>
+          <EllipsisVertical size={26} strokeWidth={1} />
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent className={`wbackdrop-blur-3xl mx-auto max-w-[800px]`}>
+        <DrawerHeader className='w-full text-center font-extrabold'>Unfollow This account ?</DrawerHeader>
+        <div className='px-5 pb-10 pr-8'>
+          <div className='flex items-center gap-4'>
+            <img src='/images/img1.png' alt='' className='size-14 rounded-full sm:size-20' />
+            <div className='flex w-full justify-between gap-2.5'>
+              <div className=''>
+                <div className='text-sm font-semibold sm:text-lg'>Ananta Karmakar</div>
+                <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-base'>codeAntu</div>
+              </div>
+            </div>
+            <Button
+              variant='zero'
+              className='rounded-[8px] px-5 py-1.5 text-xs font-medium text-red-500 sm:py-2 sm:text-base'
+            >
+              Unfollow
+            </Button>
+          </div>
+        </div>
+      </DrawerContent>
+    </Drawer>
   )
 }

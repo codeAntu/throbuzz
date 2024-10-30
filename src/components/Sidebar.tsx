@@ -6,6 +6,8 @@ import { Bell, House, icons, LogOut, Mail, Menu, Settings, User } from 'lucide-r
 import { use, useCallback, useEffect, useState } from 'react'
 import { Button } from './Button'
 import { usePathname, useRouter } from 'next/navigation'
+import useStore from '@/store/store'
+import Img from './Img'
 
 const paths = [
   { name: 'Home', path: '/', icon: <House size={24} className='' /> },
@@ -18,6 +20,7 @@ const paths = [
 export default function Sidebar() {
   const path = usePathname()
   const router = useRouter()
+  const savedUser = useStore((state) => state.savedUser)
 
   return (
     <Sheet>
@@ -30,12 +33,17 @@ export default function Sidebar() {
             <Button
               variant='zero'
               className='flex w-full flex-col items-center justify-center gap-4 py-8'
-              onClick={() => router.push('/profile/codeantu')}
+              onClick={() => {
+                if (!savedUser.username) return
+                router.push(`/profile/${savedUser.username}`)
+              }}
             >
-              <img src='/images/profile.jpg' alt='' className='w-28 rounded-full' />
+              <div className='aspect-square w-28 overflow-hidden rounded-full sm:w-32'>
+                <Img imageUrl='' publicId='' height={50} width={50} />
+              </div>
               <div className='text-center'>
-                <div className='text-lg font-semibold'>Ananta Karmakar</div>
-                <div className='text-xs font-semibold text-black/60 dark:text-white/60'>codeantu</div>
+                <div className='text-lg font-semibold'>{savedUser.username}</div>
+                <div className='text-xs font-semibold text-black/60 dark:text-white/60'>{savedUser.email}</div>
               </div>
             </Button>
           </SheetTitle>

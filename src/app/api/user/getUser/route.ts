@@ -53,7 +53,7 @@ export async function POST(request: NextRequest, result: NextResponse) {
       name: user.name,
       username: user.username,
       bio: user.bio,
-      profilePic: user.profilePic.imageUrl,
+      profilePic: user.profilePic,
       followers: user.followers,
       following: user.following,
       posts: user.postsCount,

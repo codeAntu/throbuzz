@@ -90,7 +90,10 @@ export interface UserT {
   name: string
   username: string
   bio: string
-  profilePic: string
+  profilePic: {
+    imageUrl: string
+    publicId: string
+  }
   followers: number
   following: number
   posts: number
