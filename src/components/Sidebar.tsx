@@ -7,6 +7,7 @@ import { Button } from './Button'
 import { usePathname, useRouter } from 'next/navigation'
 import useStore from '@/store/store'
 import Img from './Img'
+import { logOut } from '@/handelers/helpers/logout'
 
 const paths = [
   { name: 'Home', path: '/', icon: <House size={24} className='' /> },
@@ -20,14 +21,17 @@ export default function Sidebar() {
   const path = usePathname()
   const router = useRouter()
   const savedUser = useStore((state) => state.savedUser)
+  const clearSavedUser = useStore((state) => state.clearSavedUser)
+
+  console.log(savedUser)
 
   return (
     <Sheet>
       <SheetTrigger>
         <Menu size={43} className='p-1.5 pl-0' />
       </SheetTrigger>
-      <SheetContent side={'left'}>
-        <SheetHeader className='flex h-full flex-1'>
+      <SheetContent side={'left'} className='flex h-full flex-col justify-between'>
+        <SheetHeader className='flex flex-1'>
           <SheetTitle>
             <Button
               variant='zero'
@@ -39,8 +43,8 @@ export default function Sidebar() {
             >
               <div className='aspect-square w-28 overflow-hidden sm:w-32'>
                 <Img
-                  imageUrl={savedUser.profilePic.imageUrl}
-                  publicId={savedUser.profilePic.publicId}
+                  imageUrl={savedUser.profilePic?.imageUrl || '/icons/user.png'}
+                  publicId={savedUser.profilePic?.publicId || ''}
                   height={500}
                   width={500}
                 />
@@ -51,28 +55,38 @@ export default function Sidebar() {
               </div>
             </Button>
           </SheetTitle>
-          <SheetDescription className='flex w-full flex-grow flex-col justify-between'>
-            <div>
-              {paths.map((p, i) => (
-                <Button
-                  key={i}
-                  variant='zero'
-                  className={`flex w-full gap-4 ${path === p.path ? 'my-2 bg-black px-5 py-4 text-white dark:bg-white dark:text-black' : 'px-5 py-3.5 text-black dark:text-white'}`}
-                  onClick={() => router.push(p.path)}
-                >
-                  {p.icon}
-                  <span className='w-full text-left'>{p.name}</span>
-                </Button>
-              ))}
-            </div>
-            <div>
-              <Button variant='zero' className='flex w-full bg-red-100 px-5 py-4 text-red-500'>
-                <LogOut size={24} className='' />
-                <span className='w-full text-left'>Logout</span>
-              </Button>
-            </div>
-          </SheetDescription>
+          <SheetDescription></SheetDescription>
         </SheetHeader>
+        <div className='flex w-full flex-grow flex-col justify-between'>
+          <div>
+            {paths.map((p, i) => (
+              <Button
+                key={i}
+                variant='zero'
+                className={`flex w-full gap-4 ${path === p.path ? 'my-2 bg-black px-5 py-4 text-white dark:bg-white dark:text-black' : 'px-5 py-3.5 text-black dark:text-white'}`}
+                onClick={() => router.push(p.path)}
+              >
+                {p.icon}
+                <span className='w-full text-left'>{p.name}</span>
+              </Button>
+            ))}
+          </div>
+          <div>
+            <Button
+              variant='zero'
+              className='flex w-full bg-red-100 px-5 py-4 text-red-500'
+              onClick={() => {
+                logOut(() => {
+                  clearSavedUser()
+                  router.push('/')
+                })
+              }}
+            >
+              <LogOut size={24} className='' />
+              <span className='w-full text-left'>Logout</span>
+            </Button>
+          </div>
+        </div>
       </SheetContent>
     </Sheet>
   )

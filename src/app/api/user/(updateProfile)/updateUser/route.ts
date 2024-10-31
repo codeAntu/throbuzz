@@ -25,7 +25,6 @@ const userZ = z
       .trim()
       .min(3, { message: 'Name must be at least 3 characters long' })
       .max(100, { message: 'Name must be at most 100 characters long' })
-      .regex(/^[a-zA-Z\s]*$/, { message: 'Name must contain only letters' })
       .optional(),
     username: z
       .string({ required_error: 'Username is required' })
@@ -46,12 +45,12 @@ const userZ = z
       .min(10, { message: 'Phone must be at least 10 characters long' })
       .optional(),
 
-    instagram: z.string({ required_error: 'Instagram is required' }).url().optional(),
-    github: z.string({ required_error: 'Github is required' }).url().optional(),
-    twitter: z.string({ required_error: 'Twitter is required' }).url().optional(),
-    facebook: z.string({ required_error: 'Facebook is required' }).url().optional(),
-    linkedin: z.string({ required_error: 'Linkedin is required' }).url().optional(),
-    website: z.string({ required_error: 'Website is required' }).url().optional(),
+    instagram: z.string({ required_error: 'Username is required' }).trim().min(3).max(50).optional(),
+    github: z.string({ required_error: 'Github is required' }).trim().min(3).max(50).optional(),
+    twitter: z.string({ required_error: 'Twitter is required' }).trim().min(3).max(50).optional(),
+    facebook: z.string({ required_error: 'Facebook is required' }).trim().min(3).max(50).optional(),
+    linkedin: z.string({ required_error: 'Linkedin is required' }).trim().min(3).max(50).optional(),
+    website: z.string({ required_error: 'Website is required' }).url().min(3).max(255).optional(),
   })
   .strict()
 

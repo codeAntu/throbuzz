@@ -16,6 +16,9 @@ export default function Img({
   height: number
   width: number
 }) {
+  console.log('publicId', publicId)
+  console.log('imageUrl', imageUrl)
+
   return (
     <div className='aspect-square w-full rounded-full'>
       {publicId ? (

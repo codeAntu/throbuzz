@@ -42,7 +42,6 @@ export default function Login() {
       const response = await axios.post('/api/auth/login', user)
       console.log('response', response.data)
       setSavedUser(response.data.user)
-
       router.push('/')
     } catch (error: any) {
       console.log('Login failed')
