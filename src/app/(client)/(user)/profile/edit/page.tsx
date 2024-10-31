@@ -165,7 +165,7 @@ export default function Edit() {
         isVerified: true,
         profilePic: updatedUser.profilePic,
       })
-      router.push(`/profile/${updatedUser.username}`)
+      router.back()
     } catch (error: any) {
       console.log('error', error.response)
     }
@@ -212,7 +212,7 @@ export default function Edit() {
       <Header title='Edit Profile'>
         <Button
           variant='text'
-          className='rounded-full p-3 text-sm text-accent active:bg-accent/20 dark:text-accent md:p-3'
+          className='rounded-full p-3 text-sm text-accent dark:text-accent md:p-3'
           onClick={() => {
             updateUser()
           }}

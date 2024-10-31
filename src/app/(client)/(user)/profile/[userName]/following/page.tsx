@@ -125,7 +125,7 @@ function Following(
   return (
     <div className='flex select-none items-center gap-4'>
       <div
-        className='flex aspect-square w-16 items-center justify-center overflow-hidden rounded-full bg-red-200'
+        className='flex aspect-square w-16 items-center justify-center overflow-hidden rounded-full'
         onClick={() => {
           router.push(`/profile/${props.details.username}`)
         }}
