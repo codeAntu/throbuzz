@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, Poppins } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
+import GetMe from '@/components/GetMe'
 
 const inter = Inter({ subsets: ['latin'] })
 const poppins = Poppins({
@@ -25,6 +26,7 @@ export default function RootLayout({
         <body>
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
             {children}
+            <GetMe />
           </ThemeProvider>
         </body>
       </body>

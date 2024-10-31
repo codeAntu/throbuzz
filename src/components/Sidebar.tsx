@@ -22,9 +22,6 @@ export default function Sidebar() {
   const router = useRouter()
   const savedUser = useStore((state) => state.savedUser)
   const clearSavedUser = useStore((state) => state.clearSavedUser)
-
-  console.log(savedUser)
-
   return (
     <Sheet>
       <SheetTrigger>

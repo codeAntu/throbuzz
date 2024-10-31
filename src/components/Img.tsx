@@ -9,18 +9,17 @@ export default function Img({
   imageAlt = 'image',
   height,
   width,
+  className = '',
 }: {
   imageUrl: string
   publicId: string
   imageAlt?: string
   height: number
   width: number
+  className?: string
 }) {
-  console.log('publicId', publicId)
-  console.log('imageUrl', imageUrl)
-
   return (
-    <div className='aspect-square w-full rounded-full'>
+    <div className={`aspect-square w-full overflow-hidden rounded-full bg-black/10 dark:bg-white/10 ${className}`}>
       {publicId ? (
         <CldImage
           src={publicId}
@@ -37,8 +36,12 @@ export default function Img({
         />
       ) : (
         <>
-          <img src='/icons/user.png' alt={imageAlt} className='bg-transparent dark:hidden' />
-          <img src='/icons/user_dark.png' alt='' className='hidden bg-transparent dark:block' />
+          <img src={imageUrl || '/icons/user.png'} alt={imageAlt} className='rounded-full bg-transparent dark:hidden' />
+          <img
+            src={imageUrl || '/icons/user_dark.png'}
+            alt=''
+            className='hidden rounded-full bg-transparent dark:block'
+          />
         </>
       )}
     </div>

@@ -152,6 +152,21 @@ export async function POST(req: NextRequest) {
       {
         success: true,
         message: 'User updated successfully',
+        token: newToken,
+        user: {
+          name: user.name,
+          username: user.username,
+          bio: user.bio,
+          email: user.email,
+          phone: user.phone,
+          instagram: user.instagram,
+          github: user.github,
+          twitter: user.twitter,
+          facebook: user.facebook,
+          linkedin: user.linkedin,
+          website: user.website,
+          profilePic: user.profilePic,
+        },
       },
       {
         status: 200,

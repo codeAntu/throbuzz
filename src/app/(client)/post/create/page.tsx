@@ -19,6 +19,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import axios from 'axios'
 
 const colorNames: (keyof typeof colors)[] = [
   'stone',
@@ -58,6 +59,35 @@ export default function Page() {
 
   console.log('images', images)
 
+  const handleSubmit = async () => {
+    if (!text && !images) {
+      console.log('Please add text or image')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('text', text || '')
+    formData.append('visibility', isPublic ? 'public' : 'private')
+    if (images) {
+      Array.from(images).forEach((image) => {
+        formData.append('images', image)
+      })
+    }
+    formData.append('color', color)
+
+    try {
+      const response = await axios.post('/api/post/createPost', formData)
+
+      if (response.status === 200) {
+        console.log('Post created:', response.data)
+      } else {
+        console.log('Error creating post:', response.data)
+      }
+    } catch (error) {
+      console.error('Error creating post:', error)
+    }
+  }
+
   return (
     <Screen0 className='grid'>
       <Header />
@@ -66,7 +96,7 @@ export default function Page() {
           <div className='grid w-full gap-4'>
             <div className='flex items-center justify-between'>
               <div className='text-base font-semibold'>Add photos </div>
-              <div className='text-xs font-semibold text-black/50 dark:text-white/50'>
+              <div className='dark:text:white/50 text-xs font-semibold text-black/50'>
                 {images
                   ? `${images.length > 1 ? `${images.length} photos` : `${images.length} photo`}`
                   : 'Add upto 5 photos'}
@@ -105,39 +135,39 @@ export default function Page() {
                     ))
                   : null}
               </div>
-              <Button
-                variant='zero'
-                className={`${colors[color].card} flex h-11 w-full items-center justify-center rounded-lg border border-black/5`}
-              >
-                <label htmlFor='postImages'>
+
+              <label htmlFor='postImages'>
+                <div
+                  className={`${colors[color].card} flex h-11 w-full items-center justify-center rounded-lg border border-black/5`}
+                >
                   <Plus size={24} className='text-black' />
-                </label>
-                <input
-                  type='file'
-                  multiple
-                  accept='image/*'
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      let files = Array.from(e.target.files)
-                      const totalFiles = files.length + (images ? images.length : 0)
-                      if (totalFiles > 5) {
-                        alert('You can only upload a maximum of 5 images.')
-                        files = files.slice(0, 5 - (images ? images.length : 0))
-                      }
-                      setImages((prev) => {
-                        const dataTransfer = new DataTransfer()
-                        if (prev) {
-                          Array.from(prev).forEach((file) => dataTransfer.items.add(file))
-                        }
-                        files.forEach((file) => dataTransfer.items.add(file))
-                        return dataTransfer.files
-                      })
+                </div>
+              </label>
+              <input
+                type='file'
+                multiple
+                accept='image/*'
+                onChange={(e) => {
+                  if (e.target.files) {
+                    let files = Array.from(e.target.files)
+                    const totalFiles = files.length + (images ? images.length : 0)
+                    if (totalFiles > 5) {
+                      alert('You can only upload a maximum of 5 images.')
+                      files = files.slice(0, 5 - (images ? images.length : 0))
                     }
-                  }}
-                  className='hidden'
-                  id='postImages'
-                />
-              </Button>
+                    setImages((prev) => {
+                      const dataTransfer = new DataTransfer()
+                      if (prev) {
+                        Array.from(prev).forEach((file) => dataTransfer.items.add(file))
+                      }
+                      files.forEach((file) => dataTransfer.items.add(file))
+                      return dataTransfer.files
+                    })
+                  }
+                }}
+                className='hidden'
+                id='postImages'
+              />
             </div>
           </div>
           <div className='grid gap-5'>
@@ -151,7 +181,7 @@ export default function Page() {
               onChange={(e) => setText(e.target.value)}
               rows={6}
             ></textarea>
-            <div className='flex items-start justify-between gap-4 px-2 text-xs font-semibold text-black/80 dark:text-white/80 sm:text-sm sm:font-extrabold'>
+            <div className='dark:text:white/80 sm:text:sm flex items-start justify-between gap-4 px-2 text-xs font-semibold text-black/80 dark:text-white/80 sm:font-extrabold'>
               <div className='flex items-center justify-normal gap-5'>
                 <div className='flex items-center justify-center gap-1.5'>
                   <Image size={20} />
@@ -169,7 +199,7 @@ export default function Page() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align='end'
-                    className='border border-black/10 bg-white/10 backdrop-blur-md dark:border-white/10 dark:bg-black/25'
+                    className='dark:border:white/10 border border-black/10 bg-white/10 backdrop-blur-md dark:bg-black/25'
                   >
                     <DropdownMenuItem
                       className='text-accent'
@@ -194,7 +224,7 @@ export default function Page() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <div className='text-black/50 dark:text-white/50'>
+              <div className='dark:text:white/50 text-black/50'>
                 <span className={`${text.length > 500 ? 'text-red-500' : ''} `}>{text.length}</span>/ 500
               </div>
             </div>
@@ -216,7 +246,7 @@ export default function Page() {
         </div>
 
         <div className=''>
-          <Button variant='filled' className='w-full py-3'>
+          <Button variant='filled' className='w-full py-3' onClick={handleSubmit}>
             Post
           </Button>
         </div>
@@ -227,7 +257,7 @@ export default function Page() {
 
 function Header() {
   return (
-    <div className='sticky top-0 z-10 flex w-full items-center justify-between border-b border-black/5 bg-white/80 px-5 py-0 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
+    <div className='dark:border:white/5 sticky top-0 z-10 flex w-full items-center justify-between border-b border-black/5 bg-white/80 px-5 py-0 backdrop-blur-3xl dark:bg-black/70'>
       <Button
         variant='icon'
         onClick={() => {
@@ -237,7 +267,7 @@ function Header() {
         <ChevronLeft size={24} />
       </Button>
       <div className='text-base font-bold'>Create Post </div>
-      <Button variant='text' className='pl-5 text-base text-accent dark:text-accent'>
+      <Button variant='text' className='dark:text:accent pl-5 text-base text-accent'>
         <div></div>
       </Button>
     </div>

@@ -98,7 +98,7 @@ export const socialMediaUrls = {
   website: '', // Assuming the value is a full URL
 }
 
-const colorNames = [
+export const colorNames = [
   'stone',
   'slate',
   'orange',

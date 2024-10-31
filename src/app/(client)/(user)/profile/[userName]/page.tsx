@@ -136,12 +136,7 @@ function Profile({ userName }: { userName: string }) {
       <div className='flex w-full items-center gap-5'>
         <div className='size-24 overflow-hidden rounded-full'>
           {/* <img src={user.profilePic.imageUrl} alt='' className='aspect-square w-28 rounded-full' /> */}
-          <Img
-            imageUrl={user.profilePic.imageUrl}
-            publicId={user.profilePic.publicId || 'cld-sample-2'}
-            height={500}
-            width={500}
-          />
+          <Img imageUrl={user.profilePic.imageUrl} publicId={user.profilePic.publicId} height={500} width={500} />
         </div>
         <div className='grid flex-grow gap-5 py-4'>
           <div>

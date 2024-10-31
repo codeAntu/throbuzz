@@ -5,6 +5,7 @@ import { Button } from '@/components/Button'
 import Error from '@/components/Error'
 import Header from '@/components/Header'
 import { Ic } from '@/components/Icon'
+import Img from '@/components/Img'
 import Input from '@/components/Input'
 import { Screen0 } from '@/components/Screen'
 import useStore from '@/store/store'
@@ -156,14 +157,13 @@ export default function Edit() {
       })
       console.log('response', response.data)
 
-      // Update savedUser in the store
       setSavedUser({
-        email: updatedUser.email,
-        name: updatedUser.name,
-        username: updatedUser.username,
-        id: updatedUser._id,
-        isVerified: true,
-        profilePic: updatedUser.profilePic,
+        email: response.data.user.email,
+        name: response.data.user.name,
+        username: response.data.user.username,
+        id: response.data.user._id,
+        isVerified: response.data.user.isVerified,
+        profilePic: response.data.user.profilePic,
       })
       router.back()
     } catch (error: any) {
@@ -211,7 +211,7 @@ export default function Edit() {
     <Screen0 className=''>
       <Header title='Edit Profile'>
         <Button
-          variant='text'
+          variant='zero'
           className='rounded-full p-3 text-sm text-accent dark:text-accent md:p-3'
           onClick={() => {
             updateUser()
@@ -225,10 +225,17 @@ export default function Edit() {
         <div>
           <div className='flex flex-col justify-center gap-2.5'>
             <div className='flex flex-col items-center justify-center gap-2 sm:gap-4'>
-              <img
+              {/* <img
                 src={profileImageUrl || user.profilePic.imageUrl || '/images/img1.png'}
                 alt=''
                 className='size-36 rounded-full object-cover'
+              /> */}
+              <Img
+                imageUrl={profileImageUrl || user.profilePic.imageUrl}
+                publicId={!profileImageUrl ? user.profilePic.publicId : ''}
+                height={500}
+                width={500}
+                className='aspect-square w-36 rounded-full object-cover'
               />
               <input
                 type='file'

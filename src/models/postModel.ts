@@ -1,3 +1,4 @@
+import { colorNames } from '@/lib/const'
 import mongoose, { Document, Schema } from 'mongoose'
 
 interface PostT extends Document {
@@ -38,25 +39,7 @@ const postSchema: Schema<PostT> = new mongoose.Schema(
     },
     color: {
       type: String,
-      enum: [
-        'stone',
-        'slate',
-        'orange',
-        'amber',
-        'lime',
-        'green',
-        'emerald',
-        'teal',
-        'cyan',
-        'sky',
-        'blue',
-        'indigo',
-        'violet',
-        'purple',
-        'fuchsia',
-        'pink',
-        'red',
-      ],
+      enum: colorNames,
       default: 'stone',
     },
   },
