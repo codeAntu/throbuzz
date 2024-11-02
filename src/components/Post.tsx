@@ -156,6 +156,7 @@ export default function Post({ post }: { post: PostT }) {
           onSlideChange={() => console.log('slide change')}
           onSwiper={(swiper) => console.log(swiper)}
           className='rounded-xl'
+          // slidesPerView={3}
         >
           {post.postImages.map((img, index) => (
             <SwiperSlide key={index} className='flex w-full items-center justify-center rounded-full'>
@@ -415,14 +416,17 @@ export function CommentReplays({ commentId }: { commentId: string }) {
 export function CommentReplay() {
   return (
     <div className='grid gap-1'>
-      <CommentContent
-        profilePic='/images/profile.jpg'
+      {/* <CommentContent
+        profilePic= {
+          imageUrl: '/images/profile.jpg',
+          publicId: 'publicId'
+        }
         name='John Doe'
         time={new Date()}
         content='Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.'
         likes={203}
         comments={12}
-      />
+      /> */}
       <div className='flex items-center justify-normal gap-1.5 px-12'>
         <Button variant='zero' className='text-xs font-semibold text-black/55 dark:text-white/60' onClick={() => {}}>
           Reply
@@ -433,7 +437,10 @@ export function CommentReplay() {
 }
 
 type commentContentT = {
-  profilePic: string
+  profilePic: {
+    imageUrl: string
+    publicId: string
+  }
   name: string
   time: Date
   content: string
@@ -447,7 +454,7 @@ function CommentContent({ profilePic, name, time, content, likes, comments }: co
   return (
     <div className='flex w-full items-start justify-center gap-3'>
       <div className='flex-grow-0 pt-1.5'>
-        <img src={profilePic} alt='' className='aspect-square w-12 rounded-full' />
+        <img src={profilePic.imageUrl} alt='' className='aspect-square w-12 rounded-full' />
       </div>
       <div className='flex w-full justify-between gap-4 pr-2'>
         <div className='grid gap-1'>
