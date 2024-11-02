@@ -235,7 +235,7 @@ export default function Edit() {
                 publicId={!profileImageUrl ? user.profilePic.publicId : ''}
                 height={500}
                 width={500}
-                className='aspect-square w-36 rounded-full object-cover'
+                className='aspect-square w-32 rounded-full object-cover'
               />
               <input
                 type='file'
@@ -256,6 +256,7 @@ export default function Edit() {
               <Input
                 type='text'
                 name='name'
+                accept='image/*'
                 placeholder='Enter your name'
                 leftIcon={<Ic Icon={User} />}
                 value={updatedUser.name}

@@ -85,7 +85,7 @@ export default function UserProfile({
       <div className='w-full'>
         <Profile userName={params.userName} />
         <hr />
-        {/* <Posts username={params.userName} /> */}
+        <Posts username={params.userName} />
       </div>
     </Screen0>
   )
@@ -268,16 +268,24 @@ function Posts({ username }: { username: string }) {
     setLoading(true)
     try {
       const response = await axios.post('/api/user/getUserPosts', { username: username.toLowerCase() })
+      console.log(response.data.posts, 'posts')
+      console.log(response.data.user, 'user')
+
       const newPosts = response.data.posts.map((post: any) => ({
         id: post._id,
         name: response.data.user.name,
         username: response.data.user.username,
-        profilePic: response.data.user.profilePic,
+        profilePic: {
+          imageUrl: response.data.user.profilePic.imageUrl,
+          publicId: response.data.user.profilePic.publicId,
+        },
         time: post.createdAt,
         content: post.text,
-        image: post.publicIds,
+        postImages: post.postImages,
         likes: post.likes,
         comments: post.comments,
+        isLiked: post.isLiked,
+        isMine: response.data.user.isMe,
         color: post.color || 'stone',
       }))
 
@@ -312,7 +320,7 @@ function Posts({ username }: { username: string }) {
   return (
     <>
       <div className='space-y-3 px-3.5 py-4'>
-        <div>{posts.length}</div>
+        <div className='text-base font-semibold'>{posts.length > 0 && `Posts : ${posts.length}`}</div>
         {posts.map((post) => (
           <Post key={post.id} post={post} />
         ))}

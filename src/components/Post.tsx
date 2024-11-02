@@ -12,17 +12,24 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { like, unlike } from '@/handelers/post/like'
 import { getComments, likeComment, unlikeComment } from '@/handelers/post/comment'
 import axios from 'axios'
+import Img from '@/components/Img'
+import PostImg from './postImg'
 
 export interface PostT {
   id: string
   name: string
   username: string
-  profilePic: string
+  profilePic: {
+    imageUrl: string
+    publicId: string
+  }
   time: number
   content: string
-  image: string[]
+  postImages: { publicId: string; imageUrl: string }[]
   likes: number
   comments: number
+  isLiked: boolean
+  isMine: boolean
   color:
     | 'slate'
     | 'stone'
@@ -46,9 +53,11 @@ export interface PostT {
 
 export default function Post({ post }: { post: PostT }) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
+  const [isLiked, setIsLiked] = useState(post.isLiked)
   const [showReactions, setShowReactions] = useState()
   const [likeCount, setLikeCount] = useState(post.likes)
+
+  console.log(post.isMine)
 
   const toggleContent = () => {
     setIsExpanded(!isExpanded)
@@ -97,31 +106,35 @@ export default function Post({ post }: { post: PostT }) {
             <p className='text-xs text-black/50 md:text-black/80'>{post.time}</p>
           </div>
           <Button variant='icon' className=''>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild className='p-2'>
-                <div>
-                  <EllipsisVertical size={20} className='text-black' />
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align='end'
-                className='border border-black/10 bg-white/10 backdrop-blur-md dark:border-white/10 dark:bg-black/25'
-              >
-                <DropdownMenuItem
-                  className=''
-                  onClick={() => {
-                    console.log('clicked')
-                  }}
+            {post.isMine ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild className='p-2'>
+                  <div>
+                    <EllipsisVertical size={20} className='text-black' />
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align='end'
+                  className='border border-black/10 bg-white/10 backdrop-blur-md dark:border-white/10 dark:bg-black/25'
                 >
-                  <Pencil size={17} className='mr-2' />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem className='text-red-500'>
-                  <Trash2 size={17} className='mr-2' />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuItem
+                    className=''
+                    onClick={() => {
+                      console.log('clicked')
+                    }}
+                  >
+                    <Pencil size={17} className='mr-2' />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className='text-red-500'>
+                    <Trash2 size={17} className='mr-2' />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <EllipsisVertical size={20} className='text-black' />
+            )}
           </Button>
         </div>
       </div>
@@ -144,15 +157,10 @@ export default function Post({ post }: { post: PostT }) {
           onSwiper={(swiper) => console.log(swiper)}
           className='rounded-xl'
         >
-          {post.image.map((img, index) => (
+          {post.postImages.map((img, index) => (
             <SwiperSlide key={index} className='flex w-full items-center justify-center rounded-full'>
               <div className='flex w-full items-center justify-center bg-black/5'>
-                <img
-                  src={img}
-                  alt=''
-                  className='aspect-video w-full cursor-pointer rounded-xl object-cover transition-all duration-300 active:object-contain'
-                  onContextMenu={(e: { preventDefault: () => any }) => e.preventDefault()}
-                />
+                <PostImg imageUrl={img.imageUrl} alt='' publicId={img.publicId} />
               </div>
             </SwiperSlide>
           ))}

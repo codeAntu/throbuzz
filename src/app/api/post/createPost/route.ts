@@ -6,9 +6,7 @@ import { parseJson } from '@/utils/utils'
 import { z } from 'zod'
 import imageUpload from '@/cloudinary/cloudinaryUploadImage'
 import Post from '@/models/postModel'
-import { errorToJSON } from 'next/dist/server/render'
 import User from '@/models/userModel'
-import { color } from 'framer-motion'
 import { colorNames } from '@/lib/const'
 
 // Ensure colorNames is a tuple with at least one string element
@@ -62,32 +60,37 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
     console.log(validatedText, validatedImages, validatedVisibility, validatedColor)
 
-    if (!validatedText || !validatedImages) {
-      return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
-    }
-
-    const publicIds: string[] = []
+    const postImages: {
+      publicId: string
+      imageUrl: string
+    }[] = []
 
     if (validatedImages && validatedImages.length) {
       for (const image of validatedImages) {
         try {
           const result = (await imageUpload(image)) as CloudinaryImageResponse
-          publicIds.push(result.public_id)
+          postImages.push({
+            publicId: result.public_id,
+            imageUrl: result.secure_url,
+          })
         } catch (error: any) {
           return NextResponse.json({ error: error.message }, { status: 500 })
         }
       }
     }
 
-    console.log(publicIds)
+    console.log(postImages)
 
     const post = new Post({
-      text: validatedText || '',
+      userId: user._id,
+      text: validatedText,
       visibility: validatedVisibility || 'public',
-      publicIds: publicIds || [],
-      userId: tokenData.id,
+      postImages,
       color: validatedColor || 'stone',
     })
+
+    console.log(post)
+    console.log(post.postImages)
 
     await post.save()
 

@@ -6,6 +6,7 @@ import { parseJson } from '@/utils/utils'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
+import Like from '@/models/likeModel'
 
 connect()
 
@@ -46,6 +47,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
         username: foundUser.username,
         name: foundUser.name,
         profilePic: foundUser.profilePic.imageUrl,
+        isMe: true,
       }
       query = { userId: tokenData.id }
     } else {
@@ -57,12 +59,23 @@ export async function POST(request: NextRequest, response: NextResponse) {
         username: foundUser.username,
         name: foundUser.name,
         profilePic: foundUser.profilePic.imageUrl,
+        isMe: false,
       }
       query = { userId: foundUser._id, visibility: 'public' }
     }
 
     totalPosts = await Post.countDocuments(query)
-    const posts = await Post.find(query).skip(skip).limit(limit)
+    const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit)
+
+    const postsWithLikes = await Promise.all(
+      posts.map(async (post) => {
+        const isLiked = await Like.exists({ postId: post._id, userId: tokenData.id })
+        return {
+          ...post.toObject(),
+          isLiked: !!isLiked,
+        }
+      }),
+    )
 
     if (!posts.length) {
       return NextResponse.json({ message: 'No posts found' }, { status: 200 })
@@ -71,7 +84,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
     const totalPages = Math.ceil(totalPosts / limit)
     const nextPage = page < totalPages ? page + 1 : null
 
-    return NextResponse.json({ user, posts, nextPage }, { status: 200 })
+    return NextResponse.json({ user, posts: postsWithLikes, nextPage }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }

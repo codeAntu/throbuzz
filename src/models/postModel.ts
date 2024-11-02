@@ -5,7 +5,7 @@ interface PostT extends Document {
   userId: Schema.Types.ObjectId
   text: string
   visibility: string
-  publicIds: string[]
+  postImages: { publicId: string; imageUrl: string }[]
   likes: number
   comments: number
   color: string
@@ -21,9 +21,12 @@ const postSchema: Schema<PostT> = new mongoose.Schema(
     text: {
       type: String,
     },
-    publicIds: {
-      type: [String],
-    },
+    postImages: [
+      {
+        publicId: { type: String },
+        imageUrl: { type: String },
+      },
+    ],
     visibility: {
       type: String,
       enum: ['public', 'private'],

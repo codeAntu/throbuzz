@@ -51,16 +51,18 @@ export async function POST(request: NextRequest) {
 
     console.log('post.userId', post.userId)
 
-    const notification = new Notification({
-      userId: post.userId,
-      title: 'Like',
-      message: `${tokenData.username} liked your post: "${post.text.slice(0, 20)}..."`,
-      read: false,
-      readAt: null,
-      url: `/post/${postId}`,
-    })
+    if (post.userId.toString() !== userId) {
+      const notification = new Notification({
+        userId: post.userId,
+        title: 'Like',
+        message: `${tokenData.username} liked your post: "${post.text.slice(0, 20)}..."`,
+        read: false,
+        readAt: null,
+        url: `/post/${postId}`,
+      })
 
-    await notification.save()
+      await notification.save()
+    }
 
     return NextResponse.json({ status: 200, message: 'Like added successfully' })
   } catch (error: any) {
