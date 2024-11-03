@@ -8,18 +8,17 @@ export default function PostImg({ imageUrl, alt, publicId }: { imageUrl: string;
       {publicId ? (
         <CldImage
           src={publicId}
-          alt={alt}
+          alt={'alt'}
           width={400}
           height={400}
           className='aspect-video w-full cursor-pointer rounded-xl object-cover transition-all duration-300 active:object-contain'
         />
       ) : (
-        // <img
-        //   src={imageUrl}
-        //   alt={alt}
-        //   className='aspect-video w-full cursor-pointer rounded-xl object-cover transition-all duration-300 active:object-contain'
-        // />
-        <div></div>
+        <img
+          src={imageUrl}
+          alt={alt}
+          className='aspect-video w-full cursor-pointer rounded-xl object-cover transition-all duration-300 active:object-contain'
+        />
       )}
     </div>
   )

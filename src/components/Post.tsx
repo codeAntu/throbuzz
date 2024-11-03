@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 'use client '
 import { Button } from '@/components/Button'
@@ -202,7 +203,9 @@ export default function Post({ post }: { post: PostT }) {
               </Button>
             </DrawerTrigger>
             <DrawerContent className={`wbackdrop-blur-3xl mx-auto min-h-[600px] max-w-[800px]`}>
-              <DrawerHeader className='w-full text-center font-extrabold'>450 Comments</DrawerHeader>
+              <DrawerHeader className='w-full text-center font-extrabold'>
+                {post.comments == 1 ? 'Comment' : 'Comments'}
+              </DrawerHeader>
               <Comments postId={post.id} />
             </DrawerContent>
           </Drawer>
@@ -238,6 +241,8 @@ export function Comments({ postId }: { postId: string }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [comments, setComments] = useState<CommentT[]>([])
   const [nextPage, setNextPage] = useState('')
+  const replyRef = useRef<HTMLTextAreaElement>(null)
+  const loadMoreRef = useRef<HTMLDivElement>(null)
 
   async function handleComments() {
     console.log(postId)
@@ -264,6 +269,19 @@ export function Comments({ postId }: { postId: string }) {
     }
   }
 
+  async function handleAddComment(postId: string, content: string) {
+    try {
+      const response = await axios.post('/api/activity/comment/createComment', { postId, content })
+
+      console.log(response)
+
+      // Refresh comments after adding a new one
+      // handleComments()
+    } catch (error: any) {
+      console.error(error)
+    }
+  }
+
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
@@ -274,6 +292,25 @@ export function Comments({ postId }: { postId: string }) {
   useEffect(() => {
     handleComments()
   }, [])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          handleLoadMore()
+        }
+      },
+      { threshold: 1 },
+    )
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current)
+    }
+    return () => {
+      if (loadMoreRef.current) {
+        observer.unobserve(loadMoreRef.current)
+      }
+    }
+  }, [loadMoreRef.current])
 
   return (
     <div className=''>
@@ -291,6 +328,7 @@ export function Comments({ postId }: { postId: string }) {
           <Button
             variant='zero'
             className='flex items-center gap-1 rounded-full border border-black/5 bg-accent px-4 py-1.5 text-xs font-semibold text-white'
+            onClick={() => handleAddComment(postId, comment)}
           >
             Post
           </Button>
@@ -300,6 +338,8 @@ export function Comments({ postId }: { postId: string }) {
         {comments.map((comment, index) => (
           <Comment key={index} comment={comment} />
         ))}
+
+        <div ref={loadMoreRef}></div>
       </div>
     </div>
   )
@@ -382,7 +422,7 @@ export function Comment({ comment }: { comment: CommentT }) {
               <p className='leading-none text-black/50'>•</p>
               <Button
                 variant='zero'
-                className='text-xs font-semibold text-black/50 dark:text-white/60'
+                className='dark:text.white/60 text-xs font-semibold text-black/50'
                 onClick={() => setShowReplies(!showReplies)}
               >
                 {(showReplies ? 'Hide' : 'View') +
@@ -428,7 +468,7 @@ export function CommentReplay() {
         comments={12}
       /> */}
       <div className='flex items-center justify-normal gap-1.5 px-12'>
-        <Button variant='zero' className='text-xs font-semibold text-black/55 dark:text-white/60' onClick={() => {}}>
+        <Button variant='zero' className='dark:text.white/60 text-xs font-semibold text-black/55' onClick={() => {}}>
           Reply
         </Button>
       </div>
@@ -466,7 +506,7 @@ function CommentContent({ profilePic, name, time, content, likes, comments }: co
             </div>
           </div>
           <div
-            className={`cursor-pointer text-xs font-medium text-black/80 dark:text-white/80 sm:text-sm md:font-medium ${showMore ? '' : 'line-clamp-2'}`}
+            className={`dark:text.white/80 cursor-pointer text-xs font-medium text-black/80 sm:text-sm md:font-medium ${showMore ? '' : 'line-clamp-2'}`}
             onClick={() => setShowMore(!showMore)}
           >
             {content}
