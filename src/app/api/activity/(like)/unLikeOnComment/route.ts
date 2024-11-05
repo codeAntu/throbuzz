@@ -51,6 +51,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Like on comment not found' }, { status: 404 })
     }
 
+    // updated the comment likes count
+    comment.likes -= 1
+    await comment.save()
+
     return NextResponse.json({ status: 200, message: 'Like on Comment removed successfully' })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })

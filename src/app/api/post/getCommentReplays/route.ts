@@ -1,15 +1,15 @@
 import { connect } from '@/dbConfig/dbConfig'
 import { TokenDataT } from '@/lib/types'
-import Comment from '@/models/commentModel'
+import CommentReply from '@/models/commentReplyModel'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
-import LikeOnComment from '@/models/likeOnCommentModel'
+import LikeOnCommentReply from '@/models/likeOnCommentReply'
 
 connect()
 
 export async function POST(request: NextRequest) {
   try {
-    const { postId } = await request.json()
+    const { commentId } = await request.json()
 
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const limit = parseInt(url.searchParams.get('limit') || '10', 10)
     const skip = (page - 1) * limit
 
-    const comments = await Comment.find({ postId })
+    const commentReplays = await CommentReply.find({ commentId })
       .populate({
         path: 'userId',
         select: 'name profilePic',
@@ -29,27 +29,33 @@ export async function POST(request: NextRequest) {
       .limit(limit)
       .sort({ createdAt: -1 })
 
-    if (!comments.length) {
-      return NextResponse.json({ comments: [], totalComments: 0, nextPage: null, nextLink: null }, { status: 200 })
+    if (!commentReplays.length) {
+      return NextResponse.json(
+        { commentReplays: [], totalCommentReplays: 0, nextPage: null, nextLink: null },
+        { status: 200 },
+      )
     }
 
-    const commentsWithLikes = await Promise.all(
-      comments.map(async (comment) => {
-        const likes = await LikeOnComment.find({ commentId: comment._id })
+    const commentReplaysWithLikes = await Promise.all(
+      commentReplays.map(async (commentReply) => {
+        const likes = await LikeOnCommentReply.find({ commentReplyId: commentReply._id })
         const isLiked = tokenData ? likes.some((like) => like.userId.toString() === tokenData.id) : false
         return {
-          ...comment.toObject(),
+          ...commentReply.toObject(),
           isLiked,
         }
       }),
     )
 
-    const totalComments = await Comment.countDocuments({ postId })
-    const totalPages = Math.ceil(totalComments / limit)
+    const totalCommentReplays = await CommentReply.countDocuments({ commentId })
+    const totalPages = Math.ceil(totalCommentReplays / limit)
     const nextPage = page < totalPages ? page + 1 : null
     const nextLink = nextPage ? `${url.origin}${url.pathname}?page=${nextPage}&limit=${limit}` : null
 
-    return NextResponse.json({ comments: commentsWithLikes, totalComments, nextPage, nextLink }, { status: 200 })
+    return NextResponse.json(
+      { commentReplays: commentReplaysWithLikes, totalCommentReplays, nextPage, nextLink },
+      { status: 200 },
+    )
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }

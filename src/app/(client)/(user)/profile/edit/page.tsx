@@ -230,13 +230,15 @@ export default function Edit() {
                 alt=''
                 className='size-36 rounded-full object-cover'
               /> */}
-              <Img
-                imageUrl={profileImageUrl || user.profilePic.imageUrl}
-                publicId={!profileImageUrl ? user.profilePic.publicId : ''}
-                height={500}
-                width={500}
-                className='aspect-square w-[9rem] rounded-full object-cover'
-              />
+              <div className='w-1/3'>
+                <Img
+                  imageUrl={profileImageUrl || user.profilePic.imageUrl}
+                  publicId={!profileImageUrl ? user.profilePic.publicId : ''}
+                  height={500}
+                  width={500}
+                  className='aspect-square rounded-full object-cover'
+                />
+              </div>
               <input
                 type='file'
                 name='profileImage'

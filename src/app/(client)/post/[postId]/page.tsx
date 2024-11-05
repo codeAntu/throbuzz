@@ -21,8 +21,6 @@ export default function PostPage({
     try {
       const response = await axios.post('/api/post/getPost', { postId: params.postId })
 
-      console.log(response.data.post)
-
       setPost({
         id: response.data.post._id,
         name: response.data.user.name,
@@ -48,8 +46,6 @@ export default function PostPage({
   if (!post) {
     getPost()
   }
-
-  console.log(post)
 
   return (
     <Screen0 className=''>

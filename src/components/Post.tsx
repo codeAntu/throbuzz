@@ -5,7 +5,7 @@ import { Button } from '@/components/Button'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
 import { colors } from '@/lib/const'
 import { nFormatter } from '@/utils/utils'
-import { EllipsisVertical, Heart, MessageSquareText, Pencil, Trash, Trash2 } from 'lucide-react'
+import { Ellipsis, EllipsisVertical, Heart, MessageSquareText, Pencil, Trash, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import 'swiper/css'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -15,6 +15,8 @@ import { getComments, likeComment, unlikeComment } from '@/handelers/post/commen
 import axios from 'axios'
 import Img from '@/components/Img'
 import PostImg from './postImg'
+import useStore from '@/store/store'
+import { set } from 'mongoose'
 
 export interface PostT {
   id: string
@@ -58,8 +60,6 @@ export default function Post({ post }: { post: PostT }) {
   const [showReactions, setShowReactions] = useState()
   const [likeCount, setLikeCount] = useState(post.likes)
 
-  console.log(post.isMine)
-
   const toggleContent = () => {
     setIsExpanded(!isExpanded)
   }
@@ -90,8 +90,15 @@ export default function Post({ post }: { post: PostT }) {
       className={`flex flex-col gap-2 rounded-3xl border border-slate-400/5 px-3.5 py-4 pb-2.5 text-black sm:p-4 ${colors[post.color as keyof typeof colors].card} `}
     >
       <div className='flex items-start gap-3 px-0.5'>
-        <Button variant='zero'>
-          <img src='/images/profile.jpg' alt='' className='aspect-square w-12 rounded-full' />
+        <Button variant='zero' className='aspect-square w-11'>
+          {/* <img src='/images/profile.jpg' alt='' className='aspect-square w-12 rounded-full' /> */}
+          <Img
+            imageUrl={post.profilePic.imageUrl}
+            publicId={post.profilePic.publicId}
+            height={50}
+            width={50}
+            className='aspect-square w-12 rounded-full'
+          />
         </Button>
         <div className='flex flex-grow select-none items-center justify-between'>
           <div>
@@ -203,9 +210,6 @@ export default function Post({ post }: { post: PostT }) {
               </Button>
             </DrawerTrigger>
             <DrawerContent className={`wbackdrop-blur-3xl mx-auto min-h-[600px] max-w-[800px]`}>
-              <DrawerHeader className='w-full text-center font-extrabold'>
-                {post.comments == 1 ? 'Comment' : 'Comments'}
-              </DrawerHeader>
               <Comments postId={post.id} />
             </DrawerContent>
           </Drawer>
@@ -213,8 +217,15 @@ export default function Post({ post }: { post: PostT }) {
         <Button
           variant='zero'
           className={`cursor-pointer select-none rounded-full border-[0.5px] border-black/5 px-5 py-2 text-xs font-semibold ${colors[post.color as keyof typeof colors].button} text-black/45`}
+          onClick={() => {
+            // copy link like- > base url +  /post/6726074d8acae3fe11c3d015
+            console.log('clicked')
+            const url = window.location.origin + '/post/' + post.id
+            navigator.clipboard.writeText(url)
+            console.log(url)
+          }}
         >
-          set reaction
+          copy link
         </Button>
       </div>
     </div>
@@ -230,6 +241,7 @@ interface CommentT {
   postId: string
   content: string
   likes: number
+  isLiked: boolean
   comments: number
   createdAt: Date
   updatedAt: Date
@@ -240,9 +252,13 @@ export function Comments({ postId }: { postId: string }) {
   const [comment, setComment] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [comments, setComments] = useState<CommentT[]>([])
-  const [nextPage, setNextPage] = useState('')
+  const [nextLink, setNextLink] = useState('')
   const replyRef = useRef<HTMLTextAreaElement>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
+  const [isCommenting, setIsCommenting] = useState(false)
+  const [totalComments, setTotalComments] = useState(0)
+  const savedUser = useStore((state) => state.savedUser)
+  const [isLoading, setIsLoading] = useState(false)
 
   async function handleComments() {
     console.log(postId)
@@ -253,33 +269,61 @@ export function Comments({ postId }: { postId: string }) {
       return
     }
     setComments([...comments, ...response.comments])
-    setNextPage(response.nextPage)
+    setNextLink(response.nextLink)
+    setTotalComments(response.totalComments)
     console.log(response)
   }
 
   async function handleLoadMore() {
-    if (!nextPage) return console.log('No more comments')
+    if (!nextLink) return console.log('No more comments')
+    console.log(nextLink)
+
     try {
-      const response = await axios.post('/api/post/getComments', {
+      const response = await axios.post(nextLink, {
         postId,
-        page: nextPage,
-      })
+      }) // Change from post to get
+      console.log(response)
+      setComments([...comments, ...response.data.comments])
+      setNextLink(response.data.nextLink)
+      setTotalComments(response.data.totalComments)
     } catch (error: any) {
       console.log(error)
     }
   }
 
   async function handleAddComment(postId: string, content: string) {
+    if (!content) return
+    setIsCommenting(true)
     try {
       const response = await axios.post('/api/activity/comment/createComment', { postId, content })
-
       console.log(response)
-
-      // Refresh comments after adding a new one
-      // handleComments()
+      addComment(content)
+      setComment('')
     } catch (error: any) {
       console.error(error)
     }
+    setIsCommenting(false)
+  }
+
+  function addComment(comment: string) {
+    const newComment = {
+      _id: '1',
+      userId: {
+        profilePic: { imageUrl: savedUser.profilePic.imageUrl, publicId: savedUser.profilePic.publicId },
+        _id: savedUser.id,
+        name: savedUser.name,
+      },
+      postId,
+      content: comment,
+      likes: 0,
+      isLiked: false,
+      comments: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      __v: 0,
+    }
+    setTotalComments(totalComments + 1)
+    setComments([newComment, ...comments])
   }
 
   useEffect(() => {
@@ -310,19 +354,31 @@ export function Comments({ postId }: { postId: string }) {
         observer.unobserve(loadMoreRef.current)
       }
     }
-  }, [loadMoreRef.current])
+  }, [nextLink])
 
   return (
     <div className=''>
-      <div className='absolute bottom-0 left-auto w-full border-t bg-white/60 px-2 py-3 pt-4 backdrop-blur-lg dark:bg-black'>
+      <DrawerHeader className='w-full text-center font-extrabold'>
+        <p>{totalComments == 0 ? 'Comments' : totalComments == 1 ? '1 Comment' : totalComments + ' Comments'}</p>
+      </DrawerHeader>
+      <div className='absolute bottom-0 left-auto w-full border-t bg-white/60 px-2 py-3 pt-4 backdrop-blur-lg dark:bg-black/60'>
         <div className='flex w-full items-center gap-1.5'>
-          <img src='/images/profile.jpg' alt='' className='aspect-square w-8 rounded-full' />
+          <div className='aspect-square w-8 rounded-full'>
+            <Img
+              imageUrl={savedUser.profilePic.imageUrl}
+              publicId={savedUser.profilePic.publicId}
+              height={40}
+              width={40}
+            />
+          </div>
+
           <textarea
             ref={textareaRef}
             placeholder='Add a comment'
-            className='no-scrollbar max-h-24 flex-grow rounded-3xl border border-black/5 px-3 py-2 text-[13px] repeat-infinite focus:outline-none dark:bg-black dark:text-white'
+            className='no-scrollbar max-h-24 flex-grow rounded-3xl border border-black/5 px-3 py-2 text-[13px] repeat-infinite focus:outline-none dark:border-white/5 dark:bg-black dark:text-white'
             value={comment}
             onChange={(e) => setComment(e.target.value)}
+            disabled={isCommenting}
             rows={1}
           />
           <Button
@@ -336,7 +392,7 @@ export function Comments({ postId }: { postId: string }) {
       </div>
       <div className='grid max-h-[85dvh] gap-5 overflow-auto py-1 pb-24'>
         {comments.map((comment, index) => (
-          <Comment key={index} comment={comment} />
+          <Comment key={index} comment={comment} textareaRef={textareaRef} />
         ))}
 
         <div ref={loadMoreRef}></div>
@@ -345,10 +401,12 @@ export function Comments({ postId }: { postId: string }) {
   )
 }
 
-export function Comment({ comment }: { comment: CommentT }) {
+export function Comment({ comment, textareaRef }: { comment: CommentT; textareaRef: any }) {
   const [showReplies, setShowReplies] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
+  const [isLiked, setIsLiked] = useState(comment.isLiked)
   const [showMore, setShowMore] = useState(false)
+
+  console.log(comment.isLiked)
 
   async function handleLikeComment() {
     comment.likes = comment.likes + 1
@@ -376,8 +434,14 @@ export function Comment({ comment }: { comment: CommentT }) {
               <div className='flex gap-3'>
                 <div className='flex items-center justify-normal gap-1.5 text-xs'>
                   <p className='font-semibold'>{comment.userId.name}</p>
-                  <p className='leading-none text-black/50'>•</p>
-                  <p className='text-[11px] text-black/50'>12:20 </p>
+                  <p className='leading-none text-black/50 dark:text-white/50'>•</p>
+                  <p className='text-[11px] text-black/50 dark:text-white/50'>
+                    {new Date(comment.createdAt).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}{' '}
+                  </p>
+                  {/* <Ellipsis size={20} className='text-black opacity-50' /> */}
                 </div>
               </div>
               <div
@@ -417,12 +481,12 @@ export function Comment({ comment }: { comment: CommentT }) {
           <Button variant='zero' className='text-xs font-semibold text-black/50 dark:text-white/60'>
             Reply
           </Button>
-          {comment.comments > -2 && (
+          {comment.comments > 0 && (
             <>
-              <p className='leading-none text-black/50'>•</p>
+              <p className='leading-none text-black/50 dark:text-white/60'>•</p>
               <Button
                 variant='zero'
-                className='dark:text.white/60 text-xs font-semibold text-black/50'
+                className='text-xs font-semibold text-black/50 dark:text-white/60'
                 onClick={() => setShowReplies(!showReplies)}
               >
                 {(showReplies ? 'Hide' : 'View') +
