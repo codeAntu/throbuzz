@@ -5,7 +5,18 @@ import { Button } from '@/components/Button'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
 import { colors } from '@/lib/const'
 import { nFormatter } from '@/utils/utils'
-import { Ellipsis, EllipsisVertical, Heart, MessageSquareText, Pencil, Trash, Trash2 } from 'lucide-react'
+import {
+  Divide,
+  Ellipsis,
+  EllipsisVertical,
+  Heart,
+  LoaderCircle,
+  MessageSquareText,
+  Pencil,
+  Trash,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import 'swiper/css'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -17,6 +28,8 @@ import Img from '@/components/Img'
 import PostImg from './postImg'
 import useStore from '@/store/store'
 import { set } from 'mongoose'
+import { useRouter } from 'next/navigation'
+import { likeReplay, unlikeReplay } from '@/handelers/post/replay'
 
 export interface PostT {
   id: string
@@ -59,6 +72,7 @@ export default function Post({ post }: { post: PostT }) {
   const [isLiked, setIsLiked] = useState(post.isLiked)
   const [showReactions, setShowReactions] = useState()
   const [likeCount, setLikeCount] = useState(post.likes)
+  const router = useRouter()
 
   const toggleContent = () => {
     setIsExpanded(!isExpanded)
@@ -83,14 +97,18 @@ export default function Post({ post }: { post: PostT }) {
     }
   }
 
-  console.log(post)
-
   return (
     <div
       className={`flex flex-col gap-2 rounded-3xl border border-slate-400/5 px-3.5 py-4 pb-2.5 text-black sm:p-4 ${colors[post.color as keyof typeof colors].card} `}
     >
       <div className='flex items-start gap-3 px-0.5'>
-        <Button variant='zero' className='aspect-square w-11'>
+        <Button
+          variant='zero'
+          className='aspect-square w-11'
+          onClick={() => {
+            router.push('/profile/' + post.username)
+          }}
+        >
           {/* <img src='/images/profile.jpg' alt='' className='aspect-square w-12 rounded-full' /> */}
           <Img
             imageUrl={post.profilePic.imageUrl}
@@ -106,7 +124,7 @@ export default function Post({ post }: { post: PostT }) {
               variant='zero'
               className='text-sm font-semibold leading-tight'
               onClick={() => {
-                console.log('clicked')
+                router.push('/profile/' + post.username)
               }}
             >
               {post.name}
@@ -125,12 +143,7 @@ export default function Post({ post }: { post: PostT }) {
                   align='end'
                   className='border border-black/10 bg-white/10 backdrop-blur-md dark:border-white/10 dark:bg-black/25'
                 >
-                  <DropdownMenuItem
-                    className=''
-                    onClick={() => {
-                      console.log('clicked')
-                    }}
-                  >
+                  <DropdownMenuItem className='' onClick={() => {}}>
                     <Pencil size={17} className='mr-2' />
                     Edit
                   </DropdownMenuItem>
@@ -161,8 +174,8 @@ export default function Post({ post }: { post: PostT }) {
           autoplay={{
             delay: 3000,
           }}
-          onSlideChange={() => console.log('slide change')}
-          onSwiper={(swiper) => console.log(swiper)}
+          onSlideChange={() => {}}
+          onSwiper={(swiper) => {}}
           className='rounded-xl'
           // slidesPerView={3}
         >
@@ -192,7 +205,6 @@ export default function Post({ post }: { post: PostT }) {
               variant='zero'
               className='flex cursor-pointer items-center gap-1.5 font-normal'
               onClick={() => {
-                console.log('clicked')
                 handleLike()
               }}
             >
@@ -218,11 +230,8 @@ export default function Post({ post }: { post: PostT }) {
           variant='zero'
           className={`cursor-pointer select-none rounded-full border-[0.5px] border-black/5 px-5 py-2 text-xs font-semibold ${colors[post.color as keyof typeof colors].button} text-black/45`}
           onClick={() => {
-            // copy link like- > base url +  /post/6726074d8acae3fe11c3d015
-            console.log('clicked')
             const url = window.location.origin + '/post/' + post.id
             navigator.clipboard.writeText(url)
-            console.log(url)
           }}
         >
           copy link
@@ -237,6 +246,7 @@ interface CommentT {
     profilePic: { imageUrl: string; publicId: string }
     _id: string
     name: string
+    username: string
   }
   postId: string
   content: string
@@ -248,20 +258,41 @@ interface CommentT {
   __v: number
 }
 
+export interface CommentReplaysT {
+  _id: string
+  userId: {
+    profilePic: {
+      imageUrl: string
+      publicId: string
+    }
+    _id: string
+    name: string
+  }
+  commentId: string
+  postId: string
+  content: string
+  likes: number
+  createdAt: Date
+  updatedAt: Date
+  __v: number
+  isLiked: boolean
+}
+
 export function Comments({ postId }: { postId: string }) {
   const [comment, setComment] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [comments, setComments] = useState<CommentT[]>([])
   const [nextLink, setNextLink] = useState('')
-  const replyRef = useRef<HTMLTextAreaElement>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const [isCommenting, setIsCommenting] = useState(false)
   const [totalComments, setTotalComments] = useState(0)
   const savedUser = useStore((state) => state.savedUser)
-  const [isLoading, setIsLoading] = useState(false)
+  const [reply, setReply] = useState({
+    commentId: '',
+    username: '',
+  })
 
   async function handleComments() {
-    console.log(postId)
     const response = await getComments(postId)
 
     if (response.error) {
@@ -276,7 +307,6 @@ export function Comments({ postId }: { postId: string }) {
 
   async function handleLoadMore() {
     if (!nextLink) return console.log('No more comments')
-    console.log(nextLink)
 
     try {
       const response = await axios.post(nextLink, {
@@ -294,13 +324,27 @@ export function Comments({ postId }: { postId: string }) {
   async function handleAddComment(postId: string, content: string) {
     if (!content) return
     setIsCommenting(true)
-    try {
-      const response = await axios.post('/api/activity/comment/createComment', { postId, content })
-      console.log(response)
-      addComment(content)
-      setComment('')
-    } catch (error: any) {
-      console.error(error)
+    if (reply.commentId) {
+      try {
+        const response = await axios.post('/api/activity/commentReply/createCommentReply', {
+          content,
+          commentId: reply.commentId,
+        })
+
+        console.log(response)
+        setComment('')
+      } catch (error: any) {
+        console.error(error)
+      }
+    } else {
+      try {
+        const response = await axios.post('/api/activity/comment/createComment', { postId, content })
+        console.log(response)
+        addComment(content)
+        setComment('')
+      } catch (error: any) {
+        console.error(error)
+      }
     }
     setIsCommenting(false)
   }
@@ -312,6 +356,7 @@ export function Comments({ postId }: { postId: string }) {
         profilePic: { imageUrl: savedUser.profilePic.imageUrl, publicId: savedUser.profilePic.publicId },
         _id: savedUser.id,
         name: savedUser.name,
+        username: savedUser.username,
       },
       postId,
       content: comment,
@@ -356,12 +401,32 @@ export function Comments({ postId }: { postId: string }) {
     }
   }, [nextLink])
 
+  useEffect(() => {
+    if (reply.commentId && textareaRef.current) {
+      textareaRef.current.focus()
+    }
+    setComment('')
+  }, [reply])
+
   return (
     <div className=''>
       <DrawerHeader className='w-full text-center font-extrabold'>
         <p>{totalComments == 0 ? 'Comments' : totalComments == 1 ? '1 Comment' : totalComments + ' Comments'}</p>
       </DrawerHeader>
-      <div className='absolute bottom-0 left-auto w-full border-t bg-white/60 px-2 py-3 pt-4 backdrop-blur-lg dark:bg-black/60'>
+      <div className='absolute bottom-0 left-auto grid w-full gap-2 border-t bg-white/60 px-2 py-3 pt-4 backdrop-blur-lg dark:bg-black/60'>
+        {reply.username && (
+          <div className='flex items-center justify-between px-5'>
+            <div className='line-clamp-1 text-xs'>Replying to {reply.username}</div>
+            <X
+              size={20}
+              className='cursor-pointer p-0.5'
+              onClick={() => {
+                setReply({ commentId: '', username: '' })
+                setComment('')
+              }}
+            />
+          </div>
+        )}
         <div className='flex w-full items-center gap-1.5'>
           <div className='aspect-square w-8 rounded-full'>
             <Img
@@ -371,7 +436,6 @@ export function Comments({ postId }: { postId: string }) {
               width={40}
             />
           </div>
-
           <textarea
             ref={textareaRef}
             placeholder='Add a comment'
@@ -386,13 +450,18 @@ export function Comments({ postId }: { postId: string }) {
             className='flex items-center gap-1 rounded-full border border-black/5 bg-accent px-4 py-1.5 text-xs font-semibold text-white'
             onClick={() => handleAddComment(postId, comment)}
           >
-            Post
+            {
+              <div className='flex items-center gap-1'>
+                <MessageSquareText size={18} className='' />
+                {!isCommenting ? <div>Post</div> : <LoaderCircle size={18} className='animate-spin' />}
+              </div>
+            }
           </Button>
         </div>
       </div>
       <div className='grid max-h-[85dvh] gap-5 overflow-auto py-1 pb-24'>
         {comments.map((comment, index) => (
-          <Comment key={index} comment={comment} textareaRef={textareaRef} />
+          <Comment key={index} comment={comment} reply={reply} setReply={setReply} />
         ))}
 
         <div ref={loadMoreRef}></div>
@@ -401,12 +470,18 @@ export function Comments({ postId }: { postId: string }) {
   )
 }
 
-export function Comment({ comment, textareaRef }: { comment: CommentT; textareaRef: any }) {
+export function Comment({
+  comment,
+  reply,
+  setReply,
+}: {
+  comment: CommentT
+  reply: { commentId: string; username: string }
+  setReply: React.Dispatch<React.SetStateAction<{ commentId: string; username: string }>>
+}) {
   const [showReplies, setShowReplies] = useState(false)
   const [isLiked, setIsLiked] = useState(comment.isLiked)
   const [showMore, setShowMore] = useState(false)
-
-  console.log(comment.isLiked)
 
   async function handleLikeComment() {
     comment.likes = comment.likes + 1
@@ -478,7 +553,16 @@ export function Comment({ comment, textareaRef }: { comment: CommentT; textareaR
           </div>
         </div>
         <div className='flex items-center justify-normal gap-1.5 px-12'>
-          <Button variant='zero' className='text-xs font-semibold text-black/50 dark:text-white/60'>
+          <Button
+            variant='zero'
+            className='text-xs font-semibold text-black/50 dark:text-white/60'
+            onClick={() => {
+              setReply({
+                commentId: comment._id,
+                username: comment.userId.username,
+              })
+            }}
+          >
             Reply
           </Button>
           {comment.comments > 0 && (
@@ -505,82 +589,104 @@ export function Comment({ comment, textareaRef }: { comment: CommentT; textareaR
 }
 
 export function CommentReplays({ commentId }: { commentId: string }) {
-  const [replays, setReplays] = useState<CommentT[]>([])
+  const [replays, setReplays] = useState<CommentReplaysT[]>([])
 
-  async function getCommentsReplays() {}
+  async function getCommentsReplays() {
+    try {
+      const response = await axios.post('/api/post/getCommentReplays', {
+        commentId,
+      })
+      setReplays(response.data.commentReplays)
+    } catch (error: any) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getCommentsReplays()
+  }, [])
 
   return (
-    <div className='grid gap-3.5 pb-2 pl-10 pt-0.5'>
-      <CommentReplay />
-      <CommentReplay />
+    <div className='grid w-full gap-3.5 pb-2 pl-10 pt-0.5'>
+      {replays.map((replay, index) => (
+        <CommentReplay key={index} {...replay} />
+      ))}
     </div>
   )
 }
 
-export function CommentReplay() {
+export function CommentReplay(replay: CommentReplaysT) {
+  const [isLiked, setIsLiked] = useState(replay.isLiked)
+  const [likes, setLikes] = useState(replay.likes)
+  const [showMore, setShowMore] = useState(false)
+
+  async function handleLikeReplay() {
+    setLikes(likes + 1)
+    setIsLiked(true)
+    const response = await likeReplay(replay._id)
+    if (response.error) {
+      setLikes(likes)
+      setIsLiked(false)
+    }
+    console.log(response)
+  }
+
+  async function handleUnLikeReplay() {
+    setLikes(likes - 1)
+    setIsLiked(false)
+    const response = await unlikeReplay(replay._id)
+    if (response.error) {
+      setLikes(likes)
+      setIsLiked(true)
+    }
+    console.log(response)
+  }
   return (
     <div className='grid gap-1'>
-      {/* <CommentContent
-        profilePic= {
-          imageUrl: '/images/profile.jpg',
-          publicId: 'publicId'
-        }
-        name='John Doe'
-        time={new Date()}
-        content='Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.'
-        likes={203}
-        comments={12}
-      /> */}
-      <div className='flex items-center justify-normal gap-1.5 px-12'>
-        <Button variant='zero' className='dark:text.white/60 text-xs font-semibold text-black/55' onClick={() => {}}>
-          Reply
-        </Button>
-      </div>
-    </div>
-  )
-}
-
-type commentContentT = {
-  profilePic: {
-    imageUrl: string
-    publicId: string
-  }
-  name: string
-  time: Date
-  content: string
-  likes: number
-  comments: number
-}
-
-function CommentContent({ profilePic, name, time, content, likes, comments }: commentContentT) {
-  const [isLiked, setIsLiked] = useState(false)
-  const [showMore, setShowMore] = useState(false)
-  return (
-    <div className='flex w-full items-start justify-center gap-3'>
-      <div className='flex-grow-0 pt-1.5'>
-        <img src={profilePic.imageUrl} alt='' className='aspect-square w-12 rounded-full' />
-      </div>
-      <div className='flex w-full justify-between gap-4 pr-2'>
-        <div className='grid gap-1'>
-          <div className='flex gap-3'>
-            <div className='flex items-center justify-normal gap-1.5 text-xs'>
-              <p className='font-semibold'>{name}</p>
-              <p className='leading-none text-black/50'>•</p>
-              <p className='text-[11px] text-black/50'>12:20 </p>
+      <div className='flex w-full items-start justify-center gap-3'>
+        <div className='flex-grow-0 pt-1.5'>
+          <img src={replay.userId.profilePic.imageUrl} alt='' className='aspect-square w-12 rounded-full' />
+        </div>
+        <div className='flex w-full justify-between gap-4 pr-2'>
+          <div className='grid gap-1'>
+            <div className='flex gap-3'>
+              <div className='flex items-center justify-normal gap-1.5 text-xs'>
+                <p className='font-semibold'>{replay.userId.name}</p>
+                <p className='leading-none text-black/50'>•</p>
+                <p className='text-[11px] text-black/50'>12:20 </p>
+              </div>
+            </div>
+            <div
+              className={`cursor-pointer text-xs font-medium text-black/80 dark:text-white/80 sm:text-sm md:font-medium ${showMore ? '' : 'line-clamp-2'}`}
+              onClick={() => setShowMore(!showMore)}
+            >
+              {replay.content}
             </div>
           </div>
-          <div
-            className={`dark:text.white/80 cursor-pointer text-xs font-medium text-black/80 sm:text-sm md:font-medium ${showMore ? '' : 'line-clamp-2'}`}
-            onClick={() => setShowMore(!showMore)}
-          >
-            {content}
+          <div className='flex flex-col items-center justify-start gap-1 pt-1.5'>
+            {isLiked ? (
+              <Button
+                variant='icon'
+                className='text-xs font-semibold'
+                onClick={() => {
+                  handleUnLikeReplay()
+                }}
+              >
+                <Heart size={18} className='fill-current text-red-500' />
+              </Button>
+            ) : (
+              <Button
+                variant='icon'
+                className='text-xs font-semibold'
+                onClick={() => {
+                  handleLikeReplay()
+                }}
+              >
+                <Heart size={18} className='' />
+              </Button>
+            )}
+            <div className='text-[11px]'>{likes}</div>
           </div>
-        </div>
-        <div className='flex flex-col items-center justify-start gap-1 pt-1.5'>
-          <Button variant='icon' className='text-xs font-semibold' onClick={() => setIsLiked(!isLiked)}>
-            <Heart size={18} className={isLiked ? 'fill-current text-red-500' : ''} />
-          </Button>
-          <div className='text-[11px]'>{likes}</div>
         </div>
       </div>
     </div>

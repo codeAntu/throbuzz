@@ -10,7 +10,7 @@ import { z } from 'zod'
 connect()
 
 const dataZ = z.object({
-  likeOnCommentReplyId: z.string(),
+  commentReplyId: z.string(),
 })
 
 export async function POST(request: NextRequest) {
@@ -30,15 +30,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid input', details: parseResult.error.errors }, { status: 400 })
     }
 
-    const { likeOnCommentReplyId } = parseResult.data
+    const { commentReplyId } = parseResult.data
 
-    const likeOnCommentReply = await LikeOnCommentReply.findById(likeOnCommentReplyId)
+    const commentReply = await CommentReply.findById(commentReplyId)
 
-    if (!likeOnCommentReply) {
-      return NextResponse.json({ error: 'Like on Comment Reply not found' }, { status: 404 })
+    if (!commentReply) {
+      return NextResponse.json({ error: 'Comment Reply not found' }, { status: 404 })
     }
 
-    const post = await Post.findById(likeOnCommentReply.postId)
+    const post = await Post.findById(commentReply.postId)
 
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
@@ -48,15 +48,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'The post is private' }, { status: 401 })
     }
 
-    if (likeOnCommentReply.userId.toString() !== userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const likeOnCommentReply = await LikeOnCommentReply.findOneAndDelete({ userId, commentReplyId })
+
+    if (!likeOnCommentReply) {
+      return NextResponse.json({ error: 'Like on Comment Reply not found' }, { status: 404 })
     }
 
-    const commentReply = await CommentReply.findByIdAndUpdate(likeOnCommentReply.commentReplyId, {
-      $inc: { likes: -1 },
-    }) // Decrement the like count
-
-    await likeOnCommentReply.deleteOne()
+    commentReply.likes -= 1
+    await commentReply.save()
 
     return NextResponse.json({ status: 200, message: 'Like on Comment Reply removed successfully' })
   } catch (error: any) {

@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const comments = await Comment.find({ postId })
       .populate({
         path: 'userId',
-        select: 'name profilePic',
+        select: 'name profilePic username _id',
       })
       .skip(skip)
       .limit(limit)
