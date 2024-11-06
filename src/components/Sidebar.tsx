@@ -28,32 +28,33 @@ export default function Sidebar() {
         <Menu size={43} className='p-1.5 pl-0' />
       </SheetTrigger>
       <SheetContent side={'left'} className='flex h-full flex-col justify-between'>
-        <SheetHeader className='flex flex-1'>
-          <SheetTitle>
-            <Button
-              variant='zero'
-              className='flex w-full flex-col items-center justify-center gap-4 py-8'
-              onClick={() => {
-                if (!savedUser.username) return
-                router.push(`/profile/${savedUser.username}`)
-              }}
-            >
-              <div className='aspect-square w-28 overflow-hidden sm:w-32'>
-                <Img
-                  imageUrl={savedUser.profilePic?.imageUrl || '/icons/user.png'}
-                  publicId={savedUser.profilePic?.publicId || ''}
-                  height={500}
-                  width={500}
-                />
-              </div>
-              <div className='text-center'>
-                <div className='text-lg font-semibold'>{savedUser.name}</div>
-                <div className='text-xs font-semibold text-black/60 dark:text-white/60'>{savedUser.username}</div>
-              </div>
-            </Button>
-          </SheetTitle>
-          <SheetDescription></SheetDescription>
-        </SheetHeader>
+        <Button
+          variant='zero'
+          className='flex w-full flex-col items-center justify-center gap-5 py-8 sm:gap-8'
+          onClick={() => {
+            if (!savedUser.username) router.push('/login')
+            router.push(`/profile/${savedUser.username}`)
+          }}
+        >
+          <div className='aspect-square w-28 overflow-hidden sm:w-32'>
+            <Img
+              imageUrl={savedUser.profilePic?.imageUrl || '/icons/user.png'}
+              publicId={savedUser.profilePic?.publicId || ''}
+              height={500}
+              width={500}
+            />
+          </div>
+          {savedUser.username ? (
+            <div className='text-center'>
+              <div className='text-lg font-semibold'>{savedUser.name}</div>
+              <div className='text-xs font-semibold text-black/60 dark:text-white/60'>{savedUser.username}</div>
+            </div>
+          ) : (
+            <div className='w-auto rounded-sm bg-black px-8 py-2 text-xs text-white dark:bg-white dark:text-black'>
+              Login
+            </div>
+          )}
+        </Button>
         <div className='flex w-full flex-grow flex-col justify-between'>
           <div>
             {paths.map((p, i) => (
@@ -69,19 +70,21 @@ export default function Sidebar() {
             ))}
           </div>
           <div>
-            <Button
-              variant='zero'
-              className='flex w-full bg-red-100 px-5 py-4 text-red-500'
-              onClick={() => {
-                logOut(() => {
-                  clearSavedUser()
-                  router.push('/')
-                })
-              }}
-            >
-              <LogOut size={24} className='' />
-              <span className='w-full text-left'>Logout</span>
-            </Button>
+            {savedUser.username && (
+              <Button
+                variant='zero'
+                className='flex w-full bg-red-100 px-5 py-4 text-red-500'
+                onClick={() => {
+                  logOut(() => {
+                    clearSavedUser()
+                    router.push('/')
+                  })
+                }}
+              >
+                <LogOut size={24} className='' />
+                <span className='w-full text-left'>Logout</span>
+              </Button>
+            )}
           </div>
         </div>
       </SheetContent>

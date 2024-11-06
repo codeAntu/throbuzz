@@ -15,21 +15,25 @@ export async function middleware(request: NextRequest) {
   const token = (await request.cookies.get('token')?.value) || ''
   const tokenData = jwt.decode(token) as TokenDataT
 
-  if (isPublicPath && tokenData?.isVerified) {
-    return NextResponse.redirect(new URL('/', request.nextUrl))
-  }
+  // if (isPublicPath && tokenData?.isVerified) {
+  //   return NextResponse.redirect(new URL('/', request.nextUrl))
+  // }
 
-  if (!isPublicPath && !tokenData?.isVerified) {
-    return NextResponse.redirect(new URL('/login', request.nextUrl.origin).toString())
-  }
+  // if (!isPublicPath && !tokenData?.isVerified) {
+  //   return NextResponse.redirect(new URL('/login', request.nextUrl.origin).toString())
+  // }
 
   if (profilePath && tokenData?.isVerified) {
     return NextResponse.redirect(new URL('/profile/' + tokenData?.username, request.nextUrl.origin).toString())
   }
 
-  if (isVerificationPath && tokenData?.isVerified) {
-    return NextResponse.redirect(new URL('/signup', request.nextUrl.origin).toString())
+  if (profilePath && !tokenData?.isVerified) {
+    return NextResponse.redirect(new URL('/login', request.nextUrl.origin).toString())
   }
+
+  // if (isVerificationPath && tokenData?.isVerified) {
+  //   return NextResponse.redirect(new URL('/signup', request.nextUrl.origin).toString())
+  // }
 }
 
 // See "Matching Paths" below to learn more
