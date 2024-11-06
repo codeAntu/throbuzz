@@ -151,7 +151,6 @@ export default function Post({ post }: { post: PostT }) {
             router.push('/profile/' + post.username)
           }}
         >
-          {/* <img src='/images/profile.jpg' alt='' className='aspect-square w-12 rounded-full' /> */}
           <Img
             imageUrl={post.profilePic.imageUrl}
             publicId={post.profilePic.publicId}
@@ -219,12 +218,18 @@ export default function Post({ post }: { post: PostT }) {
           onSlideChange={() => {}}
           onSwiper={(swiper) => {}}
           className='rounded-xl'
+          navigation
+          scrollbar={{ draggable: true }}
+
           // slidesPerView={3}
         >
           {post.postImages.map((img, index) => (
-            <SwiperSlide key={index} className='flex w-full items-center justify-center rounded-full'>
+            <SwiperSlide key={index} className='flex w-full items-center justify-center'>
               <div className='flex w-full items-center justify-center bg-black/5'>
                 <PostImg imageUrl={img.imageUrl} alt='' publicId={img.publicId} />
+              </div>
+              <div className='absolute right-2 top-2 rounded-full bg-black/50 px-2.5 py-1 text-[10px] font-medium text-white/80 sm:text-sm'>
+                {index + 1} / {post.postImages.length}
               </div>
             </SwiperSlide>
           ))}
@@ -557,8 +562,14 @@ export function Comment({
     <div className='flex flex-col items-start gap-3 px-5'>
       <div className='grid w-full gap-2'>
         <div className='flex w-full items-start justify-center gap-3'>
-          <div className='flex-grow-0 pt-1.5'>
-            <img src={comment.userId.profilePic.imageUrl} alt='' className='aspect-square w-12 rounded-full' />
+          <div className='aspect-square w-12 flex-grow-0 pt-1.5'>
+            <Img
+              imageUrl={comment.userId.profilePic.imageUrl}
+              publicId={comment.userId.profilePic.publicId}
+              height={50}
+              width={50}
+              className='aspect-square w-12 rounded-full'
+            />
           </div>
           <div className='flex w-full justify-between gap-4 pr-2'>
             <div className='grid gap-1'>
@@ -572,7 +583,6 @@ export function Comment({
                       minute: '2-digit',
                     })}{' '}
                   </p>
-                  {/* <Ellipsis size={20} className='text-black opacity-50' /> */}
                 </div>
               </div>
               <div
@@ -738,8 +748,14 @@ export function CommentReplay(replay: CommentReplaysT) {
   }
   return (
     <div className='flex w-full items-start justify-center gap-3'>
-      <div className='flex-grow-0 pt-1.5'>
-        <img src={replay.userId.profilePic.imageUrl} alt='' className='aspect-square w-12 rounded-full' />
+      <div className='aspect-square w-12 flex-grow-0 pt-1.5'>
+        <Img
+          imageUrl={replay.userId.profilePic.imageUrl}
+          publicId={replay.userId.profilePic.publicId}
+          height={50}
+          width={50}
+          className='aspect-square w-12 rounded-full'
+        />
       </div>
       <div className='flex w-full justify-between gap-4 pr-2'>
         <div className='grid gap-1'>

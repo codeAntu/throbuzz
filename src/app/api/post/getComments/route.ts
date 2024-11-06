@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
 
-    if (post.visibility && (!tokenData || post.userId.toString() !== tokenData.id)) {
+    if (post.visibility === 'private' && (!tokenData || post.userId.toString() !== tokenData.id)) {
       return NextResponse.json({ error: 'Post is private' }, { status: 403 })
     }
 

@@ -14,7 +14,18 @@ export default function GetMe() {
       const { email, name, username, id, isVerified, profilePic } = response.data.user
       setSavedUser({ email, name, username, id, isVerified, profilePic })
     } catch (error: any) {
-      console.log(error)
+      setSavedUser({
+        email: '',
+        name: '',
+        username: '',
+        id: '',
+        isVerified: false,
+        profilePic: {
+          imageUrl: '',
+          publicId: '',
+        },
+      })
+      // console.log(error)
     }
   }
 

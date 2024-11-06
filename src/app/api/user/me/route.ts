@@ -17,6 +17,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
+    if (!tokenData.id) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
     const user = await User.findOne({ _id: tokenData.id, isVerified: true }).select(
       ' name email username profilePic bio phone birthday facebook twitter linkedin instagram github website ',
     )

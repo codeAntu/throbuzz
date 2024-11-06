@@ -36,31 +36,23 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
     let query = {}
     let totalPosts = 0
-    let user = null
+
+    const foundUser = await User.findOne({ username }).select('username name profilePic')
+    if (!foundUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    const user: any = {
+      username: foundUser.username,
+      name: foundUser.name,
+      profilePic: foundUser.profilePic.imageUrl,
+      isMe: false,
+    }
 
     if (tokenData && tokenData.username === username) {
-      const foundUser = await User.findById(tokenData.id).select('username name profilePic')
-      if (!foundUser) {
-        return NextResponse.json({ error: 'User not found' }, { status: 404 })
-      }
-      user = {
-        username: foundUser.username,
-        name: foundUser.name,
-        profilePic: foundUser.profilePic.imageUrl,
-        isMe: true,
-      }
+      user.isMe = true
       query = { userId: tokenData.id }
     } else {
-      const foundUser = await User.findOne({ username }).select('username name profilePic')
-      if (!foundUser) {
-        return NextResponse.json({ error: 'User not found' }, { status: 404 })
-      }
-      user = {
-        username: foundUser.username,
-        name: foundUser.name,
-        profilePic: foundUser.profilePic.imageUrl,
-        isMe: false,
-      }
       query = { userId: foundUser._id, visibility: 'public' }
     }
 
@@ -69,10 +61,13 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
     const postsWithLikes = await Promise.all(
       posts.map(async (post) => {
-        const isLiked = await Like.exists({ postId: post._id, userId: tokenData.id })
+        let isLiked = false
+        if (tokenData) {
+          isLiked = !!(await Like.exists({ postId: post._id, userId: tokenData.id }))
+        }
         return {
           ...post.toObject(),
-          isLiked: !!isLiked,
+          isLiked,
         }
       }),
     )
