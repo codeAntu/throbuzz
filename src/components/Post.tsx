@@ -10,6 +10,7 @@ import {
   Ellipsis,
   EllipsisVertical,
   Heart,
+  Link,
   LoaderCircle,
   MessageSquareText,
   Pencil,
@@ -30,6 +31,7 @@ import useStore from '@/store/store'
 import { set } from 'mongoose'
 import { useRouter } from 'next/navigation'
 import { likeReplay, unlikeReplay } from '@/handelers/post/replay'
+import newReply from '@/store/newReply'
 
 export interface PostT {
   id: string
@@ -67,11 +69,50 @@ export interface PostT {
     | 'fuchsia'
 }
 
+interface CommentT {
+  _id: string
+  userId: {
+    profilePic: { imageUrl: string; publicId: string }
+    _id: string
+    name: string
+    username: string
+  }
+  postId: string
+  content: string
+  likes: number
+  isLiked: boolean
+  comments: number
+  createdAt: Date
+  updatedAt: Date
+  __v: number
+}
+
+export interface CommentReplaysT {
+  _id: string
+  userId: {
+    profilePic: {
+      imageUrl: string
+      publicId: string
+    }
+    _id: string
+    name: string
+  }
+  commentId: string
+  postId: string
+  content: string
+  likes: number
+  createdAt: Date
+  updatedAt: Date
+  __v: number
+  isLiked: boolean
+}
+
 export default function Post({ post }: { post: PostT }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isLiked, setIsLiked] = useState(post.isLiked)
   const [showReactions, setShowReactions] = useState()
   const [likeCount, setLikeCount] = useState(post.likes)
+  const [copyLink, setCopyLink] = useState(false)
   const router = useRouter()
 
   const toggleContent = () => {
@@ -83,6 +124,7 @@ export default function Post({ post }: { post: PostT }) {
     setIsLiked(true)
     const response = await like({ postId: post.id, reaction: 'like' })
     if (response.error) {
+      post.likes = post.likes - 1
       setIsLiked(false)
     }
   }
@@ -232,50 +274,20 @@ export default function Post({ post }: { post: PostT }) {
           onClick={() => {
             const url = window.location.origin + '/post/' + post.id
             navigator.clipboard.writeText(url)
+            setCopyLink(true)
+            setTimeout(() => {
+              setCopyLink(false)
+            }, 2000)
           }}
         >
-          copy link
+          <div className='flex items-center gap-1'>
+            <Link size={16} className='' />
+            {copyLink ? 'Link copied' : 'Copy link'}
+          </div>
         </Button>
       </div>
     </div>
   )
-}
-interface CommentT {
-  _id: string
-  userId: {
-    profilePic: { imageUrl: string; publicId: string }
-    _id: string
-    name: string
-    username: string
-  }
-  postId: string
-  content: string
-  likes: number
-  isLiked: boolean
-  comments: number
-  createdAt: Date
-  updatedAt: Date
-  __v: number
-}
-
-export interface CommentReplaysT {
-  _id: string
-  userId: {
-    profilePic: {
-      imageUrl: string
-      publicId: string
-    }
-    _id: string
-    name: string
-  }
-  commentId: string
-  postId: string
-  content: string
-  likes: number
-  createdAt: Date
-  updatedAt: Date
-  __v: number
-  isLiked: boolean
 }
 
 export function Comments({ postId }: { postId: string }) {
@@ -291,6 +303,8 @@ export function Comments({ postId }: { postId: string }) {
     commentId: '',
     username: '',
   })
+  const newReplay = newReply((state) => state.newReply)
+  const setNewReplay = newReply((state) => state.setNewReply)
 
   async function handleComments() {
     const response = await getComments(postId)
@@ -330,9 +344,10 @@ export function Comments({ postId }: { postId: string }) {
           content,
           commentId: reply.commentId,
         })
-
         console.log(response)
         setComment('')
+        setReply({ commentId: '', username: '' })
+        addReplay(response.data.commentReply)
       } catch (error: any) {
         console.error(error)
       }
@@ -340,7 +355,8 @@ export function Comments({ postId }: { postId: string }) {
       try {
         const response = await axios.post('/api/activity/comment/createComment', { postId, content })
         console.log(response)
-        addComment(content)
+        const comment = response.data.comment
+        addComment(comment)
         setComment('')
       } catch (error: any) {
         console.error(error)
@@ -349,26 +365,50 @@ export function Comments({ postId }: { postId: string }) {
     setIsCommenting(false)
   }
 
-  function addComment(comment: string) {
-    const newComment = {
-      _id: '1',
+  function addComment(comment: any) {
+    const newComment: CommentT = {
+      _id: comment._id,
       userId: {
         profilePic: { imageUrl: savedUser.profilePic.imageUrl, publicId: savedUser.profilePic.publicId },
         _id: savedUser.id,
         name: savedUser.name,
         username: savedUser.username,
       },
-      postId,
-      content: comment,
-      likes: 0,
+      postId: comment.postId,
+      content: comment.content,
+      likes: comment.likes,
       isLiked: false,
       comments: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
       __v: 0,
     }
+
     setTotalComments(totalComments + 1)
     setComments([newComment, ...comments])
+  }
+
+  function addReplay(replay: any) {
+    setTotalComments(totalComments + 1)
+
+    console.log('comment id ', replay.commentId)
+
+    setNewReplay({
+      _id: replay._id,
+      userId: {
+        profilePic: { imageUrl: savedUser.profilePic.imageUrl, publicId: savedUser.profilePic.publicId },
+        _id: savedUser.id,
+        name: savedUser.name,
+      },
+      commentId: replay.commentId,
+      postId: replay.postId,
+      content: replay.content,
+      likes: replay.likes,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      __v: 0,
+      isLiked: false,
+    })
   }
 
   useEffect(() => {
@@ -482,19 +522,35 @@ export function Comment({
   const [showReplies, setShowReplies] = useState(false)
   const [isLiked, setIsLiked] = useState(comment.isLiked)
   const [showMore, setShowMore] = useState(false)
+  const [comments, setComments] = useState(comment.comments)
+  const newReplay = newReply((state) => state.newReply)
+
+  useEffect(() => {
+    if (newReplay.commentId === comment._id) {
+      comment.comments = comment.comments + 1
+      setComments(comments + 1)
+      setShowReplies(true)
+    }
+  }, [newReplay])
 
   async function handleLikeComment() {
     comment.likes = comment.likes + 1
     setIsLiked(true)
     const response = await likeComment(comment._id)
-    console.log(response)
+    if (response.error) {
+      comment.likes = comment.likes - 1
+      setIsLiked(false)
+    }
   }
 
   async function handleUnlikeComment() {
     comment.likes = comment.likes - 1
     setIsLiked(false)
     const response = await unlikeComment(comment._id)
-    console.log(response)
+    if (response.error) {
+      comment.likes = comment.likes + 1
+      setIsLiked(true)
+    }
   }
 
   return (
@@ -557,6 +613,8 @@ export function Comment({
             variant='zero'
             className='text-xs font-semibold text-black/50 dark:text-white/60'
             onClick={() => {
+              console.log(comment)
+
               setReply({
                 commentId: comment._id,
                 username: comment.userId.username,
@@ -590,6 +648,17 @@ export function Comment({
 
 export function CommentReplays({ commentId }: { commentId: string }) {
   const [replays, setReplays] = useState<CommentReplaysT[]>([])
+  const [showMore, setShowMore] = useState(false)
+  const [nextLink, setNextLink] = useState('')
+  const newReplay = newReply((state) => state.newReply)
+  const clearNewReplay = newReply((state) => state.clearNewReply)
+
+  useEffect(() => {
+    if (newReplay.commentId === commentId) {
+      setReplays([newReplay, ...replays])
+      clearNewReplay()
+    }
+  }, [newReplay])
 
   async function getCommentsReplays() {
     try {
@@ -597,6 +666,21 @@ export function CommentReplays({ commentId }: { commentId: string }) {
         commentId,
       })
       setReplays(response.data.commentReplays)
+      setNextLink(response.data.nextLink)
+    } catch (error: any) {
+      console.log(error)
+    }
+  }
+
+  async function handleLoadMore() {
+    if (!nextLink) return console.log('No more comments')
+    try {
+      const response = await axios.post(nextLink, {
+        commentId,
+      })
+      console.log(response)
+      setReplays([...replays, ...response.data.commentReplays])
+      setNextLink(response.data.nextLink)
     } catch (error: any) {
       console.log(error)
     }
@@ -604,13 +688,24 @@ export function CommentReplays({ commentId }: { commentId: string }) {
 
   useEffect(() => {
     getCommentsReplays()
-  }, [])
+  }, [commentId]) // Add commentId as a dependency
 
   return (
     <div className='grid w-full gap-3.5 pb-2 pl-10 pt-0.5'>
       {replays.map((replay, index) => (
         <CommentReplay key={index} {...replay} />
       ))}
+      <div className='px-3'>
+        {nextLink ? (
+          <Button
+            variant='zero'
+            className='text-xs font-semibold text-black/50 dark:text-white/60'
+            onClick={handleLoadMore}
+          >
+            View more
+          </Button>
+        ) : null}
+      </div>
     </div>
   )
 }
@@ -642,51 +737,49 @@ export function CommentReplay(replay: CommentReplaysT) {
     console.log(response)
   }
   return (
-    <div className='grid gap-1'>
-      <div className='flex w-full items-start justify-center gap-3'>
-        <div className='flex-grow-0 pt-1.5'>
-          <img src={replay.userId.profilePic.imageUrl} alt='' className='aspect-square w-12 rounded-full' />
+    <div className='flex w-full items-start justify-center gap-3'>
+      <div className='flex-grow-0 pt-1.5'>
+        <img src={replay.userId.profilePic.imageUrl} alt='' className='aspect-square w-12 rounded-full' />
+      </div>
+      <div className='flex w-full justify-between gap-4 pr-2'>
+        <div className='grid gap-1'>
+          <div className='flex gap-3'>
+            <div className='flex items-center justify-normal gap-1.5 text-xs'>
+              <p className='font-semibold'>{replay.userId.name}</p>
+              <p className='leading-none text-black/50'>•</p>
+              <p className='text-[11px] text-black/50'>12:20 </p>
+            </div>
+          </div>
+          <div
+            className={`cursor-pointer text-xs font-medium text-black/80 dark:text-white/80 sm:text-sm md:font-medium ${showMore ? '' : 'line-clamp-2'}`}
+            onClick={() => setShowMore(!showMore)}
+          >
+            {replay.content}
+          </div>
         </div>
-        <div className='flex w-full justify-between gap-4 pr-2'>
-          <div className='grid gap-1'>
-            <div className='flex gap-3'>
-              <div className='flex items-center justify-normal gap-1.5 text-xs'>
-                <p className='font-semibold'>{replay.userId.name}</p>
-                <p className='leading-none text-black/50'>•</p>
-                <p className='text-[11px] text-black/50'>12:20 </p>
-              </div>
-            </div>
-            <div
-              className={`cursor-pointer text-xs font-medium text-black/80 dark:text-white/80 sm:text-sm md:font-medium ${showMore ? '' : 'line-clamp-2'}`}
-              onClick={() => setShowMore(!showMore)}
+        <div className='flex flex-col items-center justify-start gap-1 pt-1.5'>
+          {isLiked ? (
+            <Button
+              variant='icon'
+              className='text-xs font-semibold'
+              onClick={() => {
+                handleUnLikeReplay()
+              }}
             >
-              {replay.content}
-            </div>
-          </div>
-          <div className='flex flex-col items-center justify-start gap-1 pt-1.5'>
-            {isLiked ? (
-              <Button
-                variant='icon'
-                className='text-xs font-semibold'
-                onClick={() => {
-                  handleUnLikeReplay()
-                }}
-              >
-                <Heart size={18} className='fill-current text-red-500' />
-              </Button>
-            ) : (
-              <Button
-                variant='icon'
-                className='text-xs font-semibold'
-                onClick={() => {
-                  handleLikeReplay()
-                }}
-              >
-                <Heart size={18} className='' />
-              </Button>
-            )}
-            <div className='text-[11px]'>{likes}</div>
-          </div>
+              <Heart size={18} className='fill-current text-red-500' />
+            </Button>
+          ) : (
+            <Button
+              variant='icon'
+              className='text-xs font-semibold'
+              onClick={() => {
+                handleLikeReplay()
+              }}
+            >
+              <Heart size={18} className='' />
+            </Button>
+          )}
+          <div className='text-[11px]'>{likes}</div>
         </div>
       </div>
     </div>

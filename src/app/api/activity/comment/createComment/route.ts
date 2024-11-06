@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     // new comment
-    await Comment.create({ userId, postId, content })
+    const comment = await Comment.create({ userId, postId, content })
     await Post.findByIdAndUpdate(postId, { $inc: { comments: 1 } }) // Increment the comment count
 
     // Send notification to the post owner
@@ -59,7 +59,13 @@ export async function POST(request: NextRequest) {
 
     await notification.save()
 
-    return NextResponse.json({ status: 200, message: 'Comment added successfully' })
+    return NextResponse.json(
+      {
+        message: 'Comment created successfully',
+        comment,
+      },
+      { status: 200 },
+    )
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

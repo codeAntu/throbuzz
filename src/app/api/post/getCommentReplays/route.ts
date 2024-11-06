@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     // Parse query parameters for pagination
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1', 10)
-    const limit = parseInt(url.searchParams.get('limit') || '10', 10)
+    const limit = parseInt(url.searchParams.get('limit') || '5', 10)
     const skip = (page - 1) * limit
 
     const commentReplays = await CommentReply.find({ commentId })

@@ -76,7 +76,14 @@ export async function POST(request: NextRequest) {
       url: `/post/${postId}`,
     })
 
-    return NextResponse.json({ message: 'Comment reply added successfully' }, { status: 200 })
+    return NextResponse.json(
+      {
+        message: 'Comment reply added successfully',
+
+        commentReply,
+      },
+      { status: 200 },
+    )
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

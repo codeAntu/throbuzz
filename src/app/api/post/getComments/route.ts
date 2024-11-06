@@ -4,6 +4,7 @@ import Comment from '@/models/commentModel'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import LikeOnComment from '@/models/likeOnCommentModel'
+import Post from '@/models/postModel'
 
 connect()
 
@@ -19,6 +20,16 @@ export async function POST(request: NextRequest) {
     const page = parseInt(url.searchParams.get('page') || '1', 10)
     const limit = parseInt(url.searchParams.get('limit') || '10', 10)
     const skip = (page - 1) * limit
+
+    const post = await Post.findById(postId)
+
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    if (post.visibility && (!tokenData || post.userId.toString() !== tokenData.id)) {
+      return NextResponse.json({ error: 'Post is private' }, { status: 403 })
+    }
 
     const comments = await Comment.find({ postId })
       .populate({
@@ -49,7 +60,10 @@ export async function POST(request: NextRequest) {
     const nextPage = page < totalPages ? page + 1 : null
     const nextLink = nextPage ? `${url.origin}${url.pathname}?page=${nextPage}&limit=${limit}` : null
 
-    return NextResponse.json({ comments: commentsWithLikes, totalComments, nextPage, nextLink }, { status: 200 })
+    return NextResponse.json(
+      { comments: commentsWithLikes, totalComments: post.comments, nextPage, nextLink },
+      { status: 200 },
+    )
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
