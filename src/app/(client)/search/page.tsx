@@ -1,29 +1,40 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 'use client'
 import { Button } from '@/components/Button'
 import Img from '@/components/Img'
+import People, { PeopleT } from '@/components/people'
 import { Screen0 } from '@/components/Screen'
+import axios from 'axios'
 import { ChevronLeft, Search, ServerCrash, X } from 'lucide-react'
+import { set } from 'mongoose'
 import { useRouter } from 'next/navigation'
-import { use, useState } from 'react'
+import { use, useEffect, useState } from 'react'
+import { FollowersT } from '../(user)/profile/[userName]/followers/page'
 
 export default function Page() {
   const [search, setSearch] = useState('')
   const router = useRouter()
   const [page, setPage] = useState('Accounts')
   const pages = ['Accounts', 'Posts']
-  const [searchResults, setSearchResults] = useState([])
   const [searchedItems, setSearchedItems] = useState(['test 1', 'test 2', 'ediehfnubj'])
-  const [searched, setSearched] = useState(true)
+  const [searched, setSearched] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
 
   return (
     <Screen0 className='flex flex-col gap-2'>
-      <div className='sticky top-0 z-10 flex min-h-3 w-full items-center justify-between border-b border-black/5 bg-white/80 py-1.5 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
+      <div className='sticky top-0 z-10 flex min-h-3 w-full items-center justify-between border-b border-black/5 bg-white/80 py-1.5 pr-5 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
         <Button
           variant='icon'
           className='rounded-full p-3 active:bg-black/10 dark:active:bg-white/10'
           onClick={() => {
-            router.back()
+            if (isSearching || searched) {
+              setIsSearching(false)
+              setSearched(false)
+              setSearch('')
+            } else {
+              router.back()
+            }
           }}
         >
           <ChevronLeft size={24} />
@@ -37,10 +48,23 @@ export default function Page() {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value)
+              if (e.target.value.length > 2) {
+                setSearched(true)
+                setIsSearching(false)
+              } else {
+                setSearched(false)
+                setIsSearching(true)
+              }
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                setSearched(false)
+                setSearched(true)
+                setIsSearching(false)
+              }
+            }}
+            onClick={() => {
+              if (!searched) {
+                setIsSearching(true)
               }
             }}
             className='w-full bg-transparent py-2 text-sm outline-none placeholder:text-black/30 dark:placeholder:text-white/30'
@@ -53,13 +77,17 @@ export default function Page() {
               strokeWidth={1.5}
               onClick={() => {
                 setSearch('')
-                setSearched(true)
+                // setSearched(false)
+                setIsSearching(false)
               }}
             />
           )}
         </div>
       </div>
-      {searched ? (
+
+      {!isSearching && !searched ? (
+        <Suggestions />
+      ) : isSearching ? (
         <div className='space-y-2 px-5'>
           <div className='flex justify-between px-1 text-xs font-semibold'>
             <div>Recent Searches</div>
@@ -109,8 +137,8 @@ export default function Page() {
           <div>
             {
               {
-                Accounts: <Account />,
-                Posts: <Posts />,
+                Accounts: <Account search={search} />,
+                Posts: <Posts search={search} />,
               }[page]
             }
           </div>
@@ -120,19 +148,62 @@ export default function Page() {
   )
 }
 
-function Account() {
+function Account({ search }: { search: string }) {
+  const [searchResults, setSearchResults] = useState<PeopleT[] | []>([])
+  const [totalSearchResults, setTotalSearchResults] = useState(0)
+
+  async function getSearchRes() {
+    try {
+      const res = await axios.post('api/social/search', { search })
+      setTotalSearchResults(res.data.totalUsers)
+      setSearchResults(res.data.users)
+    } catch (error: any) {
+      console.error('Error fetching search results:', error)
+    }
+  }
+
+  console.log(searchResults)
+
+  useEffect(() => {
+    if (search.length > 2) {
+      const timeout = setTimeout(() => {
+        console.log('searching')
+
+        getSearchRes()
+      }, 200)
+      return () => clearTimeout(timeout)
+    }
+  }, [search])
+
+  return (
+    <Screen0 className='gap-5 p-5'>
+      <div className='grid gap-5 sm:gap-7'>
+        {searchResults.length > 0 ? (
+          searchResults.map((item, index) => <People key={index} people={item} />)
+        ) : (
+          <div className='flex items-center justify-center gap-2'>
+            <ServerCrash size={24} />
+            <div className='text-sm font-medium'>No results found</div>
+          </div>
+        )}
+      </div>
+    </Screen0>
+  )
+}
+
+function Posts({ search }: { search: string }) {
   return (
     <Screen0 className='gap-5'>
-      <div className='text-sm font-semibold'>You may know</div>
+      <div className='text-lg font-semibold'>Posts</div>
       <div className='grid gap-5 sm:gap-7'></div>
     </Screen0>
   )
 }
 
-function Posts() {
+function Suggestions() {
   return (
     <Screen0 className='gap-5'>
-      <div className='text-lg font-semibold'>Posts</div>
+      <div className='text-lg font-semibold'>Suggestions</div>
       <div className='grid gap-5 sm:gap-7'></div>
     </Screen0>
   )
