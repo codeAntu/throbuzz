@@ -27,6 +27,7 @@ import {
   MessageCircleMore,
   Pencil,
   Phone,
+  Search,
   Settings,
   Trash2,
   Twitter,
@@ -60,8 +61,13 @@ export default function UserProfile({
   return (
     <Screen0 className=''>
       <Header title='Profile'>
-        <Button variant='icon'>
-          <DropdownMenu>
+        <Button
+          variant='icon'
+          onClick={() => {
+            router.push('/search')
+          }}
+        >
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild className='p-2'>
               <Ellipsis size={20} className='' />
             </DropdownMenuTrigger>
@@ -79,7 +85,8 @@ export default function UserProfile({
                 Setting
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
+          <Search size={20} className='' />
         </Button>
       </Header>
       <div className='w-full'>
