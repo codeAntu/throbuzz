@@ -34,12 +34,14 @@ import { likeReplay, unlikeReplay } from '@/handelers/post/replay'
 import newReply from '@/store/newReply'
 
 export interface PostT {
-  id: string
-  name: string
-  username: string
-  profilePic: {
-    imageUrl: string
-    publicId: string
+  _id: string
+  author: {
+    name: string
+    username: string
+    profilePic: {
+      imageUrl: string
+      publicId: string
+    }
   }
   time: number
   content: string
@@ -122,7 +124,7 @@ export default function Post({ post }: { post: PostT }) {
   async function handleLike() {
     post.likes = post.likes + 1
     setIsLiked(true)
-    const response = await like({ postId: post.id, reaction: 'like' })
+    const response = await like({ postId: post._id, reaction: 'like' })
     if (response.error) {
       post.likes = post.likes - 1
       setIsLiked(false)
@@ -132,7 +134,7 @@ export default function Post({ post }: { post: PostT }) {
   async function handleUnlike() {
     post.likes = post.likes - 1
     setIsLiked(false)
-    const response = await unlike({ postId: post.id })
+    const response = await unlike({ postId: post._id })
     if (response.error) {
       post.likes = post.likes + 1
       setIsLiked(true)
@@ -148,12 +150,12 @@ export default function Post({ post }: { post: PostT }) {
           variant='zero'
           className='aspect-square w-11'
           onClick={() => {
-            router.push('/profile/' + post.username)
+            router.push('/profile/' + post.author.username)
           }}
         >
           <Img
-            imageUrl={post.profilePic.imageUrl}
-            publicId={post.profilePic.publicId}
+            imageUrl={post.author.profilePic.imageUrl}
+            publicId={post.author.profilePic.publicId}
             height={50}
             width={50}
             className='aspect-square w-12 rounded-full'
@@ -165,10 +167,10 @@ export default function Post({ post }: { post: PostT }) {
               variant='zero'
               className='text-sm font-semibold leading-tight'
               onClick={() => {
-                router.push('/profile/' + post.username)
+                router.push('/profile/' + post.author.username)
               }}
             >
-              {post.name}
+              {post.author.name}
             </Button>
             <p className='text-xs text-black/50 md:text-black/80'>{post.time}</p>
           </div>
@@ -269,7 +271,7 @@ export default function Post({ post }: { post: PostT }) {
               </Button>
             </DrawerTrigger>
             <DrawerContent className={`wbackdrop-blur-3xl mx-auto min-h-[600px] max-w-[800px]`}>
-              <Comments postId={post.id} />
+              <Comments postId={post._id} />
             </DrawerContent>
           </Drawer>
         </div>
@@ -277,7 +279,7 @@ export default function Post({ post }: { post: PostT }) {
           variant='zero'
           className={`cursor-pointer select-none rounded-full border-[0.5px] border-black/5 px-5 py-2 text-xs font-semibold ${colors[post.color as keyof typeof colors].button} text-black/45`}
           onClick={() => {
-            const url = window.location.origin + '/post/' + post.id
+            const url = window.location.origin + '/post/' + post._id
             navigator.clipboard.writeText(url)
             setCopyLink(true)
             setTimeout(() => {

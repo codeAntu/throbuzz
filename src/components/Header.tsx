@@ -20,9 +20,7 @@ export default function Header({ title, children }: { title: string; children?: 
         </Button>
       </div>
       <div className='text-base font-bold'>{title}</div>
-      <div className='w-12 rounded-full text-sm text-accent active:bg-accent/20 active:dark:bg-accent md:p-3'>
-        {children}
-      </div>
+      <div className='flex w-12 justify-center rounded-full text-sm md:p-3'>{children}</div>
     </div>
   )
 }

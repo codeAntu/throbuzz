@@ -2,15 +2,13 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 import { Button } from '@/components/Button'
-import Img from '@/components/Img'
 import People, { PeopleT } from '@/components/people'
+import Post, { PostT } from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
 import axios from 'axios'
 import { ChevronLeft, Search, ServerCrash, X } from 'lucide-react'
-import { set } from 'mongoose'
 import { useRouter } from 'next/navigation'
-import { use, useEffect, useState } from 'react'
-import { FollowersT } from '../(user)/profile/[userName]/followers/page'
+import { useEffect, useRef, useState } from 'react'
 
 export default function Page() {
   const [search, setSearch] = useState('')
@@ -154,7 +152,7 @@ function Account({ search }: { search: string }) {
 
   async function getSearchRes() {
     try {
-      const res = await axios.post('api/social/search', { search })
+      const res = await axios.post('api/search/user', { search })
       setTotalSearchResults(res.data.totalUsers)
       setSearchResults(res.data.users)
     } catch (error: any) {
@@ -192,10 +190,72 @@ function Account({ search }: { search: string }) {
 }
 
 function Posts({ search }: { search: string }) {
+  const [searchResults, setSearchResults] = useState<PostT[] | []>([])
+  const [totalSearchResults, setTotalSearchResults] = useState(0)
+  const [nextPageUrl, setNextPageUrl] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
+
+  async function getSearchRes() {
+    try {
+      const res = await axios.post('api/search/post', { search })
+      setTotalSearchResults(res.data.total)
+      setSearchResults(res.data.posts)
+      setNextPageUrl(res.data.nextPageUrl)
+      console.log(res.data.posts)
+    } catch (error: any) {
+      console.error('Error fetching search results:', error)
+    }
+  }
+
+  async function getNewPage() {
+    try {
+      const res = await axios.post(nextPageUrl, { search })
+      setTotalSearchResults(res.data.total)
+      setSearchResults([...searchResults, ...res.data.posts])
+      setNextPageUrl(res.data.nextPageUrl)
+    } catch (error: any) {
+      console.error('Error fetching search results:', error)
+    }
+  }
+
+  console.log(searchResults)
+  // console.log('total ', totalSearchResults)
+
+  useEffect(() => {
+    if (search.length > 2) {
+      const timeout = setTimeout(() => {
+        console.log('searching')
+
+        getSearchRes()
+      }, 200)
+      return () => clearTimeout(timeout)
+    }
+  }, [search])
+
+  useEffect(() => {
+    if (ref.current) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          getNewPage()
+        }
+      })
+      observer.observe(ref.current)
+      return () => observer.disconnect()
+    }
+  }, [ref])
+
   return (
-    <Screen0 className='gap-5'>
-      <div className='text-lg font-semibold'>Posts</div>
+    <Screen0 className='gap-5 px-5'>
       <div className='grid gap-5 sm:gap-7'></div>
+      {searchResults.length > 0 ? (
+        searchResults.map((item, index) => <Post key={index} post={item} />)
+      ) : (
+        <div className='flex items-center justify-center gap-2'>
+          <ServerCrash size={24} />
+          <div className='text-sm font-medium'>No results found</div>
+        </div>
+      )}
+      <div ref={ref}></div>
     </Screen0>
   )
 }

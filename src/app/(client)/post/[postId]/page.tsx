@@ -22,12 +22,14 @@ export default function PostPage({
       const response = await axios.post('/api/post/getPost', { postId: params.postId })
 
       setPost({
-        id: response.data.post._id,
-        name: response.data.user.name,
-        username: response.data.user.username,
-        profilePic: {
-          imageUrl: response.data.user.profilePic.imageUrl,
-          publicId: response.data.user.profilePic.publicId,
+        _id: response.data.post._id,
+        author: {
+          name: response.data.user.name,
+          username: response.data.user.username,
+          profilePic: {
+            imageUrl: response.data.user.profilePic.imageUrl,
+            publicId: response.data.user.profilePic.publicId,
+          },
         },
         time: response.data.post.createdAt,
         content: response.data.post.text,

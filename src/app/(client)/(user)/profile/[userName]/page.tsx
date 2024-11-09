@@ -62,10 +62,11 @@ export default function UserProfile({
     <Screen0 className=''>
       <Header title='Profile'>
         <Button
-          variant='icon'
+          variant='zero'
           onClick={() => {
             router.push('/search')
           }}
+          className=''
         >
           {/* <DropdownMenu>
             <DropdownMenuTrigger asChild className='p-2'>
@@ -86,7 +87,7 @@ export default function UserProfile({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu> */}
-          <Search size={20} className='' />
+          <Search size={22} className='' />
         </Button>
       </Header>
       <div className='w-full'>
@@ -279,12 +280,14 @@ function Posts({ username }: { username: string }) {
       console.log(response.data.user, 'user')
 
       const newPosts = response.data.posts.map((post: any) => ({
-        id: post._id,
-        name: response.data.user.name,
-        username: response.data.user.username,
-        profilePic: {
-          imageUrl: response.data.user.profilePic.imageUrl,
-          publicId: response.data.user.profilePic.publicId,
+        _id: post._id,
+        author: {
+          name: response.data.user.name,
+          username: response.data.user.username,
+          profilePic: {
+            imageUrl: response.data.user.profilePic.imageUrl,
+            publicId: response.data.user.profilePic.publicId,
+          },
         },
         time: post.createdAt,
         content: post.text,
@@ -329,7 +332,7 @@ function Posts({ username }: { username: string }) {
       <div className='space-y-3 px-3.5 py-4'>
         <div className='text-base font-semibold'>{posts.length > 0 && `Posts : ${posts.length}`}</div>
         {posts.map((post) => (
-          <Post key={post.id} post={post} />
+          <Post key={post._id} post={post} />
         ))}
       </div>
     </>
