@@ -37,7 +37,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
     let query = {}
     let totalPosts = 0
 
-    const foundUser = await User.findOne({ username }).select('username name profilePic')
+    const foundUser = await User.findOne({ username })
     if (!foundUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -71,6 +71,11 @@ export async function POST(request: NextRequest, response: NextResponse) {
         }
       }),
     )
+
+    if (tokenData && tokenData.username === username) {
+      foundUser.postsCount = totalPosts
+      await foundUser.save()
+    }
 
     if (!posts.length) {
       return NextResponse.json({ message: 'No posts found' }, { status: 200 })

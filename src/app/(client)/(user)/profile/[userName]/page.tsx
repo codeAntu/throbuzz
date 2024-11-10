@@ -25,6 +25,7 @@ import {
   Mail,
   MapPin,
   MessageCircleMore,
+  MessageSquareText,
   Pencil,
   Phone,
   Search,
@@ -181,16 +182,29 @@ function Profile({ userName }: { userName: string }) {
       </div>
       <div className='flex gap-4'>
         {user.isMe ? (
-          <Button
-            variant='filled'
-            className='border-2 border-black bg-black py-3 font-medium text-white'
-            onClick={() => {
-              router.push('/profile/edit')
-            }}
-          >
-            <Pencil size={16} className='' />
-            Edit Profile
-          </Button>
+          <>
+            <Button
+              variant='filled'
+              className='border-2 border-black bg-black py-3 font-medium text-white'
+              onClick={() => {
+                router.push('/profile/edit')
+              }}
+            >
+              <Pencil size={16} className='' />
+              Edit Profile
+            </Button>
+            <Button
+              variant='outline'
+              className='border-2 border-black py-2.5 font-medium text-black'
+              onClick={() => {
+                router.push('/post/create')
+              }}
+            >
+              {/* post */}
+              <MessageSquareText size={18} className='' />
+              <span>Post</span>
+            </Button>
+          </>
         ) : (
           <>
             {followed ? (

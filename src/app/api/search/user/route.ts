@@ -39,7 +39,10 @@ export async function POST(request: NextRequest) {
     const users = await User.aggregate([
       {
         $match: {
-          $or: [{ username: { $regex: search, $options: 'i' } }, { name: { $regex: search, $options: 'i' } }],
+          $or: [
+            { username: { $regex: search, $options: 'i' }, isVerified: true },
+            { name: { $regex: search, $options: 'i' }, isVerified: true },
+          ],
         },
       },
       {

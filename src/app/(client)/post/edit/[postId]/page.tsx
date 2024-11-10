@@ -1,12 +1,15 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
 'use client'
 
 import { Button } from '@/components/Button'
+import { DeletePost } from '@/components/DeletePost'
+import PostImg from '@/components/PostImg'
 import { Screen, Screen0 } from '@/components/Screen'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { colors } from '@/lib/const'
 import axios from 'axios'
-import { Check, ChevronDown, ChevronLeft, Earth, EarthLock, Image, Plus, Trash2 } from 'lucide-react'
+import { Check, ChevronDown, ChevronLeft, Delete, Earth, EarthLock, Image, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 const colorNames: (keyof typeof colors)[] = [
@@ -29,20 +32,49 @@ const colorNames: (keyof typeof colors)[] = [
   'red',
 ]
 
-export default function EditPostPage() {
+export interface PostT {
+  _id: string
+  userId: string
+  text: string
+  postImages: any[]
+  visibility: string
+  likes: number
+  comments: number
+  color: string
+  createdAt: Date
+  updatedAt: Date
+  __v: number
+  isLiked: boolean
+  isMine: boolean
+}
+
+interface PostImagesT {
+  imageUrl: string
+  publicId: string
+}
+
+export default function EditPostPage({
+  params,
+}: {
+  params: {
+    postId: string
+  }
+}) {
   const [visibility, setVisibility] = useState('public')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const postId = '66f2e42e108a3040e088d114'
-  const [postImages, setPostImages] = useState<string[]>([])
-
+  const [postImages, setPostImages] = useState<PostImagesT[]>([])
+  const postId = params.postId
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [text, setText] = useState('')
   const [color, setColor] = useState<keyof typeof colors>('stone')
   const [isPublic, setIsPublic] = useState(true)
   const [images, setImages] = useState<FileList | null>(null)
+  const [post, setPost] = useState<PostT | null>(null)
 
-  console.log('color', color)
+  console.log(postId)
+
+  // console.log('color', color)
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -51,7 +83,7 @@ export default function EditPostPage() {
     }
   }, [text])
 
-  console.log('images', images)
+  // console.log('images', images)
 
   async function getPost(postId: string) {
     try {
@@ -59,16 +91,31 @@ export default function EditPostPage() {
         postId,
       })
       console.log(response.data)
-
+      setPost(response.data.post)
       setText(response.data.post.text)
       setVisibility(response.data.post.visibility)
-      setPostImages(response.data.post.images)
+      setPostImages(response.data.post.postImages)
     } catch (error) {
       console.log('error', error)
     }
   }
 
   async function editPost({ text, visibility, postId }: { text: string; visibility: string; postId: string }) {
+    if (text.length > 500) {
+      setError('Text is too long')
+      return
+    }
+
+    if (text.length === 0) {
+      setError('Text is required')
+      return
+    }
+
+    if (text === post?.text && visibility === post?.visibility) {
+      setError('No changes made')
+      return
+    }
+
     try {
       const response = await axios.post('/api/post/editPost', {
         text,
@@ -82,16 +129,11 @@ export default function EditPostPage() {
     }
   }
 
-  async function deletePost(postId: string) {
-    try {
-      const response = await axios.post('/api/post/deletePost', {
-        postId: '66f2697fdbb5e1ae7c5a2e26',
-      })
-      console.log(response.data)
-    } catch (error) {
-      console.log('error', error)
-    }
-  }
+  useEffect(() => {
+    getPost(postId)
+  }, [postId])
+
+  console.log('post', post)
 
   return (
     <Screen0 className='grid'>
@@ -102,78 +144,21 @@ export default function EditPostPage() {
           <div className='grid w-full gap-4'>
             <div className='flex items-center justify-between'>
               <div className='text-base font-semibold'>Your photos </div>
-              {/* <div className='text-xs font-semibold text-black/50 dark:text-white/50'>
-                {images
-                  ? `${images.length > 1 ? `${images.length} photos` : `${images.length} photo`}`
-                  : 'Add upto 5 photos'}
-              </div> */}
             </div>
             <div className='grid w-full gap-4'>
-              {/* <div className='no-scrollbar flex gap-3.5 overflow-auto rounded-2xl sm:gap-5'>
-                {images
-                  ? Array.from(images).map((image, index) => (
-                      <div key={index} className='relative aspect-video h-44'>
-                        <img
-                          src={URL.createObjectURL(image)}
-                          className='aspect-video h-44 cursor-pointer rounded-2xl object-cover transition-all duration-300 active:object-contain sm:h-56 md:hover:object-contain'
-                          onContextMenu={(e: { preventDefault: () => any }) => e.preventDefault()}
-                        />
-                        <Button
-                          variant='zero'
-                          className='absolute right-1.5 top-1.5 rounded-full bg-black/50 p-1.5'
-                          onClick={() => {
-                            setImages((prev) => {
-                              if (prev) {
-                                const dataTransfer = new DataTransfer()
-                                Array.from(prev)
-                                  .filter((_, i) => i !== index)
-                                  .forEach((file) => dataTransfer.items.add(file))
-                                const newImages = dataTransfer.files
-                                return newImages
-                              }
-                              return null
-                            })
-                          }}
-                        >
-                          <Trash2 size={16} className='text-white' />
-                        </Button>
-                      </div>
-                    ))
-                  : null}
-              </div> */}
+              <div className='no-scrollbar flex gap-3.5 overflow-auto rounded-2xl sm:gap-5'>
+                {postImages &&
+                  postImages.map((image, index) => (
+                    <div key={index} className='relative aspect-video h-44'>
+                      <PostImg imageUrl={image.imageUrl} publicId={image.publicId} alt='image' />
+                    </div>
+                  ))}
+              </div>
               <Button
                 variant='zero'
                 className={`${colors[color].card} flex h-11 w-full items-center justify-center rounded-lg border border-black/5`}
               >
-                <div>You have {postImages.length} images</div>
-                {/* <label htmlFor='postImages'>
-                  <Plus size={24} className='text-black' />
-                </label> */}
-                {/* <input
-                  type='file'
-                  multiple
-                  accept='image/*'
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      let files = Array.from(e.target.files)
-                      const totalFiles = files.length + (images ? images.length : 0)
-                      if (totalFiles > 5) {
-                        alert('You can only upload a maximum of 5 images.')
-                        files = files.slice(0, 5 - (images ? images.length : 0))
-                      }
-                      setImages((prev) => {
-                        const dataTransfer = new DataTransfer()
-                        if (prev) {
-                          Array.from(prev).forEach((file) => dataTransfer.items.add(file))
-                        }
-                        files.forEach((file) => dataTransfer.items.add(file))
-                        return dataTransfer.files
-                      })
-                    }
-                  }}
-                  className='hidden'
-                  id='postImages'
-                /> */}
+                <div>You have {postImages && postImages.length} images</div>
               </Button>
             </div>
           </div>
@@ -253,8 +238,14 @@ export default function EditPostPage() {
         </div>
 
         <div className=''>
-          <Button variant='filled' className='w-full py-3'>
-            Post
+          <Button
+            variant='filled'
+            className='w-full py-3'
+            onClick={() => {
+              editPost({ text, visibility, postId })
+            }}
+          >
+            Save changes
           </Button>
         </div>
       </Screen>
@@ -275,11 +266,10 @@ function Header() {
         <ChevronLeft size={24} />
       </Button>
       <div className='text-base font-bold'>Edit Post </div>
-      <Button variant='text' className='rounded-full p-3 text-base active:bg-red-100 active:dark:bg-red-900 md:p-3'>
-        <div>
-          <Trash2 size={21} className='text-red-500' />
-        </div>
-      </Button>
+      {/* <Button variant='text' className='rounded-full p-3 text-base active:bg-red-100 active:dark:bg-red-900 md:p-3'> */}
+      <DeletePost />
+      {/* <Trash2 size={21} className='text-red-500' /> */}
+      {/* </Button> */}
     </div>
   )
 }

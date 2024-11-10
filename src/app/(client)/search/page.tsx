@@ -189,9 +189,7 @@ function Account({ search }: { search: string }) {
   )
 }
 
-export interface TempT {
- 
-}
+export interface TempT {}
 
 function Posts({ search }: { search: string }) {
   const [searchResults, setSearchResults] = useState<PostT[] | []>([])
@@ -267,10 +265,30 @@ function Posts({ search }: { search: string }) {
 }
 
 function Suggestions() {
+  const [suggestions, setSuggestions] = useState<PeopleT[] | []>([])
+
+  async function getSuggestions() {
+    try {
+      const res = await axios.post('api/search/suggestions')
+      setSuggestions(res.data.users)
+    } catch (error: any) {
+      console.error('Error fetching suggestions:', error)
+    }
+  }
+
+  useEffect(() => {
+    getSuggestions()
+  }, [])
+
+  console.log(suggestions)
+
   return (
-    <Screen0 className='gap-5'>
+    <Screen0 className='gap-5 px-5'>
       <div className='text-lg font-semibold'>Suggestions</div>
-      <div className='grid gap-5 sm:gap-7'></div>
+      {/* <div className='grid gap-5 sm:gap-7'></div> */}
+      {suggestions.map((item, index) => (
+        <People key={index} people={item} />
+      ))}
     </Screen0>
   )
 }
