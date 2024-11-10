@@ -43,13 +43,21 @@ export interface PostT {
       publicId: string
     }
   }
-  time: number
-  content: string
-  postImages: { publicId: string; imageUrl: string }[]
+  userId: string
+  text: string
+  postImages: {
+    publicId: string
+    imageUrl: string
+    _id: string
+  }[]
+  visibility: string
   likes: number
   comments: number
+  createdAt: Date
+  updatedAt: Date
+  // __v: number
   isLiked: boolean
-  isMine: boolean
+  isMine?: boolean
   color:
     | 'slate'
     | 'stone'
@@ -165,14 +173,23 @@ export default function Post({ post }: { post: PostT }) {
           <div>
             <Button
               variant='zero'
-              className='text-sm font-semibold leading-tight'
+              className='line-clamp-1 text-sm font-semibold leading-tight'
               onClick={() => {
                 router.push('/profile/' + post.author.username)
               }}
             >
               {post.author.name}
             </Button>
-            <p className='text-xs text-black/50 md:text-black/80'>{post.time}</p>
+            <div className='flex items-center gap-2 text-xs text-black/50 md:text-black/80'>
+              <p className='line-clamp-1'>{post.author.username}</p>
+              <p className='text-lg leading-3'>•</p>
+              <p className=''>
+                {new Date(post.createdAt).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </p>
+            </div>
           </div>
           <Button variant='icon' className=''>
             {post.isMine ? (
@@ -206,7 +223,7 @@ export default function Post({ post }: { post: PostT }) {
         className={`cursor-pointer px-1 text-xs font-medium text-black/80 sm:text-sm md:font-medium ${isExpanded ? '' : 'line-clamp-2'}`}
         onClick={toggleContent}
       >
-        {post.content}
+        {post.text}
       </div>
       <div className=''>
         <Swiper

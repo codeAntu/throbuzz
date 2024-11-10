@@ -30,15 +30,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'The post id Privet' }, { status: 401 })
     }
 
-    const like = await Like.findOne({ postId })
+    const like = await Like.findOne({
+      postId,
+      userId,
+    })
 
     if (!like) {
       return NextResponse.json({ error: 'Like not found' }, { status: 404 })
     }
 
-    if (like.userId.toString() !== userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    // if (like.userId.toString() !== userId) {
+    //   return NextResponse.json({ error: 'Unauthorized ' }, { status: 401 })
+    // }
 
     await Like.findByIdAndDelete(like._id)
 

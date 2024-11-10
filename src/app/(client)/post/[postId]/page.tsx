@@ -23,6 +23,9 @@ export default function PostPage({
 
       setPost({
         _id: response.data.post._id,
+        userId: response.data.post.userId,
+        visibility: response.data.post.visibility,
+        updatedAt: response.data.post.updatedAt,
         author: {
           name: response.data.user.name,
           username: response.data.user.username,
@@ -31,8 +34,8 @@ export default function PostPage({
             publicId: response.data.user.profilePic.publicId,
           },
         },
-        time: response.data.post.createdAt,
-        content: response.data.post.text,
+        text: response.data.post.text,
+        createdAt: response.data.post.createdAt,
         postImages: response.data.post.postImages,
         likes: response.data.post.likes,
         comments: response.data.post.comments,
@@ -48,6 +51,8 @@ export default function PostPage({
   if (!post) {
     getPost()
   }
+
+  console.log(post)
 
   return (
     <Screen0 className=''>

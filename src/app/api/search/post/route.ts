@@ -49,6 +49,15 @@ export async function POST(request: NextRequest) {
           localField: 'userId',
           foreignField: '_id',
           as: 'author',
+          pipeline: [
+            {
+              $project: {
+                name: 1,
+                username: 1,
+                profilePic: 1,
+              },
+            },
+          ],
         },
       },
       { $unwind: '$author' },

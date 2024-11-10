@@ -189,6 +189,10 @@ function Account({ search }: { search: string }) {
   )
 }
 
+export interface TempT {
+ 
+}
+
 function Posts({ search }: { search: string }) {
   const [searchResults, setSearchResults] = useState<PostT[] | []>([])
   const [totalSearchResults, setTotalSearchResults] = useState(0)
@@ -212,6 +216,8 @@ function Posts({ search }: { search: string }) {
       const res = await axios.post(nextPageUrl, { search })
       setTotalSearchResults(res.data.total)
       setSearchResults([...searchResults, ...res.data.posts])
+      console.log(typeof res.data.posts)
+
       setNextPageUrl(res.data.nextPageUrl)
     } catch (error: any) {
       console.error('Error fetching search results:', error)
