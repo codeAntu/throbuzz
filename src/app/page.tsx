@@ -3,14 +3,14 @@
 'use client'
 
 import { Button } from '@/components/Button'
-import Img from '@/components/Img'
 import { NewPost } from '@/components/NewPost'
+import Post, { PostT } from '@/components/Post'
 import { Screen } from '@/components/Screen'
 import Sidebar from '@/components/Sidebar'
 import useStore from '@/store/store'
-import { ArrowBigLeft, ArrowRight, ChevronDown, CircleUser, Earth, Image } from 'lucide-react'
+import axios from 'axios'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function Home() {
   const router = useRouter()
@@ -69,7 +69,31 @@ export default function Home() {
 }
 
 function Recent() {
-  return <div>Recent</div>
+  const [posts, setPosts] = useState<PostT[] | []>([])
+  const [nextPageUrl, setNextPageUrl] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
+
+  async function getPosts() {
+    try {
+      const response = await axios.post('/api/feed/recent')
+      console.log(response)
+      setPosts(response.data.posts)
+    } catch (error: any) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    getPosts()
+  }, [])
+
+  return (
+    <div className='space-y-4'>
+      {posts.map((post, index) => (
+        <Post key={index} post={post} />
+      ))}
+    </div>
+  )
 }
 
 function Friends() {

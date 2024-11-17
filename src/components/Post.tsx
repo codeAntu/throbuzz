@@ -203,7 +203,12 @@ export default function Post({ post }: { post: PostT }) {
                   align='end'
                   className='border border-black/10 bg-white/10 backdrop-blur-md dark:border-white/10 dark:bg-black/25'
                 >
-                  <DropdownMenuItem className='' onClick={() => {}}>
+                  <DropdownMenuItem
+                    className=''
+                    onClick={() => {
+                      router.push('/post/edit/' + post._id)
+                    }}
+                  >
                     <Pencil size={17} className='mr-2' />
                     Edit
                   </DropdownMenuItem>

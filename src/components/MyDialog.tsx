@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
 
-export function DeletePost() {
+export function MyDialog({ children, trigger }: { children: React.ReactNode; trigger: React.ReactNode }) {
   async function deletePost(postId: string) {
     try {
       const response = await axios.post('/api/post/deletePost', {
@@ -15,15 +15,16 @@ export function DeletePost() {
 
   return (
     <Dialog>
-      <DialogTrigger>Open</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
+      <DialogTrigger>{trigger}</DialogTrigger>
+      <DialogContent className='m-auto w-[90%] rounded-lg bg-white/5 p-5 backdrop-blur-xl'>
+        {/* <DialogHeader className=''>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
             This action cannot be undone. This will permanently delete your account and remove your data from our
             servers.
           </DialogDescription>
-        </DialogHeader>
+        </DialogHeader> */}
+        {children}
       </DialogContent>
     </Dialog>
   )

@@ -3,13 +3,15 @@
 'use client'
 
 import { Button } from '@/components/Button'
-import { DeletePost } from '@/components/DeletePost'
+import { MyDialog } from '@/components/MyDialog'
 import PostImg from '@/components/PostImg'
 import { Screen, Screen0 } from '@/components/Screen'
+import { DialogClose } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { colors } from '@/lib/const'
 import axios from 'axios'
 import { Check, ChevronDown, ChevronLeft, Delete, Earth, EarthLock, Image, Plus, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 const colorNames: (keyof typeof colors)[] = [
@@ -71,6 +73,7 @@ export default function EditPostPage({
   const [isPublic, setIsPublic] = useState(true)
   const [images, setImages] = useState<FileList | null>(null)
   const [post, setPost] = useState<PostT | null>(null)
+  const router = useRouter()
 
   console.log(postId)
 
@@ -124,6 +127,7 @@ export default function EditPostPage({
       })
 
       console.log('response', response.data)
+      router.push(`/post/${postId}`)
     } catch (error) {
       console.log('error ', error)
     }
@@ -145,22 +149,24 @@ export default function EditPostPage({
             <div className='flex items-center justify-between'>
               <div className='text-base font-semibold'>Your photos </div>
             </div>
-            <div className='grid w-full gap-4'>
-              <div className='no-scrollbar flex gap-3.5 overflow-auto rounded-2xl sm:gap-5'>
-                {postImages &&
-                  postImages.map((image, index) => (
+            {postImages.length && (
+              <div className='grid w-full gap-4'>
+                <div className='no-scrollbar flex gap-3.5 overflow-auto rounded-2xl sm:gap-5'>
+                  {postImages.map((image, index) => (
                     <div key={index} className='relative aspect-video h-44'>
                       <PostImg imageUrl={image.imageUrl} publicId={image.publicId} alt='image' />
                     </div>
                   ))}
+                </div>
+
+                <Button
+                  variant='zero'
+                  className={`${colors[color].card} flex h-11 w-full items-center justify-center rounded-lg border border-black/5`}
+                >
+                  <div>You have {postImages.length} images</div>
+                </Button>
               </div>
-              <Button
-                variant='zero'
-                className={`${colors[color].card} flex h-11 w-full items-center justify-center rounded-lg border border-black/5`}
-              >
-                <div>You have {postImages && postImages.length} images</div>
-              </Button>
-            </div>
+            )}
           </div>
           <div className='grid gap-5'>
             <textarea
@@ -267,7 +273,36 @@ function Header() {
       </Button>
       <div className='text-base font-bold'>Edit Post </div>
       {/* <Button variant='text' className='rounded-full p-3 text-base active:bg-red-100 active:dark:bg-red-900 md:p-3'> */}
-      <DeletePost />
+      <MyDialog
+        trigger={
+          <Button variant='icon' className='rounded-full p-3 active:bg-black/10 dark:active:bg-white/10'>
+            <Trash2 size={21} className='text-red-500' />
+          </Button>
+        }
+      >
+        <div className='pt-5 text-center text-lg'>Do you want to delete the post</div>
+        <div className='pb-3 text-center text-xs text-black/50 dark:text-white/50'>
+          If you delete the post, it will be permanently removed from your account. This cannot be undone.
+        </div>
+        <div className='grid grid-cols-2 gap-3'>
+          <Button
+            variant='filled'
+            className='border-red-500 bg-red-500 text-white dark:border-red-500 dark:bg-red-500 dark:text-white'
+            onClick={() => {
+              // deletePost(postId)
+            }}
+          >
+            Delete
+          </Button>
+          <DialogClose>
+            <Button variant='filled' className=''>
+              Cancel
+            </Button>
+          </DialogClose>
+        </div>
+      </MyDialog>
+      {/* <Trash2 size={21} className='text-red-500' /> */}
+      {/* </Button> */}
       {/* <Trash2 size={21} className='text-red-500' /> */}
       {/* </Button> */}
     </div>
