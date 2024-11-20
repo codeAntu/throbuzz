@@ -26,7 +26,21 @@ export async function POST(req: NextRequest) {
           visibility: 'public',
         },
       },
-      { $sort: { createdAt: -1 } },
+      {
+        $addFields: {
+          daysSinceCreated: {
+            $divide: [{ $subtract: [new Date(), '$createdAt'] }, 1000 * 60 * 60 * 24],
+          },
+        },
+      },
+      {
+        $addFields: {
+          popularity: {
+            $multiply: [{ $add: ['$likes', '$comments'] }, { $exp: { $multiply: ['$daysSinceCreated', -0.1] } }],
+          },
+        },
+      },
+      { $sort: { popularity: -1, createdAt: -1 } },
       { $skip: skip },
       { $limit: limit },
       {
@@ -76,6 +90,7 @@ export async function POST(req: NextRequest) {
       {
         $project: {
           userLikes: 0,
+          daysSinceCreated: 0,
         },
       },
     ])
@@ -93,13 +108,6 @@ export async function POST(req: NextRequest) {
       },
     )
   } catch (error: any) {
-    return NextResponse.json(
-      {
-        error: error.errors,
-      },
-      {
-        status: 400,
-      },
-    )
+    return NextResponse.json({ error: error.error }, { status: 500 })
   }
 }

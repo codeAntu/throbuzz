@@ -1,13 +1,16 @@
 import { connect } from '@/dbConfig/dbConfig'
-import { parseJson } from '@/utils/utils'
-import { NextRequest, NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
 import { TokenDataT } from '@/lib/types'
-import Post from '@/models/postModel'
+import Follow from '@/models/follows'
+import { parseJson } from '@/utils/utils'
+import jwt from 'jsonwebtoken'
+import { NextRequest, NextResponse } from 'next/server'
+import mongoose from 'mongoose'
 
 connect()
 
 export async function POST(req: NextRequest) {
+  const body = await parseJson(req)
+
   const url = new URL(req.url)
   const page = parseInt(url.searchParams.get('page') || '1', 10)
   const limit = parseInt(url.searchParams.get('limit') || '20', 10)
@@ -17,15 +20,33 @@ export async function POST(req: NextRequest) {
     const token = (await req.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    const tokenUserId = tokenData ? tokenData.id : null
-    console.log('Token User ID:', tokenUserId)
+    if (!tokenData) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
-    const posts = await Post.aggregate([
+    const tokenUserId = new mongoose.Types.ObjectId(tokenData.id)
+
+    const posts = await Follow.aggregate([
       {
-        $match: {
-          visibility: 'public',
+        $match: { follower: tokenUserId },
+      },
+      {
+        $lookup: {
+          from: 'posts',
+          localField: 'following',
+          foreignField: 'userId',
+          as: 'posts',
         },
       },
+      {
+        $unwind: '$posts',
+      },
+      {
+        $match: {
+          'posts.visibility': 'public',
+        },
+      },
+      { $replaceRoot: { newRoot: '$posts' } },
       { $sort: { createdAt: -1 } },
       { $skip: skip },
       { $limit: limit },
@@ -80,18 +101,7 @@ export async function POST(req: NextRequest) {
       },
     ])
 
-    const nextPage = posts.length === limit ? page + 1 : null
-    const nextPageUrl = nextPage ? `/api/feed/recent?page=${nextPage}&limit=${limit}` : null
-
-    return NextResponse.json(
-      {
-        posts,
-        nextPageUrl,
-      },
-      {
-        status: 200,
-      },
-    )
+    return NextResponse.json({ posts, nextPageUrl: `/api/feed/friends?page=${page + 1}&limit=${limit}` })
   } catch (error: any) {
     return NextResponse.json(
       {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 'use client'
@@ -12,14 +13,14 @@ import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
+const pages = ['Recent', 'Following', 'Popular']
+
 export default function Home() {
   const router = useRouter()
   const savedUser = useStore((state) => state.savedUser)
   const clearSavedUser = useStore((state) => state.clearSavedUser)
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState('Recent')
-
-  const pages = ['Recent', 'Friends', 'Popular']
 
   useEffect(() => {
     setIsLoading(!savedUser)
@@ -61,7 +62,7 @@ export default function Home() {
 
       <div>
         {page === 'Recent' && <Recent />}
-        {page === 'Friends' && <Friends />}
+        {page === 'Following' && <Following />}
         {page === 'Popular' && <Popular />}
       </div>
     </Screen>
@@ -73,33 +74,163 @@ function Recent() {
   const [nextPageUrl, setNextPageUrl] = useState('')
   const ref = useRef<HTMLDivElement>(null)
 
-  async function getPosts() {
+  async function getPosts(url: string) {
     try {
-      const response = await axios.post('/api/feed/recent')
+      const response = await axios.post(url)
       console.log(response)
-      setPosts(response.data.posts)
+      if (posts.length === 0) {
+        setPosts(response.data.posts)
+      } else {
+        setPosts((prev) => [...prev, ...response.data.posts])
+      }
+      setNextPageUrl(response.data.nextPageUrl)
     } catch (error: any) {
       console.error(error)
     }
   }
 
   useEffect(() => {
-    getPosts()
+    getPosts('/api/feed/recent')
   }, [])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && nextPageUrl) {
+          getPosts(nextPageUrl)
+        }
+      },
+      { threshold: 1 },
+    )
+
+    if (ref.current) {
+      observer.observe(ref.current)
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current)
+      }
+    }
+  })
 
   return (
     <div className='space-y-4'>
       {posts.map((post, index) => (
         <Post key={index} post={post} />
       ))}
+      <div ref={ref}></div>
     </div>
   )
 }
 
-function Friends() {
-  return <div>Friends</div>
+function Following() {
+  const [posts, setPosts] = useState<PostT[] | []>([])
+  const [nextPageUrl, setNextPageUrl] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
+
+  async function getPosts(url: string) {
+    try {
+      const response = await axios.post(url)
+      console.log(response.data)
+      if (posts.length === 0) {
+        setPosts(response.data.posts)
+      } else {
+        setPosts((prev) => [...prev, ...response.data.posts])
+      }
+      setNextPageUrl(response.data.nextPageUrl)
+    } catch (error: any) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    getPosts('/api/feed/friends')
+  }, [])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && nextPageUrl) {
+          getPosts(nextPageUrl)
+        }
+      },
+      { threshold: 1 },
+    )
+
+    if (ref.current) {
+      observer.observe(ref.current)
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current)
+      }
+    }
+  })
+  return (
+    <div className='space-y-4'>
+      {posts.map((post, index) => (
+        <Post key={index} post={post} />
+      ))}
+      <div ref={ref}></div>
+    </div>
+  )
 }
 
 function Popular() {
-  return <div>Popular</div>
+  const [posts, setPosts] = useState<PostT[] | []>([])
+  const [nextPageUrl, setNextPageUrl] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
+
+  async function getPosts(url: string) {
+    try {
+      const response = await axios.post(url)
+      console.log(response.data)
+      if (posts.length === 0) {
+        setPosts(response.data.posts)
+      } else {
+        setPosts((prev) => [...prev, ...response.data.posts])
+      }
+      setNextPageUrl(response.data.nextPageUrl)
+    } catch (error: any) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    getPosts('/api/feed/popular')
+  }, [])
+
+  console.log(posts)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && nextPageUrl) {
+          getPosts(nextPageUrl)
+        }
+      },
+      { threshold: 1 },
+    )
+
+    if (ref.current) {
+      observer.observe(ref.current)
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current)
+      }
+    }
+  })
+
+  return (
+    <div className='space-y-4'>
+      {posts.map((post, index) => (
+        <Post key={index} post={post} />
+      ))}
+      <div ref={ref}></div>
+    </div>
+  )
 }
