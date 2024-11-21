@@ -20,36 +20,25 @@ export async function POST(request: NextRequest) {
     const userId = tokenData.id
 
     const post = await Post.findById(postId)
-
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
-
-    // Check if the post is private
-
     if (post.visibility === 'private' && post.userId.toString() !== userId) {
       return NextResponse.json({ error: 'The post is Privet' }, { status: 401 })
     }
 
-    console.log('post.userId', post.userId)
-    console.log(post.visibility)
-
     const like = await Like.findOne({ postId, userId })
-
     if (like) {
       like.reaction = reaction
       await like.save()
     } else {
-      const post = await Post.findByIdAndUpdate(postId, { $inc: { likes: 1 } }) // Increment the like count
-      if (!post) {
+      post.likes += 1
+      const updatedPost = await post.save()
+      if (!updatedPost) {
         return NextResponse.json({ error: 'Post not found' }, { status: 404 })
       }
       await Like.create({ postId, userId, reaction })
     }
-
-    // Send notification to the post owner
-
-    console.log('post.userId', post.userId)
 
     if (post.userId.toString() !== userId) {
       const notification = new Notification({

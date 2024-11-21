@@ -37,15 +37,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Comment not found' }, { status: 404 })
     }
 
-    const post = await Post.findById(comment.postId)
-    if (!post) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
-    }
-
-    if (post.visibility !== 'public') {
-      return NextResponse.json({ error: 'Post is not public' }, { status: 403 })
-    }
-
     const result = await LikeOnComment.findOneAndDelete({ userId, commentId })
     if (!result) {
       return NextResponse.json({ error: 'Like on comment not found' }, { status: 404 })

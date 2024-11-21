@@ -41,16 +41,6 @@ export async function POST(request: NextRequest) {
 
     const postId = comment.postId
 
-    const post = await Post.findById(postId)
-
-    if (!post) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
-    }
-
-    if (post.visibility === 'private' && post.userId.toString() !== userId) {
-      return NextResponse.json({ error: 'The post is private' }, { status: 401 })
-    }
-
     const like = await LikeOnCommentReply.findOne({ commentReplyId, userId })
 
     if (like) {
@@ -58,15 +48,11 @@ export async function POST(request: NextRequest) {
       await like.save()
       console.log('Like updated')
     } else {
-      const comment = await CommentReply.findByIdAndUpdate(commentReplyId, { $inc: { likes: 1 } }) // Increment the like count
-
-      if (!comment) {
-        return NextResponse.json({ error: 'Comment not found' }, { status: 404 })
-      }
-
       const likeOnComment = new LikeOnCommentReply({ userId, reaction, commentReplyId, postId: comment.postId })
-
       await likeOnComment.save()
+
+      comment.likes += 1
+      await comment.save()
     }
 
     // Send notification to the comment owner
@@ -79,6 +65,8 @@ export async function POST(request: NextRequest) {
         readAt: null,
         url: `/post/${comment.postId}`,
       })
+
+      await notification.save()
     }
     return NextResponse.json({ status: 200, message: 'Like added successfully' })
   } catch (error: any) {
