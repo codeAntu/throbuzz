@@ -3,7 +3,6 @@ import { TokenDataT } from '@/lib/types'
 import Follow from '@/models/follows'
 import User from '@/models/userModel'
 import { parseJson } from '@/utils/utils'
-import { request } from 'http'
 import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -20,34 +19,62 @@ const userNameValid = z
   })
   .strict()
 
-export async function POST(request: NextRequest, result: NextResponse) {
+export async function POST(request: NextRequest) {
   const body = await parseJson(request)
   if (body instanceof NextResponse) return body
+
   try {
     const { username } = userNameValid.parse(body)
-
     const searchBy = username.trim().toLowerCase()
 
-    const token = (await request.cookies.get('token')?.value) || ''
+    const token = request.cookies.get('token')?.value || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    const user = await User.findOne({ username: searchBy, isVerified: true })
+    const userAggregation = await User.aggregate([
+      { $match: { username: searchBy, isVerified: true } },
+      {
+        $lookup: {
+          from: 'follows',
+          let: { userId: '$_id' },
+          pipeline: [
+            {
+              $match: { $expr: { $and: [{ $eq: ['$following', '$$userId'] }, { $eq: ['$follower', tokenData?.id] }] } },
+            },
+            { $limit: 1 },
+          ],
+          as: 'isFollowing',
+        },
+      },
+      { $unwind: { path: '$isFollowing', preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          username: 1,
+          bio: 1,
+          profilePic: 1,
+          followers: 1,
+          following: 1,
+          postsCount: 1,
+          email: 1,
+          phone: 1,
+          location: 1,
+          instagram: 1,
+          twitter: 1,
+          github: 1,
+          linkedin: 1,
+          website: 1,
+          birthday: 1,
+          isFollowing: { $cond: { if: { $isArray: '$isFollowing' }, then: { $size: '$isFollowing' }, else: 0 } },
+        },
+      },
+    ])
 
-    if (!user) {
+    if (!userAggregation.length) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    let isFollowing = false
-
-    if (token) {
-      const currentUserId = tokenData.id
-      const following = await Follow.findOne({ follower: currentUserId, following: user._id })
-
-      if (following) {
-        isFollowing = true
-      }
-    }
-
+    const user = userAggregation[0]
     const resUser = {
       id: user._id,
       name: user.name,
@@ -58,7 +85,7 @@ export async function POST(request: NextRequest, result: NextResponse) {
       following: user.following,
       posts: user.postsCount,
       isMe: token ? tokenData.id === user._id.toString() : false,
-      isFollowing,
+      isFollowing: user.isFollowing > 0,
       about: {
         email: user.email,
         phone: user.phone,
@@ -72,8 +99,8 @@ export async function POST(request: NextRequest, result: NextResponse) {
       },
     }
 
-    return NextResponse.json({ user: resUser, isFollowing }, { status: 200 })
+    return NextResponse.json({ user: resUser, isFollowing: user.isFollowing > 0 }, { status: 200 })
   } catch (error: any) {
-    return NextResponse.json({ error: error.response.data }, { status: 400 })
+    return NextResponse.json({ error: error.message || 'An error occurred' }, { status: 400 })
   }
 }

@@ -42,31 +42,34 @@ export async function POST(request: NextRequest) {
 
     const userId = tokenData.id // Extract user ID from token data
 
-    const follower = await User.findById(userId)
+    const [follower, following, follow] = await Promise.all([
+      User.findById(userId),
+      User.findById(id),
+      Follow.findOne({ follower: userId, following: id }),
+    ])
 
     if (!follower || !follower.isVerified) {
-      return NextResponse.json({ error: 'User 1  not found' }, { status: 404 })
+      return NextResponse.json({ error: 'User 1 not found or not verified' }, { status: 404 })
     }
-
-    const following = await User.findById(id)
 
     if (!following || !following.isVerified) {
-      return NextResponse.json({ error: 'User 2  not found' }, { status: 404 })
+      return NextResponse.json({ error: 'User 2 not found or not verified' }, { status: 404 })
     }
-
-    const follow = await Follow.findOne({ follower: follower._id, following: following._id })
 
     if (follow) {
       return NextResponse.json({ error: 'Already following' }, { status: 400 })
     }
 
-    await Follow.create({ follower: follower._id, following: following._id })
+    const newFollow = await Follow.create({ follower: follower._id, following: following._id })
+
+    if (!newFollow) {
+      return NextResponse.json({ error: 'Failed to follow' }, { status: 400 })
+    }
 
     follower.following += 1
     following.followers += 1
 
-    await follower.save()
-    await following.save()
+    await Promise.all([follower.save(), following.save()])
 
     const notification = new Notification({
       userId: following._id,

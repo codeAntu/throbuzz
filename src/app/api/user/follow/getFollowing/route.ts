@@ -29,21 +29,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const { username } = userNameValid.parse(body)
-    console.log(username)
+
+    const token = (await request.cookies.get('token')?.value) || ''
+    const tokenData = jwt.decode(token) as TokenDataT
+    const tokenUserId = tokenData?.id
 
     const user = await User.findOne({ username }).select('_id')
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    const token = (await request.cookies.get('token')?.value) || ''
-    const tokenData = jwt.decode(token) as TokenDataT
-
-    let tokenUserId = null
-
-    if (tokenData) {
-      const extUser = await User.findById(tokenData.id)
-      tokenUserId = extUser?._id || null
     }
 
     const result = await Follow.aggregate([
@@ -87,6 +80,9 @@ export async function POST(request: NextRequest) {
     ])
     const totalFollowing = result[0].metadata[0] ? result[0].metadata[0].total : 0
     const followers = result[0].data
+
+    // user.following = totalFollowing
+    // await user.save()
 
     const totalPages = Math.ceil(totalFollowing / limit)
     const nextPage = page < totalPages ? page + 1 : null

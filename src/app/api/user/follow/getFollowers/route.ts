@@ -30,20 +30,15 @@ export async function POST(request: NextRequest) {
   try {
     const { username } = userNameValid.parse(body)
 
+    const token = (await request.cookies.get('token')?.value) || ''
+    const tokenData = jwt.decode(token) as TokenDataT
+    const tokenUserId = tokenData?.id
+
     const user = await User.findOne({ username }).select('_id')
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const token = (await request.cookies.get('token')?.value) || ''
-    const tokenData = jwt.decode(token) as TokenDataT
-
-    let tokenUserId = null
-
-    if (tokenData) {
-      const extUser = await User.findById(tokenData.id)
-      tokenUserId = extUser?._id || null
-    }
     const result = await Follow.aggregate([
       {
         $match: { following: user._id },
@@ -73,7 +68,10 @@ export async function POST(request: NextRequest) {
                   {
                     $match: {
                       $expr: {
-                        $and: [{ $eq: ['$follower', tokenUserId] }, { $eq: ['$following', '$$followerId'] }],
+                        $and: [
+                          { $eq: [{ $toString: '$follower' }, { $toString: tokenUserId }] },
+                          { $eq: [{ $toString: '$following' }, { $toString: '$$followerId' }] },
+                        ],
                       },
                     },
                   },
@@ -109,12 +107,11 @@ export async function POST(request: NextRequest) {
       },
     ])
 
-    console.log(tokenUserId)
-
     const totalFollowers = result[0].metadata[0] ? result[0].metadata[0].total : 0
     const followers = result[0].data
 
-    console.log(followers)
+    // user.followers = totalFollowers
+    // await user.save()
 
     const totalPages = Math.ceil(totalFollowers / limit)
     const nextPage = page < totalPages ? page + 1 : null

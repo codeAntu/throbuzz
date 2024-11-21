@@ -26,7 +26,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
   const url = new URL(request.url)
   const page = parseInt(url.searchParams.get('page') || '1', 10)
-  const limit = 10
+  const limit = 20
   const skip = (page - 1) * limit
 
   try {
@@ -34,57 +34,78 @@ export async function POST(request: NextRequest, response: NextResponse) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    let query = {}
-    let totalPosts = 0
+    const foundUser = await User.aggregate([
+      { $match: { username } },
+      {
+        $lookup: {
+          from: 'posts',
+          let: { userId: '$_id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$userId', '$$userId'] } } },
+            { $sort: { createdAt: -1 } },
+            { $skip: skip },
+            { $limit: limit },
+            {
+              $lookup: {
+                from: 'likes',
+                let: { postId: { $toString: '$_id' }, userId: { $toString: tokenData?.id } },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $and: [
+                          { $eq: [{ $toString: '$postId' }, '$$postId'] },
+                          { $eq: [{ $toString: '$userId' }, '$$userId'] },
+                        ],
+                      },
+                    },
+                  },
+                ],
+                as: 'userLikes',
+              },
+            },
+            {
+              $addFields: {
+                isLiked: { $gt: [{ $size: '$userLikes' }, 0] },
+              },
+            },
+            {
+              $project: {
+                userLikes: 0,
+              },
+            },
+          ],
+          as: 'posts',
+        },
+      },
+      {
+        $project: {
+          username: 1,
+          name: 1,
+          profilePic: '$profilePic',
+          posts: 1,
+          postsCount: { $size: '$posts' },
+        },
+      },
+    ])
 
-    const foundUser = await User.findOne({ username })
-    if (!foundUser) {
+    if (!foundUser.length) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const user: any = {
-      username: foundUser.username,
-      name: foundUser.name,
-      profilePic: foundUser.profilePic.imageUrl,
-      isMe: false,
-    }
+    const user = foundUser[0]
+    user.isMe = tokenData && tokenData.username === username
 
-    if (tokenData && tokenData.username === username) {
-      user.isMe = true
-      query = { userId: tokenData.id }
-    } else {
-      query = { userId: foundUser._id, visibility: 'public' }
-    }
-
-    totalPosts = await Post.countDocuments(query)
-    const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit)
-
-    const postsWithLikes = await Promise.all(
-      posts.map(async (post) => {
-        let isLiked = false
-        if (tokenData) {
-          isLiked = !!(await Like.exists({ postId: post._id, userId: tokenData.id }))
-        }
-        return {
-          ...post.toObject(),
-          isLiked,
-        }
-      }),
-    )
-
-    if (tokenData && tokenData.username === username) {
-      foundUser.postsCount = totalPosts
-      await foundUser.save()
-    }
-
-    if (!posts.length) {
+    if (!user.posts.length) {
       return NextResponse.json({ message: 'No posts found' }, { status: 200 })
     }
 
-    const totalPages = Math.ceil(totalPosts / limit)
-    const nextPage = page < totalPages ? page + 1 : null
+    const nextPage = user.posts.length === limit ? `${url.pathname}?page=${page + 1}` : ''
+    // const nextPage = nextPageUrl ? `${url.pathname}${nextPageUrl}` : null
 
-    return NextResponse.json({ user, posts: postsWithLikes, nextPage }, { status: 200 })
+    console.log(nextPage)
+
+    return NextResponse.json({ user, posts: user.posts, nextPage }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }

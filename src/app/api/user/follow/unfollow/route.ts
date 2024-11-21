@@ -23,30 +23,26 @@ connect()
 export async function POST(request: NextRequest) {
   const body = await parseJson(request)
   if (body instanceof NextResponse) return body
+
   try {
     const { id } = await data.parse(body)
-
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
+
     if (!tokenData) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    if (!id) {
-      return NextResponse.json({ error: 'Username is required' }, { status: 400 })
-    }
 
-    const userId = tokenData.id // Extract user ID from token data
-
+    const userId = tokenData.id
     const follower = await User.findById(userId)
-
-    if (!follower || !follower.isVerified) {
-      return NextResponse.json({ error: 'User 1  not found' }, { status: 404 })
-    }
-
     const following = await User.findById(id)
 
+    if (!follower || !follower.isVerified) {
+      return NextResponse.json({ error: 'User not found or not verified' }, { status: 404 })
+    }
+
     if (!following || !following.isVerified) {
-      return NextResponse.json({ error: 'User 2  not found' }, { status: 404 })
+      return NextResponse.json({ error: 'User not found or not verified' }, { status: 404 })
     }
 
     const follow = await Follow.deleteOne({ follower: follower._id, following: following._id })

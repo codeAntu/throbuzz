@@ -28,14 +28,8 @@ interface UserT extends Document {
   forgotPasswordExpires: Date
   verificationCode: string
   verificationCodeExpires: Date
-  profilePic: {
-    imageUrl: string
-    publicId: string
-  }
-  coverPic: {
-    imageUrl: string
-    publicId: string
-  }
+  profilePic: mongoose.Schema.Types.Mixed
+  coverPic: mongoose.Schema.Types.Mixed
   followers: number
   following: number
   postsCount: number
@@ -138,24 +132,12 @@ const userSchema: Schema<UserT> = new mongoose.Schema(
       type: Date,
     },
     profilePic: {
-      imageUrl: {
-        type: String,
-        default: '',
-      },
-      publicId: {
-        type: String,
-        default: '',
-      },
+      type: mongoose.Schema.Types.Mixed,
+      default: { imageUrl: '', publicId: '' },
     },
     coverPic: {
-      imageUrl: {
-        type: String,
-        default: '',
-      },
-      publicId: {
-        type: String,
-        default: '',
-      },
+      type: mongoose.Schema.Types.Mixed,
+      default: { imageUrl: '', publicId: '' },
     },
     bio: {
       type: String,

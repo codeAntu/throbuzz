@@ -11,13 +11,7 @@ export async function GET(req: NextRequest) {
     const token = (await req.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    if (!tokenData) {
-      console.log('Token not found')
-
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    if (!tokenData.id) {
+    if (!tokenData || !tokenData.id) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 

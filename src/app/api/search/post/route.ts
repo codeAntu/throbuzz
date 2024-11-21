@@ -40,7 +40,21 @@ export async function POST(request: NextRequest) {
           visibility: 'public',
         },
       },
-      { $sort: { createdAt: -1 } },
+      {
+        $addFields: {
+          daysSinceCreated: {
+            $divide: [{ $subtract: [new Date(), '$createdAt'] }, 1000 * 60 * 60 * 24],
+          },
+        },
+      },
+      {
+        $addFields: {
+          popularity: {
+            $multiply: [{ $add: ['$likes', '$comments'] }, { $exp: { $multiply: ['$daysSinceCreated', -0.1] } }],
+          },
+        },
+      },
+      { $sort: { popularity: -1, createdAt: -1 } },
       { $skip: skip },
       { $limit: limit },
       {
