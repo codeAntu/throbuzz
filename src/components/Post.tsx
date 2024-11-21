@@ -26,12 +26,12 @@ import { like, unlike } from '@/handelers/post/like'
 import { getComments, likeComment, unlikeComment } from '@/handelers/post/comment'
 import axios from 'axios'
 import Img from '@/components/Img'
-import PostImg from './PostImg'
 import useStore from '@/store/store'
 import { set } from 'mongoose'
 import { useRouter } from 'next/navigation'
 import { likeReplay, unlikeReplay } from '@/handelers/post/replay'
 import newReply from '@/store/newReply'
+import PostImage from './PostImage'
 
 export interface PostT {
   _id: string
@@ -250,7 +250,7 @@ export default function Post({ post }: { post: PostT }) {
           {post.postImages.map((img, index) => (
             <SwiperSlide key={index} className='flex w-full items-center justify-center'>
               <div className='flex w-full items-center justify-center bg-black/5'>
-                <PostImg imageUrl={img.imageUrl} alt='' publicId={img.publicId} />
+                <PostImage imageUrl={img.imageUrl} alt='' publicId={img.publicId} />
               </div>
               <div className='absolute right-2 top-2 rounded-full bg-black/50 px-2.5 py-1 text-[10px] font-medium text-white/80 sm:text-sm'>
                 {index + 1} / {post.postImages.length}

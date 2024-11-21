@@ -2,7 +2,7 @@
 'use client'
 import { CldImage } from 'next-cloudinary'
 
-export default function PostImg({ imageUrl, alt, publicId }: { imageUrl: string; alt: string; publicId: string }) {
+export default function PostImage({ imageUrl, alt, publicId }: { imageUrl: string; alt: string; publicId: string }) {
   return (
     <div onContextMenu={(e: { preventDefault: () => any }) => e.preventDefault()} className='aspect-video w-full'>
       {publicId ? (
