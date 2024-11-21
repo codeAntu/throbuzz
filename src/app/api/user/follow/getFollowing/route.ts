@@ -61,7 +61,33 @@ export async function POST(request: NextRequest) {
               $unwind: '$details',
             },
             {
+              $lookup: {
+                from: 'follows',
+                let: { followingId: '$details._id' },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $and: [
+                          { $eq: [{ $toString: '$follower' }, { $toString: tokenUserId }] },
+                          { $eq: [{ $toString: '$following' }, { $toString: '$$followingId' }] },
+                        ],
+                      },
+                    },
+                  },
+                ],
+                as: 'isFollowing',
+              },
+            },
+            {
               $addFields: {
+                isFollowing: {
+                  $cond: {
+                    if: { $eq: [tokenUserId, null] },
+                    then: false,
+                    else: { $gt: [{ $size: '$isFollowing' }, 0] },
+                  },
+                },
                 isMe: { $eq: [{ $toString: '$details._id' }, { $toString: tokenUserId }] },
               },
             },
@@ -71,6 +97,8 @@ export async function POST(request: NextRequest) {
                 'details.username': 1,
                 'details.profilePic': 1,
                 'details.bio': 1,
+                'details._id': 1,
+                isFollowing: 1,
                 isMe: 1,
               },
             },
@@ -80,9 +108,6 @@ export async function POST(request: NextRequest) {
     ])
     const totalFollowing = result[0].metadata[0] ? result[0].metadata[0].total : 0
     const followers = result[0].data
-
-    // user.following = totalFollowing
-    // await user.save()
 
     const totalPages = Math.ceil(totalFollowing / limit)
     const nextPage = page < totalPages ? page + 1 : null

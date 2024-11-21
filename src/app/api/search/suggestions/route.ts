@@ -19,23 +19,25 @@ export async function POST(request: NextRequest) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    let tokenUserId = tokenData?.id || null
+    let tokenUserId = String(tokenData?.id || '')
+
+    console.log('tokenUserId:', tokenUserId)
 
     let users
     if (tokenUserId) {
       const following = await Follow.find({ follower: tokenUserId }).select('following')
-      const followingIds = following.map((f) => f.following)
+      const followingIds = following.map((f) => String(f.following))
 
       users = await User.aggregate([
+        { $addFields: { score: { $add: ['$postsCount', '$followers'] }, _id: { $toString: '$_id' } } },
         { $match: { _id: { $nin: followingIds, $ne: tokenUserId }, isVerified: true } },
-        { $addFields: { score: { $add: ['$postsCount', '$followers'] } } },
         { $sort: { score: -1 } },
         { $skip: skip },
         { $limit: limit },
       ])
     } else {
       users = await User.aggregate([
-        { $addFields: { score: { $add: ['$postsCount', '$followers'] } } },
+        { $addFields: { score: { $add: ['$postsCount', '$followers'] }, _id: { $toString: '$_id' } } },
         { $sort: { score: -1 } },
         { $skip: skip },
         { $limit: limit },

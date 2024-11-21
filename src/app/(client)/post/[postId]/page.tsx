@@ -20,6 +20,7 @@ export default function PostPage({
   async function getPost() {
     try {
       const response = await axios.post('/api/post/getPost', { postId: params.postId })
+      console.log(response.data)
 
       setPost({
         _id: response.data.post._id,
