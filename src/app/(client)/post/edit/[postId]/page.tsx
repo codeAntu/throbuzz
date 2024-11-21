@@ -4,7 +4,7 @@
 
 import { Button } from '@/components/Button'
 import { MyDialog } from '@/components/MyDialog'
-import PostImg from '@/components/PostImg'
+// import PostImg from '@/components/PostImg'
 import { Screen, Screen0 } from '@/components/Screen'
 import { DialogClose } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -154,7 +154,7 @@ export default function EditPostPage({
                 <div className='no-scrollbar flex gap-3.5 overflow-auto rounded-2xl sm:gap-5'>
                   {postImages.map((image, index) => (
                     <div key={index} className='relative aspect-video h-44'>
-                      <PostImg imageUrl={image.imageUrl} publicId={image.publicId} alt='image' />
+                      {/* <PostImg imageUrl={image.imageUrl} publicId={image.publicId} alt='image' /> */}
                     </div>
                   ))}
                 </div>
