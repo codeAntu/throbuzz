@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import Post from '@/models/postModel'
 import User from '@/models/userModel'
 import Like from '@/models/likeModel'
+import mongoose from 'mongoose'
 
 connect()
 
@@ -15,28 +16,72 @@ export async function POST(request: NextRequest) {
     const token = (await request.cookies.get('token')?.value) || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
-    const post = await Post.findOne({ _id: postId })
+    const postAggregate = await Post.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(postId) } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'author',
+        },
+      },
+      { $unwind: '$author' },
+      {
+        $lookup: {
+          from: 'likes',
+          let: { postId: { $toString: '$_id' }, userId: { $toString: tokenData?.id } },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: [{ $toString: '$postId' }, '$$postId'] },
+                    { $eq: [{ $toString: '$userId' }, '$$userId'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'userLikes',
+        },
+      },
+      {
+        $addFields: {
+          isLiked: { $gt: [{ $size: '$userLikes' }, 0] },
+        },
+      },
+      {
+        $project: {
+          'author.profilePic': 1,
+          'author.username': 1,
+          'author.name': 1,
+          'author._id': 1,
+          visibility: 1,
+          userId: 1,
+          text: 1,
+          postImages: 1,
+          likes: 1,
+          comments: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          color: 1,
+          isLiked: 1,
+        },
+      },
+    ])
 
-    if (!post) {
+    if (!postAggregate.length) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
+
+    const post = postAggregate[0]
 
     if (post.visibility === 'private' && (!tokenData || post.userId.toString() !== tokenData.id)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await User.findById(post.userId).select('username name profilePic')
-    const isLiked = tokenData ? await Like.exists({ postId: post._id, userId: tokenData.id }) : false
-
-    return NextResponse.json({
-      post: {
-        ...post.toObject(),
-        isLiked: !!isLiked,
-        isMine: tokenData ? post.userId.toString() === tokenData.id : false,
-      },
-      user,
-      status: 200,
-    })
+    return NextResponse.json({ post })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }

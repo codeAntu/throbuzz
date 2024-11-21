@@ -23,26 +23,43 @@ export async function POST(request: NextRequest) {
 
     console.log('tokenUserId:', tokenUserId)
 
-    let users
-    if (tokenUserId) {
-      const following = await Follow.find({ follower: tokenUserId }).select('following')
-      const followingIds = following.map((f) => String(f.following))
+    const following = tokenUserId ? await Follow.find({ follower: tokenUserId }).select('following') : []
+    const followingIds = following.map((f) => String(f.following))
 
-      users = await User.aggregate([
-        { $addFields: { score: { $add: ['$postsCount', '$followers'] }, _id: { $toString: '$_id' } } },
-        { $match: { _id: { $nin: followingIds, $ne: tokenUserId }, isVerified: true } },
-        { $sort: { score: -1 } },
-        { $skip: skip },
-        { $limit: limit },
-      ])
-    } else {
-      users = await User.aggregate([
-        { $addFields: { score: { $add: ['$postsCount', '$followers'] }, _id: { $toString: '$_id' } } },
-        { $sort: { score: -1 } },
-        { $skip: skip },
-        { $limit: limit },
-      ])
-    }
+    const users = await User.aggregate([
+      { $addFields: { score: { $add: ['$postsCount', '$followers'] }, _id: { $toString: '$_id' } } },
+      {
+        $match: {
+          $and: [{ isVerified: true }, tokenUserId ? { _id: { $nin: followingIds, $ne: tokenUserId } } : {}],
+        },
+      },
+      { $sort: { score: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ])
+
+    // const users = await User.aggregate([
+    //   { $addFields: { score: { $add: ['$postsCount', '$followers'] }, _id: { $toString: '$_id' } } },
+    //   {
+    //     $lookup: {
+    //       from: 'follows',
+    //       let: { userId: '$_id' },
+    //       pipeline: [
+    //         { $match: { $expr: { $and: [{ $eq: ['$follower', tokenUserId] }, { $eq: ['$following', '$$userId'] }] } } },
+    //         { $project: { _id: 1 } },
+    //       ],
+    //       as: 'isFollowing',
+    //     },
+    //   },
+    //   {
+    //     $match: {
+    //       $and: [{ isVerified: true }, tokenUserId ? { isFollowing: { $eq: [] }, _id: { $ne: tokenUserId } } : {}],
+    //     },
+    //   },
+    //   { $sort: { score: -1 } },
+    //   { $skip: skip },
+    //   { $limit: limit },
+    // ])
 
     return NextResponse.json({ users }, { status: 200 })
   } catch (error: any) {

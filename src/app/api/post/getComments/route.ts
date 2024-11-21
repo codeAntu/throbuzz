@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import LikeOnComment from '@/models/likeOnCommentModel'
 import Post from '@/models/postModel'
+import { ObjectId } from 'mongodb'
 
 connect()
 
@@ -13,7 +14,9 @@ export async function POST(request: NextRequest) {
     const { postId } = await request.json()
 
     const token = (await request.cookies.get('token')?.value) || ''
-    const tokenData = jwt.decode(token) as TokenDataT
+    const tokenData = jwt.decode(token) as TokenDataT | null
+
+    const tokenUserId = tokenData ? tokenData.id : null
 
     // Parse query parameters for pagination
     const url = new URL(request.url)
@@ -23,45 +26,105 @@ export async function POST(request: NextRequest) {
 
     const post = await Post.findById(postId)
 
-    if (!post) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
-    }
+    // if (!post) {
+    //   return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    // }
 
-    if (post.visibility === 'private' && (!tokenData || post.userId.toString() !== tokenData.id)) {
-      return NextResponse.json({ error: 'Post is private' }, { status: 403 })
-    }
+    // if (post.visibility === 'private' && (!tokenData || post.userId.toString() !== tokenData.id)) {
+    //   return NextResponse.json({ error: 'Post is private' }, { status: 403 })
+    // }
 
-    const comments = await Comment.find({ postId })
-      .populate({
-        path: 'userId',
-        select: 'name profilePic username _id',
-      })
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 })
+    // console.log('post', post)
 
-    if (!comments.length) {
-      return NextResponse.json({ comments: [], totalComments: 0, nextPage: null, nextLink: null }, { status: 200 })
-    }
+    const commentsAggregation = await Comment.aggregate([
+      { $match: { postId: new ObjectId(postId) } },
+      {
+        $facet: {
+          comments: [
+            { $sort: { createdAt: -1 } },
+            { $skip: skip },
+            { $limit: limit },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'user',
+              },
+            },
+            { $unwind: '$user' },
+            ...(tokenUserId
+              ? [
+                  {
+                    $lookup: {
+                      from: 'likeoncomments',
+                      let: { commentId: '$_id', postId: '$postId' },
+                      pipeline: [
+                        {
+                          $match: {
+                            $expr: {
+                              $and: [
+                                { $eq: ['$commentId', '$$commentId'] },
+                                { $eq: ['$postId', '$$postId'] },
+                                { $eq: ['$userId', new ObjectId(tokenUserId)] },
+                              ],
+                            },
+                          },
+                        },
+                      ],
+                      as: 'userLikes',
+                    },
+                  },
+                  {
+                    $addFields: {
+                      isLiked: { $gt: [{ $size: '$userLikes' }, 0] },
+                    },
+                  },
+                ]
+              : [
+                  {
+                    $addFields: {
+                      isLiked: false,
+                    },
+                  },
+                ]),
+            {
+              $project: {
+                'user.profilePic': 1,
+                'user.username': 1,
+                'user.name': 1,
+                'user._id': 1,
+                postId: 1,
+                userId: 1,
+                content: 1,
+                likes: 1,
+                comments: 1,
+                isLiked: 1,
+                createdAt: 1,
+              },
+            },
+          ],
+          totalComments: [{ $count: 'count' }],
+        },
+      },
+      {
+        $project: {
+          comments: 1,
+          totalComments: { $arrayElemAt: ['$totalComments.count', 0] },
+        },
+      },
+    ])
 
-    const commentsWithLikes = await Promise.all(
-      comments.map(async (comment) => {
-        const likes = await LikeOnComment.find({ commentId: comment._id })
-        const isLiked = tokenData ? likes.some((like) => like.userId.toString() === tokenData.id) : false
-        return {
-          ...comment.toObject(),
-          isLiked,
-        }
-      }),
-    )
-
-    const totalComments = await Comment.countDocuments({ postId })
-    const totalPages = Math.ceil(totalComments / limit)
-    const nextPage = page < totalPages ? page + 1 : null
+    const nextPage = commentsAggregation[0].comments.length === limit ? page + 1 : null
     const nextLink = nextPage ? `${url.origin}${url.pathname}?page=${nextPage}&limit=${limit}` : null
 
     return NextResponse.json(
-      { comments: commentsWithLikes, totalComments: post.comments, nextPage, nextLink },
+      {
+        comments: commentsAggregation[0].comments,
+        totalComments: commentsAggregation[0].totalComments || 0,
+        nextPage,
+        nextLink,
+      },
       { status: 200 },
     )
   } catch (error: any) {

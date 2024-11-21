@@ -111,3 +111,21 @@ export interface UserT {
     dob: string
   }
 }
+
+interface CommentT {
+  _id: string
+  userId: {
+    profilePic: { imageUrl: string; publicId: string }
+    _id: string
+    name: string
+    username: string
+  }
+  postId: string
+  content: string
+  likes: number
+  isLiked: boolean
+  comments: number
+  createdAt: Date
+  updatedAt: Date
+  __v: number
+}

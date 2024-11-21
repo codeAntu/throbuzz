@@ -30,11 +30,21 @@ export async function POST(request: NextRequest) {
     const limit = parseInt(url.searchParams.get('limit') || '20', 10)
     const skip = (page - 1) * limit
 
-    // Fetch notifications with pagination
-    const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).skip(skip).limit(limit)
+    const aggregationPipeline = [
+      { $match: { userId } },
+      { $sort: { createdAt: -1 as -1 } },
+      {
+        $facet: {
+          notifications: [{ $skip: skip }, { $limit: limit }],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ]
 
-    // Check if there are more notifications to load
-    const totalNotifications = await Notification.countDocuments({ userId })
+    const result = await Notification.aggregate(aggregationPipeline)
+    const notifications = result[0].notifications
+    const totalNotifications = result[0].totalCount[0]?.count || 0
+
     const hasNextPage = skip + notifications.length < totalNotifications
     const nextPage = hasNextPage ? page + 1 : null
     const nextLink = hasNextPage ? `${url.origin}${url.pathname}?page=${nextPage}&limit=${limit}` : null

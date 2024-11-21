@@ -22,28 +22,7 @@ export default function PostPage({
       const response = await axios.post('/api/post/getPost', { postId: params.postId })
       console.log(response.data)
 
-      setPost({
-        _id: response.data.post._id,
-        userId: response.data.post.userId,
-        visibility: response.data.post.visibility,
-        updatedAt: response.data.post.updatedAt,
-        author: {
-          name: response.data.user.name,
-          username: response.data.user.username,
-          profilePic: {
-            imageUrl: response.data.user.profilePic.imageUrl,
-            publicId: response.data.user.profilePic.publicId,
-          },
-        },
-        text: response.data.post.text,
-        createdAt: response.data.post.createdAt,
-        postImages: response.data.post.postImages,
-        likes: response.data.post.likes,
-        comments: response.data.post.comments,
-        isLiked: response.data.post.isLiked,
-        isMine: response.data.post.isMine,
-        color: response.data.post.color,
-      })
+      setPost(response.data.post)
     } catch (error: any) {
       console.error(error)
     }
@@ -52,8 +31,6 @@ export default function PostPage({
   if (!post) {
     getPost()
   }
-
-  console.log(post)
 
   return (
     <Screen0 className=''>

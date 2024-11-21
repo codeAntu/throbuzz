@@ -79,41 +79,42 @@ export interface PostT {
     | 'fuchsia'
 }
 
-interface CommentT {
+export interface CommentT {
   _id: string
-  userId: {
-    profilePic: { imageUrl: string; publicId: string }
-    _id: string
-    name: string
-    username: string
-  }
+  userId: string
   postId: string
   content: string
   likes: number
-  isLiked: boolean
   comments: number
   createdAt: Date
-  updatedAt: Date
-  __v: number
-}
-
-export interface CommentReplaysT {
-  _id: string
-  userId: {
+  user: {
+    _id: string
+    name: string
+    username: string
     profilePic: {
       imageUrl: string
       publicId: string
     }
-    _id: string
-    name: string
   }
+  isLiked: boolean
+}
+
+export interface CommentReplaysT {
+  _id: string
+  userId: string
   commentId: string
-  postId: string
   content: string
   likes: number
   createdAt: Date
-  updatedAt: Date
-  __v: number
+  user: {
+    _id: string
+    name: string
+    username: string
+    profilePic: {
+      imageUrl: string
+      publicId: string
+    }
+  }
   isLiked: boolean
 }
 
@@ -397,20 +398,19 @@ export function Comments({ postId }: { postId: string }) {
   function addComment(comment: any) {
     const newComment: CommentT = {
       _id: comment._id,
-      userId: {
+      user: {
         profilePic: { imageUrl: savedUser.profilePic.imageUrl, publicId: savedUser.profilePic.publicId },
         _id: savedUser.id,
         name: savedUser.name,
         username: savedUser.username,
       },
+      userId: savedUser.id,
       postId: comment.postId,
       content: comment.content,
       likes: comment.likes,
       isLiked: false,
       comments: 0,
       createdAt: new Date(),
-      updatedAt: new Date(),
-      __v: 0,
     }
 
     setTotalComments(totalComments + 1)
@@ -424,19 +424,18 @@ export function Comments({ postId }: { postId: string }) {
 
     setNewReplay({
       _id: replay._id,
-      userId: {
+      userId: savedUser.id,
+      user: {
         profilePic: { imageUrl: savedUser.profilePic.imageUrl, publicId: savedUser.profilePic.publicId },
         _id: savedUser.id,
         name: savedUser.name,
+        username: savedUser.username,
       },
       commentId: replay.commentId,
-      postId: replay.postId,
       content: replay.content,
       likes: replay.likes,
       createdAt: new Date(),
-      updatedAt: new Date(),
-      __v: 0,
-      isLiked: false,
+      isLiked: replay.isLiked,
     })
   }
 
@@ -588,8 +587,8 @@ export function Comment({
         <div className='flex w-full items-start justify-center gap-3'>
           <div className='aspect-square w-12 flex-grow-0 pt-1.5'>
             <Img
-              imageUrl={comment.userId.profilePic.imageUrl}
-              publicId={comment.userId.profilePic.publicId}
+              imageUrl={comment.user.profilePic.imageUrl}
+              publicId={comment.user.profilePic.publicId}
               height={50}
               width={50}
               className='aspect-square w-12 rounded-full'
@@ -599,7 +598,7 @@ export function Comment({
             <div className='grid gap-1'>
               <div className='flex gap-3'>
                 <div className='flex items-center justify-normal gap-1.5 text-xs'>
-                  <p className='font-semibold'>{comment.userId.name}</p>
+                  <p className='font-semibold'>{comment.user.name}</p>
                   <p className='leading-none text-black/50 dark:text-white/50'>•</p>
                   <p className='text-[11px] text-black/50 dark:text-white/50'>
                     {new Date(comment.createdAt).toLocaleTimeString([], {
@@ -651,7 +650,7 @@ export function Comment({
 
               setReply({
                 commentId: comment._id,
-                username: comment.userId.username,
+                username: comment.user.username,
               })
             }}
           >
@@ -699,6 +698,8 @@ export function CommentReplays({ commentId }: { commentId: string }) {
       const response = await axios.post('/api/post/getCommentReplays', {
         commentId,
       })
+      console.log(response.data)
+
       setReplays(response.data.commentReplays)
       setNextLink(response.data.nextLink)
     } catch (error: any) {
@@ -712,7 +713,7 @@ export function CommentReplays({ commentId }: { commentId: string }) {
       const response = await axios.post(nextLink, {
         commentId,
       })
-      console.log(response)
+      console.log(response.data)
       setReplays([...replays, ...response.data.commentReplays])
       setNextLink(response.data.nextLink)
     } catch (error: any) {
@@ -774,8 +775,8 @@ export function CommentReplay(replay: CommentReplaysT) {
     <div className='flex w-full items-start justify-center gap-3'>
       <div className='aspect-square w-12 flex-grow-0 pt-1.5'>
         <Img
-          imageUrl={replay.userId.profilePic.imageUrl}
-          publicId={replay.userId.profilePic.publicId}
+          imageUrl={replay.user.profilePic.imageUrl}
+          publicId={replay.user.profilePic.publicId}
           height={50}
           width={50}
           className='aspect-square w-12 rounded-full'
@@ -785,7 +786,7 @@ export function CommentReplay(replay: CommentReplaysT) {
         <div className='grid gap-1'>
           <div className='flex gap-3'>
             <div className='flex items-center justify-normal gap-1.5 text-xs'>
-              <p className='font-semibold'>{replay.userId.name}</p>
+              <p className='font-semibold'>{replay.user.name}</p>
               <p className='leading-none text-black/50'>•</p>
               <p className='text-[11px] text-black/50'>12:20 </p>
             </div>

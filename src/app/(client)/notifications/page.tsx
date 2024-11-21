@@ -25,16 +25,6 @@ export default function NotificationsPage() {
   const [nextPage, setNextPage] = useState('')
   const ref = useRef<HTMLDivElement>(null)
   const [newNotificationsCount, setNewNotificationsCount] = useState(0)
-  async function createNotification() {
-    console.log('Creating notification')
-
-    try {
-      const response = await axios.post('/api/notification/createNotification')
-      console.log(response)
-    } catch (error: any) {
-      console.log(error.message)
-    }
-  }
 
   async function handleGetNotifications() {
     const response = await gteNotifications()
