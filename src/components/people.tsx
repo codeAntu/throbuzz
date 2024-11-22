@@ -23,6 +23,7 @@ export interface PeopleT {
 export default function People({ people }: { people: PeopleT }) {
   const [isFollowing, setIsFollowing] = useState(people.isFollowing)
   const [isMe, setIsMe] = useState(people.isMe)
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   return (
     <div className='flex select-none items-center gap-4'>
@@ -52,7 +53,7 @@ export default function People({ people }: { people: PeopleT }) {
                 className='rounded-[8px] bg-black px-5 py-2 text-xs font-medium text-white dark:bg-white dark:text-black sm:py-2'
                 onClick={(e) => {
                   e.stopPropagation()
-                  handleFollow(people._id, setIsFollowing)
+                  handleFollow(people._id, setIsFollowing, setLoading)
                 }}
                 disabled={isFollowing}
               >
@@ -64,7 +65,7 @@ export default function People({ people }: { people: PeopleT }) {
                 className='rounded-[8px] bg-black/10 px-5 py-2 text-xs font-medium text-black dark:bg-white/10 dark:text-white sm:py-2'
                 onClick={(e) => {
                   e.stopPropagation()
-                  handleUnFollow(people._id, setIsFollowing)
+                  handleUnFollow(people._id, setIsFollowing, setLoading)
                 }}
                 disabled={!isFollowing}
               >

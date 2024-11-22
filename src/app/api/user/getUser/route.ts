@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
     const token = request.cookies.get('token')?.value || ''
     const tokenData = jwt.decode(token) as TokenDataT
 
+    const tokenUserId = tokenData?.id
+
     const userAggregation = await User.aggregate([
       { $match: { username: searchBy, isVerified: true } },
       {
@@ -38,14 +40,34 @@ export async function POST(request: NextRequest) {
           let: { userId: '$_id' },
           pipeline: [
             {
-              $match: { $expr: { $and: [{ $eq: ['$following', '$$userId'] }, { $eq: ['$follower', tokenData?.id] }] } },
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: [{ $toString: '$follower' }, { $toString: tokenUserId }] },
+                    { $eq: [{ $toString: '$following' }, { $toString: '$$userId' }] },
+                  ],
+                },
+              },
+              // $match: { $expr: { $and: [{ $eq: ['$following', '$$userId'] }, { $eq: ['$follower', tokenData?.id] }] } },
             },
-            { $limit: 1 },
+
+            // { $limit: 1 },
           ],
           as: 'isFollowing',
         },
       },
-      { $unwind: { path: '$isFollowing', preserveNullAndEmptyArrays: true } },
+      // { $unwind: { path: '$isFollowing', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          isFollowing: {
+            $cond: {
+              if: { $eq: [tokenUserId, null] },
+              then: false,
+              else: { $gt: [{ $size: '$isFollowing' }, 0] },
+            },
+          },
+        },
+      },
       {
         $project: {
           _id: 1,
@@ -65,7 +87,7 @@ export async function POST(request: NextRequest) {
           linkedin: 1,
           website: 1,
           birthday: 1,
-          isFollowing: { $cond: { if: { $isArray: '$isFollowing' }, then: { $size: '$isFollowing' }, else: 0 } },
+          isFollowing: 1,
         },
       },
     ])
@@ -99,7 +121,7 @@ export async function POST(request: NextRequest) {
       },
     }
 
-    return NextResponse.json({ user: resUser, isFollowing: user.isFollowing > 0 }, { status: 200 })
+    return NextResponse.json({ user: resUser }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'An error occurred' }, { status: 400 })
   }

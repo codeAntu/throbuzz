@@ -1,427 +1,293 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @next/next/no-img-element */
 'use client'
 import { Button } from '@/components/Button'
-import Header from '@/components/Header'
+import People, { PeopleT } from '@/components/people'
+import Post from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
+import { PostT } from '@/lib/types'
 import axios from 'axios'
-import { errorToJSON } from 'next/dist/server/render'
+import { ChevronLeft, Search, ServerCrash, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
-interface FriendRequest {
-  _id: string
-  senderDetails: {
-    name: string
-    username: string
-    profilePic: {
-      imageUrl: string
-      publicId: string
-    }
-    bio: string
-  }
-}
-
-export default function Requests() {
+export default function Page() {
+  const [search, setSearch] = useState('')
   const router = useRouter()
-  const [page, setPage] = useState('Friends')
-
-  const pages = ['Follow Requests', 'Sent Requests', 'Suggestions', 'Friends']
+  const [page, setPage] = useState('Accounts')
+  const pages = ['Accounts', 'Posts']
+  const [searchedItems, setSearchedItems] = useState(['test 1', 'test 2', 'ediehfnubj'])
+  const [searched, setSearched] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
 
   return (
-    <Screen0>
-      <Header title={page}></Header>
-      <div className='grid select-none gap-4 px-5 py-4'>
-        <div className='no-scrollbar grid grid-flow-col gap-2 overflow-scroll'>
-          {pages.map((title, index) => (
-            <Button
-              key={index}
-              variant='zero'
-              className={`whitespace-nowrap rounded-full bg-black/10 px-5 py-2 text-xs font-semibold text-black/80 dark:bg-white/10 dark:text-white/80 ${page === title ? 'hidden' : ''} `}
+    <Screen0 className='flex flex-col gap-2'>
+      <div className='sticky top-0 z-10 flex min-h-3 w-full items-center justify-between border-b border-black/5 bg-white/80 py-1.5 pr-5 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
+        <Button
+          variant='icon'
+          className='rounded-full p-3 active:bg-black/10 dark:active:bg-white/10'
+          onClick={() => {
+            if (isSearching || searched) {
+              setIsSearching(false)
+              setSearched(false)
+              setSearch('')
+            } else {
+              router.back()
+            }
+          }}
+        >
+          <ChevronLeft size={24} />
+        </Button>
+        <div className='flex w-full items-center gap-2 rounded-xl border border-black/10 bg-black/5 px-2.5 dark:border-white/5 dark:bg-white/5'>
+          <Search size={24} className='h-6 w-6 text-black/40 dark:text-white/40' strokeWidth={1.5} />
+          <input
+            type='text'
+            name=''
+            id=''
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              if (e.target.value.length > 2) {
+                setSearched(true)
+                setIsSearching(false)
+              } else {
+                setSearched(false)
+                setIsSearching(true)
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setSearched(true)
+                setIsSearching(false)
+              }
+            }}
+            onClick={() => {
+              if (!searched) {
+                setIsSearching(true)
+              }
+            }}
+            className='w-full bg-transparent py-2 text-sm outline-none placeholder:text-black/30 dark:placeholder:text-white/30'
+            placeholder='Search'
+          />
+          {search.length > 0 && (
+            <X
+              size={24}
+              className='h-6 w-6 cursor-pointer text-black/40 dark:text-white/40'
+              strokeWidth={1.5}
               onClick={() => {
-                setPage(title)
+                setSearch('')
+                // setSearched(false)
+                setIsSearching(false)
               }}
-            >
-              {title}
-            </Button>
-          ))}
+            />
+          )}
         </div>
-        <hr />
-        {/* {
-          {
-            'Follow Requests': <FriendRequests />,
-            Suggestions: <Suggestions />,
-            'Sent Requests': <SentRequests />,
-            Friends: <Friends />,
-          }[page]
-        } */}
+      </div>
+
+      {!isSearching && !searched ? (
+        <Suggestions />
+      ) : isSearching ? (
+        <div className='space-y-2 px-5'>
+          <div className='flex justify-between px-1 text-xs font-semibold'>
+            <div>Recent Searches</div>
+            <div className='text-accent'>See all </div>
+          </div>
+          <div>
+            {searchedItems.map((item, index) => (
+              <div
+                key={index}
+                className='flex items-center justify-between border-black/10 p-2 text-xs font-medium dark:border-white/10'
+              >
+                <div
+                  className='flex w-full items-center gap-1.5'
+                  onClick={() => {
+                    setSearch(item)
+                    setSearched(false)
+                  }}
+                >
+                  <Search
+                    size={36}
+                    className='rounded-full border border-gray-700 bg-black/20 p-2.5'
+                    strokeWidth={1.5}
+                  />
+                  <div>{item}</div>
+                </div>
+                <X size={18} className='cursor-pointer text-black/40 dark:text-white/40' strokeWidth={1.5} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className='flex items-center justify-around'>
+            {pages.map((item, index) => (
+              <Button
+                key={index}
+                variant='text'
+                className={`px-4 text-xs font-bold text-black/50 dark:text-white/50 sm:text-sm ${page === item ? 'rounded-none border-b-2 border-black text-black dark:border-white dark:text-white' : ''} `}
+                onClick={() => {
+                  setPage(item)
+                }}
+              >
+                {item}
+              </Button>
+            ))}
+          </div>
+          <div>
+            {
+              {
+                Accounts: <Account search={search} />,
+                Posts: <Posts search={search} />,
+              }[page]
+            }
+          </div>
+        </>
+      )}
+    </Screen0>
+  )
+}
+
+function Account({ search }: { search: string }) {
+  const [searchResults, setSearchResults] = useState<PeopleT[] | []>([])
+  const [totalSearchResults, setTotalSearchResults] = useState(0)
+
+  async function getSearchRes() {
+    try {
+      const res = await axios.post('api/search/user', { search })
+      setTotalSearchResults(res.data.totalUsers)
+      setSearchResults(res.data.users)
+    } catch (error: any) {
+      console.error('Error fetching search results:', error)
+    }
+  }
+
+  console.log(searchResults)
+
+  useEffect(() => {
+    if (search.length > 2) {
+      const timeout = setTimeout(() => {
+        console.log('searching')
+
+        getSearchRes()
+      }, 200)
+      return () => clearTimeout(timeout)
+    }
+  }, [search])
+
+  return (
+    <Screen0 className='gap-5 p-5'>
+      <div className='grid gap-5 sm:gap-7'>
+        {searchResults.length > 0 ? (
+          searchResults.map((item, index) => <People key={index} people={item} />)
+        ) : (
+          <div className='flex items-center justify-center gap-2'>
+            <ServerCrash size={24} />
+            <div className='text-sm font-medium'>No results found</div>
+          </div>
+        )}
       </div>
     </Screen0>
   )
 }
 
-// function FriendRequests() {
-//   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([])
-//   const [nextPage, setNextPage] = useState('')
-//   const ref = useRef<HTMLDivElement>(null)
-//   const [total, setTotal] = useState(0)
+function Posts({ search }: { search: string }) {
+  const [searchResults, setSearchResults] = useState<PostT[] | []>([])
+  const [totalSearchResults, setTotalSearchResults] = useState(0)
+  const [nextPageUrl, setNextPageUrl] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
 
-//   async function handleGetFriendRequests() {
-//     const response = await getFriendRequests()
+  async function getSearchRes() {
+    try {
+      const res = await axios.post('api/search/post', { search })
+      setTotalSearchResults(res.data.total)
+      setSearchResults(res.data.posts)
+      setNextPageUrl(res.data.nextPageUrl)
+      console.log(res.data.posts)
+    } catch (error: any) {
+      console.error('Error fetching search results:', error)
+    }
+  }
 
-//     console.log(response)
+  async function getNewPage() {
+    try {
+      const res = await axios.post(nextPageUrl, { search })
+      setTotalSearchResults(res.data.total)
+      setSearchResults([...searchResults, ...res.data.posts])
+      console.log(typeof res.data.posts)
 
-//     if (response.error) {
-//       console.log(response.message)
-//       return
-//     }
+      setNextPageUrl(res.data.nextPageUrl)
+    } catch (error: any) {
+      console.error('Error fetching search results:', error)
+    }
+  }
 
-//     setFriendRequests(response.friendRequests)
-//     setNextPage(response.nextPage)
-//     setTotal(response.total)
-//   }
-//   async function getNextFriendRequests(nextPage: string) {
-//     if (!nextPage) return console.log('No more friend requests')
+  console.log(searchResults)
+  // console.log('total ', totalSearchResults)
 
-//     console.log('next page', nextPage)
+  useEffect(() => {
+    if (search.length > 2) {
+      const timeout = setTimeout(() => {
+        console.log('searching')
 
-//     try {
-//       const response = await axios.get(nextPage)
-//       console.log(response.data)
-//       setFriendRequests([...friendRequests, ...response.data.friendRequests])
-//       setNextPage(response.data.nextPage)
-//     } catch (error: any) {
-//       console.log(error.message)
-//     }
-//   }
+        getSearchRes()
+      }, 200)
+      return () => clearTimeout(timeout)
+    }
+  }, [search])
 
-//   useEffect(() => {
-//     handleGetFriendRequests()
-//   }, [])
+  useEffect(() => {
+    if (ref.current) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          getNewPage()
+        }
+      })
+      observer.observe(ref.current)
+      return () => observer.disconnect()
+    }
+  }, [ref])
 
-//   useEffect(() => {
-//     const observer = new IntersectionObserver((entries) => {
-//       if (entries[0].isIntersecting) {
-//         getNextFriendRequests(nextPage)
-//       }
-//     })
+  return (
+    <Screen0 className='gap-5 px-5'>
+      <div className='grid gap-5 sm:gap-7'></div>
+      {searchResults.length > 0 ? (
+        searchResults.map((item, index) => <Post key={index} post={item} />)
+      ) : (
+        <div className='flex items-center justify-center gap-2'>
+          <ServerCrash size={24} />
+          <div className='text-sm font-medium'>No results found</div>
+        </div>
+      )}
+      <div ref={ref}></div>
+    </Screen0>
+  )
+}
 
-//     if (ref.current) observer.observe(ref.current)
-//   }, [nextPage])
+function Suggestions() {
+  const [suggestions, setSuggestions] = useState<PeopleT[] | []>([])
 
-//   return (
-//     <Screen0 className='gap-5'>
-//       <div className='text-lg font-semibold'>
-//         {' '}
-//         Follow Requests
-//         <span className='px-2 text-red-500'>{total > 0 ? total : ''}</span>
-//       </div>
-//       <div className='grid gap-5 sm:gap-7'>
-//         {friendRequests.map((friendRequest, index) => (
-//           <FriendRequest key={index} friendRequest={friendRequest} />
-//         ))}
-//       </div>
-//       <div ref={ref}></div>
-//     </Screen0>
-//   )
-// }
+  async function getSuggestions() {
+    try {
+      const res = await axios.post('api/search/suggestions')
+      setSuggestions(res.data.users)
+    } catch (error: any) {
+      console.error('Error fetching suggestions:', error)
+    }
+  }
 
-// function FriendRequest({ friendRequest }: { friendRequest: FriendRequest }) {
-//   const [isAccepted, setIsAccepted] = useState(false)
-//   const [isDeleted, setIsDeleted] = useState(false)
-//   const router = useRouter()
+  useEffect(() => {
+    getSuggestions()
+  }, [])
 
-//   if (isDeleted) return null
+  console.log(suggestions)
 
-//   return (
-//     <div
-//       className='flex items-center gap-3'
-//       onClick={() => {
-//         router.push(`/profile/${friendRequest.senderDetails.username}`)
-//       }}
-//     >
-//       <img src={friendRequest.senderDetails.profilePic.imageUrl} alt='' className='size-20 rounded-full sm:size-24' />
-//       <div className='grid w-full gap-2.5 pt-1'>
-//         <div className='px-2'>
-//           <div className='text-base font-semibold sm:text-lg'>{friendRequest.senderDetails.name}</div>
-//           <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-sm'>
-//             {friendRequest.senderDetails.username}
-//           </div>
-//         </div>
-//         <div className='flex w-full items-center justify-between gap-3'>
-//           {isAccepted ? (
-//             <Button variant='filled' className='rounded-xs py-2 text-xs sm:py-3' disabled={isAccepted}>
-//               Accepted
-//             </Button>
-//           ) : (
-//             <>
-//               <Button
-//                 variant='filled'
-//                 className='rounded-xs py-2 text-xs sm:py-3'
-//                 onClick={(e) => {
-//                   e.stopPropagation()
-//                   console.log(friendRequest._id)
-
-//                   handleAcceptRequest(friendRequest._id, setIsAccepted)
-//                 }}
-//                 disabled={isAccepted}
-//               >
-//                 Accept
-//               </Button>
-//               <Button
-//                 variant='outline'
-//                 className='rounded-xs border-[1.5px] py-2 text-xs sm:py-3'
-//                 onClick={(e) => {
-//                   e.stopPropagation()
-//                   handleDeleteRequest(friendRequest._id, setIsDeleted)
-//                 }}
-//                 disabled={isDeleted}
-//               >
-//                 Delete
-//               </Button>
-//             </>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
-
-// function Suggestions() {
-//   const router = useRouter()
-//   return (
-//     <Screen0 className='gap-5'>
-//       <div className='text-lg font-semibold'>You may know</div>
-//       <div className='grid gap-5 sm:gap-7'>
-//         <People />
-//         <People />
-//         <People />
-//       </div>
-//     </Screen0>
-//   )
-// }
-
-// function People() {
-//   return (
-//     <div className='flex items-center gap-3'>
-//       <img src='/images/img1.png' alt='' className='size-20 rounded-full sm:size-24' />
-//       <div className='grid w-full gap-2.5 pt-1'>
-//         <div className='px-2'>
-//           <div className='text-base font-semibold sm:text-lg'>Ananta Karmakar</div>
-//           <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-sm'>codeAntu</div>
-//         </div>
-//         <div className='flex w-full items-center justify-between gap-3'>
-//           <Button
-//             variant='filled'
-//             className='rounded-xs py-2 text-xs sm:py-3'
-//             onClick={(e) => {
-//               e.stopPropagation()
-//             }}
-//           >
-//             Follow
-//           </Button>
-//           <Button variant='outline' className='rounded-xs border-[1.5px] py-2 text-xs sm:py-3'>
-//             Message
-//           </Button>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
-
-// export interface SentRequestT {
-//   _id: string
-//   receiverDetails: {
-//     name: string
-//     username: string
-//     profilePic: {
-//       imageUrl: string
-//       publicId: string
-//     }
-//     bio: string
-//   }
-// }
-
-// function SentRequests() {
-//   const [sentRequests, setSentRequests] = useState<SentRequestT[]>([])
-//   const [nextPage, setNextPage] = useState('')
-//   const ref = useRef<HTMLDivElement>(null)
-//   const [total, setTotal] = useState(0)
-
-//   async function handleGetSentRequests() {
-//     const response = await getSentRequests()
-//     if (response.error) {
-//       console.log(response.message)
-//       setSentRequests((prevRequests) => [...prevRequests, ...response.data.friendRequests])
-//     }
-//     console.log(response)
-
-//     setSentRequests(response.sentRequests)
-//     setNextPage(response.nextPage)
-//     setTotal(response.totalRequests)
-//   }
-
-//   async function getNextSentRequests(nextPage: string) {
-//     if (!nextPage) return console.log('No more sent requests')
-
-//     try {
-//       const response = await axios.post(nextPage)
-//       console.log(response.data)
-//       setSentRequests([...sentRequests, ...response.data.sentRequests])
-//       setNextPage(response.data.nextPage)
-//     } catch (error: any) {
-//       console.log(error.message)
-//     }
-//   }
-
-//   useEffect(() => {
-//     handleGetSentRequests()
-//   }, [])
-
-//   useEffect(() => {
-//     const observer = new IntersectionObserver((entries) => {
-//       if (entries[0].isIntersecting) {
-//         getNextSentRequests(nextPage)
-//       }
-//     })
-
-//     if (ref.current) observer.observe(ref.current)
-//   }, [nextPage])
-
-//   return (
-//     <Screen0 className='gap-5'>
-//       <div className='text-lg font-semibold'>
-//         Sent Requests
-//         <span className='px-2 text-red-500'>{total > 0 ? total : ''}</span>
-//       </div>
-
-//       <div className='grid gap-5 sm:gap-7'>
-//         {sentRequests.map((sentRequest, index) => (
-//           <SentRequest key={index} sentRequest={sentRequest} />
-//         ))}
-//       </div>
-//       <div ref={ref}></div>
-//     </Screen0>
-//   )
-// }
-
-// function SentRequest({ sentRequest }: { sentRequest: SentRequestT }) {
-//   console.log(sentRequest)
-//   const [isDeleted, setIsDeleted] = useState(false)
-//   const router = useRouter()
-
-//   if (isDeleted) return null
-
-//   return (
-//     <div
-//       className='flex items-center gap-3'
-//       onClick={() => {
-//         router.push(`/profile/${sentRequest.receiverDetails.username}`)
-//       }}
-//     >
-//       <img src={sentRequest.receiverDetails.profilePic.imageUrl} alt='' className='size-20 rounded-full sm:size-24' />
-//       <div className='grid w-full gap-2.5 pt-1'>
-//         <div className='px-2'>
-//           <div className='text-base font-semibold sm:text-lg'>{sentRequest.receiverDetails.name}</div>
-//           <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-sm'>
-//             {sentRequest.receiverDetails.username}
-//           </div>
-//         </div>
-//         <div className='flex w-full items-center justify-between gap-3'>
-//           <Button
-//             variant='filled'
-//             className='rounded-xs py-2 text-xs sm:py-3'
-//             onClick={(e) => {
-//               e.stopPropagation()
-//               handleDeleteRequest(sentRequest._id, setIsDeleted)
-//             }}
-//           >
-//             Withdraw
-//           </Button>
-//           <Button variant='outline' className='rounded-xs border-[1.5px] py-2 text-xs sm:py-3'>
-//             Message
-//           </Button>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
-
-// interface FriendsT {
-//   _id: string
-//   details: {
-//     name: string
-//     username: string
-//     profilePic: {
-//       imageUrl: string
-//       publicId: string
-//     }
-//     bio: string
-//   }
-// }
-
-// function Friends() {
-//   const [friends, setFriends] = useState<FriendsT[]>([])
-//   const ref = useRef<HTMLDivElement>(null)
-//   const [total, setTotal] = useState(0)
-//   const router = useRouter()
-
-//   async function handleGetFriends() {
-//     try {
-//       const response = await axios.post('/api/user/getFriends')
-//       console.log(response.data)
-//       setFriends(response.data.friends)
-//       setTotal(response.data.total)
-//     } catch (error: any) {
-//       console.log('error', error)
-//     }
-//   }
-
-//   useEffect(() => {
-//     handleGetFriends()
-//   }, [])
-
-//   return (
-//     <Screen0 className='gap-5'>
-//       <div className='text-lg font-semibold'>
-//         Friends
-//         <span className='px-2 text-red-500'>{total > 0 ? total : ''}</span>
-//       </div>
-
-//       <div className='grid gap-5 sm:gap-7'>
-//         {friends.map((sentRequest, index) => (
-//           <Friend key={index} friend={sentRequest} />
-//         ))}
-//       </div>
-//       <div ref={ref}></div>
-//     </Screen0>
-//   )
-// }
-
-// function Friend({ friend }: { friend: FriendsT }) {
-//   const router = useRouter()
-//   return (
-//     <div
-//       className='flex items-center gap-3'
-//       onClick={() => {
-//         router.push(`/profile/${friend.details.username}`)
-//       }}
-//     >
-//       <img src={friend.details.profilePic.imageUrl} alt='' className='size-20 rounded-full sm:size-24' />
-//       <div className='grid w-full gap-2.5 pt-1'>
-//         <div className='px-2'>
-//           <div className='text-base font-semibold sm:text-lg'>{friend.details.name}</div>
-//           <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-sm'>
-//             {friend.details.username}
-//           </div>
-//         </div>
-//         <div className='flex w-full items-center justify-between gap-3'>
-//           <Button variant='outline' className='rounded-xs border-[1.5px] py-2 text-xs sm:py-3'>
-//             Message
-//           </Button>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
+  return (
+    <Screen0 className='gap-5 px-5'>
+      <div className='text-lg font-semibold'>Suggestions</div>
+      {/* <div className='grid gap-5 sm:gap-7'></div> */}
+      {suggestions.map((item, index) => (
+        <People key={index} people={item} />
+      ))}
+    </Screen0>
+  )
+}

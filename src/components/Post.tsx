@@ -164,30 +164,32 @@ export default function Post({ post }: { post: PostT }) {
         </Swiper>
       </div>
       <div className='flex select-none items-center justify-between gap-5 pl-1 sm:px-2'>
-        <div className='flex flex-grow items-center gap-4 text-sm font-medium text-black/50 md:text-black/50'>
-          {isLiked ? (
-            <Button
-              variant='zero'
-              className='flex cursor-pointer items-center gap-1.5 font-normal'
-              onClick={() => {
-                handleUnlike()
-              }}
-            >
-              <Heart size={20} className='fill-current text-red-500' />
-            </Button>
-          ) : (
-            <Button
-              variant='zero'
-              className='flex cursor-pointer items-center gap-1.5 font-normal'
-              onClick={() => {
-                handleLike()
-              }}
-            >
-              <Heart size={20} className='' />
-            </Button>
-          )}
-          <p className=''>{nFormatter(post.likes)}</p>
-          <p className='hidden md:block'> {post.likes == 1 ? 'Like' : 'Likes'} </p>
+        <div className='flex flex-grow items-center gap-3 text-sm font-medium text-black/50 md:text-black/50'>
+          <div className='flex items-center justify-normal gap-1.5'>
+            {isLiked ? (
+              <Button
+                variant='zero'
+                className='flex cursor-pointer items-center gap-1.5 font-normal'
+                onClick={() => {
+                  handleUnlike()
+                }}
+              >
+                <Heart size={20} className='fill-current text-red-500' />
+              </Button>
+            ) : (
+              <Button
+                variant='zero'
+                className='flex cursor-pointer items-center gap-1.5 font-normal'
+                onClick={() => {
+                  handleLike()
+                }}
+              >
+                <Heart size={20} className='' />
+              </Button>
+            )}
+            <p className=''>{nFormatter(post.likes)}</p>
+            <p className='hidden md:block'> {post.likes == 1 ? 'Like' : 'Likes'} </p>
+          </div>
           <Drawer>
             <DrawerTrigger asChild>
               <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>

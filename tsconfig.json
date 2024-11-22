@@ -28,7 +28,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/models/userModel.ts",
-    "src/app/(client)/social"
+    "src/app/(client)/social_old"
   ],
   "exclude": ["node_modules"]
 }

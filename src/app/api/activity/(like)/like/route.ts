@@ -32,12 +32,12 @@ export async function POST(request: NextRequest) {
       like.reaction = reaction
       await like.save()
     } else {
+      const like = await Like.create({ postId, userId, reaction })
+      if (!like) {
+        return NextResponse.json({ error: 'Like not added' }, { status: 500 })
+      }
       post.likes += 1
       const updatedPost = await post.save()
-      if (!updatedPost) {
-        return NextResponse.json({ error: 'Post not found' }, { status: 404 })
-      }
-      await Like.create({ postId, userId, reaction })
     }
 
     if (post.userId.toString() !== userId) {

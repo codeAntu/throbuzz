@@ -33,6 +33,7 @@
     "punycode": "^2.3.1",
     "react": "^18",
     "react-dom": "^18",
+    "react-loading-skeleton": "^3.5.0",
     "recharts": "^2.12.7",
     "resend": "^4.0.0",
     "swiper": "^11.1.14",

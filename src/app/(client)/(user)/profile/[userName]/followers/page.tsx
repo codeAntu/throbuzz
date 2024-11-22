@@ -130,6 +130,7 @@ export default function Followers({
 function Follower(props: FollowersT) {
   const [isFollowing, setIsFollowing] = useState(props.isFollowing)
   const [isMe, setIsMe] = useState(props.isMe)
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   return (
     <div className='flex select-none items-center gap-4'>
@@ -166,7 +167,7 @@ function Follower(props: FollowersT) {
                 className='rounded-[8px] bg-black px-5 py-2 text-xs font-medium text-white dark:bg-white dark:text-black sm:py-2'
                 onClick={(e) => {
                   e.stopPropagation()
-                  handleFollow(props.details._id, setIsFollowing)
+                  handleFollow(props.details._id, setIsFollowing, setLoading)
                 }}
                 disabled={isFollowing}
               >
@@ -178,7 +179,7 @@ function Follower(props: FollowersT) {
                 className='rounded-[8px] bg-black/10 px-5 py-2 text-xs font-medium text-black dark:bg-white/10 dark:text-white sm:py-2'
                 onClick={(e) => {
                   e.stopPropagation()
-                  handleUnFollow(props.details._id, setIsFollowing)
+                  handleUnFollow(props.details._id, setIsFollowing, setLoading)
                 }}
                 disabled={!isFollowing}
               >

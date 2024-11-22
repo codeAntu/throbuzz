@@ -6,6 +6,8 @@ import Header from '@/components/Header'
 import Img from '@/components/Img'
 import Post from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
+import PostSkeleton from '@/components/skeleton/PostSkeleton'
+import ProfileSkeleton from '@/components/skeleton/ProfileSkeleton'
 import { handleFollow, handleUnFollow } from '@/handelers/helpers/follow'
 import { socialMediaUrls } from '@/lib/const'
 import { PostT, UserT } from '@/lib/types'
@@ -21,10 +23,14 @@ import {
   MapPin,
   MessageCircleMore,
   MessageSquareText,
+  MoveRight,
   Pencil,
   Phone,
   Search,
+  SearchCheckIcon,
+  SearchIcon,
   Twitter,
+  User,
   UserCheck,
   UserPlus,
 } from 'lucide-react'
@@ -86,7 +92,7 @@ function Profile({ userName }: { userName: string }) {
     try {
       const response = await axios.post('/api/user/getUser', { username: userName })
       setUser(response.data.user)
-      setFollowed(response.data.isFollowing)
+      setFollowed(response.data.user.isFollowing)
       console.log(response.data)
     } catch (error: any) {
       console.error(error)
@@ -98,18 +104,27 @@ function Profile({ userName }: { userName: string }) {
     getUser()
   }, [])
 
-  if (loading) {
-    return (
-      <div className='px-5 py-16 text-center'>
-        <div className='text-lg font-semibold text-black/70 dark:text-white/70'>Loading...</div>
-      </div>
-    )
+  if (!user && loading) {
+    return <ProfileSkeleton />
   }
 
   if (!user) {
     return (
-      <div className='px-5 py-16 text-center'>
-        <div className='text-lg font-semibold text-black/70 dark:text-white/70'>User not found.</div>
+      <div className='grid items-center gap-10 px-5 py-16 text-center'>
+        <div className='space-y-6'>
+          <img src='/icons/user.png' alt='' className='mx-auto h-16 w-16 rounded-full' />
+          <div className='text-lg font-bold text-black/70 dark:text-white/70'>User not found.</div>
+        </div>
+        <Button
+          className='mx-auto flex w-auto items-center gap-2.5 px-9 py-3'
+          onClick={() => {
+            router.push('/social')
+          }}
+        >
+          <SearchIcon size={18} className='text-white dark:text-black' />
+          <div className='text-sm font-medium'>Search for user </div>
+          <MoveRight size={18} className='text-white dark:text-black' />
+        </Button>
       </div>
     )
   }
@@ -118,7 +133,6 @@ function Profile({ userName }: { userName: string }) {
     <div className='flex flex-col gap-5 px-5 py-4'>
       <div className='flex w-full items-center gap-5'>
         <div className='size-24 overflow-hidden rounded-full'>
-          {/* <img src={user.profilePic.imageUrl} alt='' className='aspect-square w-28 rounded-full' /> */}
           <Img imageUrl={user.profilePic.imageUrl} publicId={user.profilePic.publicId} height={500} width={500} />
         </div>
         <div className='grid flex-grow gap-5 py-4'>
@@ -174,7 +188,6 @@ function Profile({ userName }: { userName: string }) {
                 router.push('/post/create')
               }}
             >
-              {/* post */}
               <MessageSquareText size={18} className='' />
               <span>Post</span>
             </Button>
@@ -186,8 +199,11 @@ function Profile({ userName }: { userName: string }) {
                 variant='filled'
                 className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
                 onClick={() => {
-                  handleUnFollow(user.id, setFollowed)
+                  console.log('clicked')
+
+                  handleUnFollow(user.id, setFollowed, setLoading)
                 }}
+                disabled={loading}
               >
                 <UserCheck size={18} className='' /> Following
               </Button>
@@ -196,10 +212,10 @@ function Profile({ userName }: { userName: string }) {
                 variant='filled'
                 className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
                 onClick={() => {
-                  console.log(userName)
-
-                  handleFollow(user.id, setFollowed)
+                  console.log('clicked')
+                  handleFollow(user.id, setFollowed, setLoading)
                 }}
+                disabled={loading}
               >
                 <UserPlus size={18} className='' /> Follow
               </Button>
@@ -304,8 +320,9 @@ function Posts({ username }: { username: string }) {
 
   if (loading) {
     return (
-      <div className='px-5 py-16 text-center'>
-        <div className='text-lg font-semibold text-black/70 dark:text-white/70'>Loading...</div>
+      <div className='space-y-2 px-5 py-5'>
+        <div className='h-6 w-16 rounded-sm bg-gray-100 dark:bg-zinc-900'></div>
+        <PostSkeleton />
       </div>
     )
   }
@@ -320,9 +337,14 @@ function Posts({ username }: { username: string }) {
   return (
     <>
       <div className='space-y-3 px-3.5 py-4'>
+        {/* <div className='h-4 w-12 rounded-full bg-gray-50 dark:bg-zinc-900'>
+          <div className='h-5 w-5 bg-slate-200/70'></div>
+        </div> */}
+
         <div className='text-base font-semibold'>{posts.length > 0 && `Posts : ${posts.length}`}</div>
         {posts.map((post) => (
           <Post key={post._id} post={post} />
+          // <PostSkeleton key={post._id} />
         ))}
       </div>
     </>
