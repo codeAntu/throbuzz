@@ -190,8 +190,6 @@ function Account({ search }: { search: string }) {
   )
 }
 
-export interface TempT {}
-
 function Posts({ search }: { search: string }) {
   const [searchResults, setSearchResults] = useState<PostT[] | []>([])
   const [totalSearchResults, setTotalSearchResults] = useState(0)

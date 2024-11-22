@@ -62,32 +62,14 @@ export default function UserProfile({
           }}
           className=''
         >
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild className='p-2'>
-              <Ellipsis size={20} className='' />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align='end'
-              className='border border-black/10 bg-white/10 backdrop-blur-md dark:border-white/10 dark:bg-black/25'
-            >
-              <DropdownMenuItem
-                className=''
-                onClick={() => {
-                  router.push('/settings')
-                }}
-              >
-                <Settings size={17} className='mr-2' />
-                Setting
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
           <Search size={22} className='' />
         </Button>
       </Header>
       <div className='w-full'>
         <Profile userName={params.userName} />
         <hr />
-        <Posts username={params.userName} />
+        {/* Here is a problem  */}
+        {/* <Posts username={params.userName} /> */}
       </div>
     </Screen0>
   )

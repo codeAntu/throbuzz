@@ -61,7 +61,8 @@ export default function Sidebar() {
               <Button
                 key={i}
                 variant='zero'
-                className={`flex w-full gap-4 ${path === p.path ? 'my-2 bg-black px-5 py-4 text-white dark:bg-white dark:text-black' : 'px-5 py-3.5 text-black dark:text-white'}`}
+                className={`flex w-full gap-4 px-5 py-4 ${path === p.path ? 'my-2 bg-black text-white dark:bg-white dark:text-black' : 'text-black dark:text-white'}`}
+                // className={`flex w-full gap-4 ${path === p.path ? 'my-2 bg-black px-5 py-4 text-white dark:bg-white dark:text-black' : 'px-5 py-3.5 text-black dark:text-white'}`}
                 onClick={() => router.push(p.path)}
               >
                 {p.icon}
@@ -89,5 +90,85 @@ export default function Sidebar() {
         </div>
       </SheetContent>
     </Sheet>
+  )
+}
+
+export function OpenSidebar() {
+  const path = usePathname()
+  const router = useRouter()
+  const savedUser = useStore((state) => state.savedUser)
+  const clearSavedUser = useStore((state) => state.clearSavedUser)
+  return (
+    <div className='fixed left-0 hidden h-[100dvh] w-full max-w-[400px] border border-l px-5 xl:block'>
+      <Button
+        variant='zero'
+        className='flex w-full flex-col items-center justify-center gap-5 py-8 sm:gap-8'
+        onClick={() => {
+          if (!savedUser.username) router.push('/login')
+          router.push(`/profile/${savedUser.username}`)
+        }}
+      >
+        <div className='aspect-square w-28 overflow-hidden sm:w-32'>
+          <Img
+            imageUrl={savedUser.profilePic?.imageUrl || '/icons/user.png'}
+            publicId={savedUser.profilePic?.publicId || ''}
+            height={500}
+            width={500}
+          />
+        </div>
+        {savedUser.username ? (
+          <div className='text-center'>
+            <div className='text-lg font-semibold'>{savedUser.name}</div>
+            <div className='text-xs font-semibold text-black/60 dark:text-white/60'>{savedUser.username}</div>
+          </div>
+        ) : (
+          <div className='w-auto rounded-sm bg-black px-8 py-2 text-xs text-white dark:bg-white dark:text-black'>
+            Login
+          </div>
+        )}
+      </Button>
+      <div className='flex h-[70dvh] w-full flex-grow flex-col justify-between'>
+        <div>
+          {paths.map((p, i) => (
+            <Button
+              key={i}
+              variant='zero'
+              className={`flex w-full gap-4 px-5 py-4 ${path === p.path ? 'my-2 bg-black text-white dark:bg-white dark:text-black' : 'text-black dark:text-white'}`}
+              onClick={() => router.push(p.path)}
+            >
+              {p.icon}
+              <span className='w-full text-left'>{p.name}</span>
+            </Button>
+          ))}
+        </div>
+        <div>
+          {savedUser.username && (
+            <Button
+              variant='zero'
+              className='flex w-full bg-red-100 px-5 py-4 text-red-500'
+              onClick={() => {
+                logOut(() => {
+                  clearSavedUser()
+                  router.push('/')
+                })
+              }}
+            >
+              <LogOut size={24} className='' />
+              <span className='w-full text-left'>Logout</span>
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function Right() {
+  return (
+    <div className='fixed right-0 hidden h-[100dvh] w-full max-w-[400px] border border-r p-5 2xl:block'>
+      <div>New feathers</div>
+      <div>Suggestions</div>
+      <div>Stories</div>
+    </div>
   )
 }

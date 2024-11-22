@@ -94,7 +94,7 @@ export default function Followers({
   }, [nextPageUrl])
 
   return (
-    <Screen0>
+    <Screen0 className=''>
       <Header title='Followers' />
       <div className='grid select-none gap-4 px-5 py-4'>
         <div className='flex w-full items-center justify-center gap-2 rounded-full bg-black/5 px-3 py-2.5 text-xs text-black/80 dark:bg-white/5 dark:text-white/80'>

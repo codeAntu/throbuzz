@@ -3,6 +3,7 @@ import { Inter, Poppins } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import GetMe from '@/components/GetMe'
+import { OpenSidebar, Right } from '@/components/Sidebar'
 
 const inter = Inter({ subsets: ['latin'] })
 const poppins = Poppins({
@@ -25,7 +26,13 @@ export default function RootLayout({
       <body className={poppins.className + ' ' + ''}>
         <body>
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-            {children}
+            <div className='flex justify-center'>
+              <OpenSidebar />
+              <div className='hidden w-full max-w-[400px] xl:block'></div>
+              {children}
+              <div className='hidden w-full max-w-[400px] 2xl:block'></div>
+              <Right />
+            </div>
             <GetMe />
           </ThemeProvider>
         </body>
