@@ -1,4 +1,4 @@
-import { CommentReplaysT } from '@/components/Post'
+import { CommentReplaysT } from '@/lib/types'
 import { create } from 'zustand'
 
 interface newReplyT {
@@ -7,52 +7,33 @@ interface newReplyT {
   clearNewReply: () => void
 }
 
+const initialReply: CommentReplaysT = {
+  _id: '',
+  userId: '',
+  commentId: '',
+  content: '',
+  likes: 0,
+  createdAt: new Date(),
+  user: {
+    profilePic: {
+      imageUrl: '',
+      publicId: '',
+    },
+    _id: '',
+    name: '',
+    username: '',
+  },
+  isLiked: false,
+}
+
 const newReply = create<newReplyT>((set) => {
   return {
-    newReply: {
-      _id: '',
-      userId: {
-        profilePic: {
-          imageUrl: '',
-          publicId: '',
-        },
-        _id: '',
-        name: '',
-      },
-      commentId: '',
-      postId: '',
-      content: '',
-      likes: 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      __v: 0,
-      isLiked: false,
-    },
+    newReply: initialReply,
     setNewReply: (data: CommentReplaysT) => {
       set({ newReply: data })
     },
     clearNewReply: () => {
-      set({
-        newReply: {
-          _id: '',
-          userId: {
-            profilePic: {
-              imageUrl: '',
-              publicId: '',
-            },
-            _id: '',
-            name: '',
-          },
-          commentId: '',
-          postId: '',
-          content: '',
-          likes: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          __v: 0,
-          isLiked: false,
-        },
-      })
+      set({ newReply: initialReply })
     },
   }
 })

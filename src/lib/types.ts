@@ -1,5 +1,3 @@
-import { Document, Schema } from 'mongoose'
-
 export interface ResponseT {
   title: string
   error: string
@@ -111,21 +109,105 @@ export interface UserT {
     dob: string
   }
 }
-
-interface CommentT {
+export interface PostT {
   _id: string
-  userId: {
-    profilePic: { imageUrl: string; publicId: string }
-    _id: string
+  author: {
     name: string
     username: string
+    profilePic: {
+      imageUrl: string
+      publicId: string
+    }
   }
-  postId: string
-  content: string
+  userId: string
+  text: string
+  postImages: {
+    publicId: string
+    imageUrl: string
+    _id: string
+  }[]
+  visibility: string
   likes: number
-  isLiked: boolean
   comments: number
   createdAt: Date
   updatedAt: Date
-  __v: number
+  // __v: number
+  isLiked: boolean
+  isMine?: boolean
+  color:
+    | 'slate'
+    | 'stone'
+    | 'red'
+    | 'orange'
+    | 'amber'
+    | 'yellow'
+    | 'lime'
+    | 'green'
+    | 'emerald'
+    | 'teal'
+    | 'cyan'
+    | 'sky'
+    | 'blue'
+    | 'indigo'
+    | 'violet'
+    | 'purple'
+    | 'pink'
+    | 'fuchsia'
 }
+
+export interface CommentT {
+  _id: string
+  userId: string
+  postId: string
+  content: string
+  likes: number
+  comments: number
+  createdAt: Date
+  user: {
+    _id: string
+    name: string
+    username: string
+    profilePic: {
+      imageUrl: string
+      publicId: string
+    }
+  }
+  isLiked: boolean
+}
+
+export interface CommentReplaysT {
+  _id: string
+  userId: string
+  commentId: string
+  content: string
+  likes: number
+  createdAt: Date
+  user: {
+    _id: string
+    name: string
+    username: string
+    profilePic: {
+      imageUrl: string
+      publicId: string
+    }
+  }
+  isLiked: boolean
+}
+
+// interface CommentT {
+//   _id: string
+//   userId: {
+//     profilePic: { imageUrl: string; publicId: string }
+//     _id: string
+//     name: string
+//     username: string
+//   }
+//   postId: string
+//   content: string
+//   likes: number
+//   isLiked: boolean
+//   comments: number
+//   createdAt: Date
+//   updatedAt: Date
+//   __v: number
+// }

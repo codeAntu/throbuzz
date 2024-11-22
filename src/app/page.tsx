@@ -5,9 +5,10 @@
 
 import { Button } from '@/components/Button'
 import { NewPost } from '@/components/NewPost'
-import Post, { PostT } from '@/components/Post'
+import Post from '@/components/Post'
 import { Screen } from '@/components/Screen'
 import Sidebar from '@/components/Sidebar'
+import { PostT } from '@/lib/types'
 import useStore from '@/store/store'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'

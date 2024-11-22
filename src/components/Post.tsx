@@ -2,121 +2,24 @@
 /* eslint-disable @next/next/no-img-element */
 'use client '
 import { Button } from '@/components/Button'
+import Img from '@/components/Img'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
+import { getComments, likeComment, unlikeComment } from '@/handelers/post/comment'
+import { like, unlike } from '@/handelers/post/like'
+import { likeReplay, unlikeReplay } from '@/handelers/post/replay'
 import { colors } from '@/lib/const'
+import { CommentReplaysT, CommentT, PostT } from '@/lib/types'
+import newReply from '@/store/newReply'
+import useStore from '@/store/store'
 import { nFormatter } from '@/utils/utils'
-import {
-  Divide,
-  Ellipsis,
-  EllipsisVertical,
-  Heart,
-  Link,
-  LoaderCircle,
-  MessageSquareText,
-  Pencil,
-  Trash,
-  Trash2,
-  X,
-} from 'lucide-react'
+import axios from 'axios'
+import { EllipsisVertical, Heart, Link, LoaderCircle, MessageSquareText, Pencil, Trash2, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import 'swiper/css'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
-import { like, unlike } from '@/handelers/post/like'
-import { getComments, likeComment, unlikeComment } from '@/handelers/post/comment'
-import axios from 'axios'
-import Img from '@/components/Img'
-import useStore from '@/store/store'
-import { set } from 'mongoose'
-import { useRouter } from 'next/navigation'
-import { likeReplay, unlikeReplay } from '@/handelers/post/replay'
-import newReply from '@/store/newReply'
 import PostImage from './PostImage'
-
-export interface PostT {
-  _id: string
-  author: {
-    name: string
-    username: string
-    profilePic: {
-      imageUrl: string
-      publicId: string
-    }
-  }
-  userId: string
-  text: string
-  postImages: {
-    publicId: string
-    imageUrl: string
-    _id: string
-  }[]
-  visibility: string
-  likes: number
-  comments: number
-  createdAt: Date
-  updatedAt: Date
-  // __v: number
-  isLiked: boolean
-  isMine?: boolean
-  color:
-    | 'slate'
-    | 'stone'
-    | 'red'
-    | 'orange'
-    | 'amber'
-    | 'yellow'
-    | 'lime'
-    | 'green'
-    | 'emerald'
-    | 'teal'
-    | 'cyan'
-    | 'sky'
-    | 'blue'
-    | 'indigo'
-    | 'violet'
-    | 'purple'
-    | 'pink'
-    | 'fuchsia'
-}
-
-export interface CommentT {
-  _id: string
-  userId: string
-  postId: string
-  content: string
-  likes: number
-  comments: number
-  createdAt: Date
-  user: {
-    _id: string
-    name: string
-    username: string
-    profilePic: {
-      imageUrl: string
-      publicId: string
-    }
-  }
-  isLiked: boolean
-}
-
-export interface CommentReplaysT {
-  _id: string
-  userId: string
-  commentId: string
-  content: string
-  likes: number
-  createdAt: Date
-  user: {
-    _id: string
-    name: string
-    username: string
-    profilePic: {
-      imageUrl: string
-      publicId: string
-    }
-  }
-  isLiked: boolean
-}
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
 
 export default function Post({ post }: { post: PostT }) {
   const [isExpanded, setIsExpanded] = useState(false)

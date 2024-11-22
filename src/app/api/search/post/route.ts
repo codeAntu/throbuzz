@@ -1,12 +1,10 @@
+import { connect } from '@/dbConfig/dbConfig'
 import { TokenDataT } from '@/lib/types'
+import Post from '@/models/postModel'
 import { parseJson } from '@/utils/utils'
+import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import jwt from 'jsonwebtoken'
-import { connect } from '@/dbConfig/dbConfig'
-import Post from '@/models/postModel'
-import { PostT } from '@/components/Post'
-import Like from '@/models/likeModel'
 
 connect()
 

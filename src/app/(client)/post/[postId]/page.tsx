@@ -1,8 +1,9 @@
 'use client'
 
 import Header from '@/components/Header'
-import Post, { PostT } from '@/components/Post'
+import Post from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
+import { PostT } from '@/lib/types'
 import axios from 'axios'
 import { useState } from 'react'
 

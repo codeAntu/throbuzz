@@ -4,20 +4,15 @@
 import { Button } from '@/components/Button'
 import Header from '@/components/Header'
 import Img from '@/components/Img'
-import Post, { PostT } from '@/components/Post'
+import Post from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { handleFollow, handleUnFollow } from '@/handelers/helpers/follow'
-import { follow } from '@/handelers/social/social'
 import { socialMediaUrls } from '@/lib/const'
-import { UserT } from '@/lib/types'
+import { PostT, UserT } from '@/lib/types'
 import { nFormatter } from '@/utils/utils'
 import axios from 'axios'
 import {
   Calendar,
-  ChevronLeft,
-  Ellipsis,
-  EllipsisVertical,
   GithubIcon,
   Instagram,
   Link,
@@ -29,8 +24,6 @@ import {
   Pencil,
   Phone,
   Search,
-  Settings,
-  Trash2,
   Twitter,
   UserCheck,
   UserPlus,

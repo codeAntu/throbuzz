@@ -28,8 +28,14 @@ interface UserT extends Document {
   forgotPasswordExpires: Date
   verificationCode: string
   verificationCodeExpires: Date
-  profilePic: mongoose.Schema.Types.Mixed
-  coverPic: mongoose.Schema.Types.Mixed
+  profilePic: {
+    imageUrl: string
+    publicId: string
+  }
+  coverPic: {
+    imageUrl: string
+    publicId: string
+  }
   followers: number
   following: number
   postsCount: number
