@@ -68,8 +68,7 @@ export default function UserProfile({
       <div className='w-full'>
         <Profile userName={params.userName} />
         <hr />
-        {/* Here is a problem  */}
-        {/* <Posts username={params.userName} /> */}
+        <Posts username={params.userName} />
       </div>
     </Screen0>
   )

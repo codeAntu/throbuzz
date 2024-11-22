@@ -7,23 +7,26 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import bcryptjs from 'bcryptjs'
 
-const dataZ = z.object({
-  OTP: z
-    .string({ required_error: 'OTP is required' })
-    .trim()
-    .min(6, { message: 'OTP must be at least 6 characters long' })
-    .max(6, { message: 'OTP must be at most 6 characters long' }),
-  newPassword: z
-    .string({ required_error: 'Password is required' })
-    .trim()
-    .min(8, { message: 'Password must be at least 5 characters long' })
-    .max(100, { message: 'Password must be at most 100 characters long' }),
-  confirmPassword: z
-    .string({ required_error: 'Password is required' })
-    .trim()
-    .min(8, { message: 'Password must be at least 5 characters long' })
-    .max(100, { message: 'Password must be at most 100 characters long' }),
-})
+const dataZ = z
+  .object({
+    OTP: z
+      .string({ required_error: 'OTP is required' })
+      .trim()
+      .min(6, { message: 'OTP must be at least 6 characters long' })
+      .max(6, { message: 'OTP must be at most 6 characters long' }),
+    newPassword: z
+      .string({ required_error: 'Password is required' })
+      .trim()
+      .min(8, { message: 'Password must be at least 5 characters long' })
+      .max(100, { message: 'Password must be at most 100 characters long' }),
+    confirmPassword: z
+      .string({ required_error: 'Password is required' })
+      .trim()
+      .min(8, { message: 'Password must be at least 5 characters long' })
+      .max(100, { message: 'Password must be at most 100 characters long' }),
+  })
+  .strict()
+  .refine((data) => data.OTP, { message: 'OTP is required' })
 
 connect()
 
@@ -118,6 +121,7 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    const errorMessage = error.errors ? error.errors[0].message : error.message
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

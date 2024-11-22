@@ -156,7 +156,7 @@ export default function SignUpPage() {
           />
           {error && <Error error={error} />}
         </div>
-        <Button variant='accent' onClick={onSignUp} disabled={loading || !isUsernameAvailable}>
+        <Button variant='accent' onClick={onSignUp} disabled={loading}>
           {loading ? (
             <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
           ) : (

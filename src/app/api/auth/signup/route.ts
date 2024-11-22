@@ -32,7 +32,7 @@ const user = z
     password: z
       .string({ required_error: 'Password is required' })
       .trim()
-      .min(5, { message: 'Password must be at least 5 characters long' })
+      .min(8, { message: 'Password must be at least 8 characters long' })
       .max(100, { message: 'Password must be at most 100 characters long' }),
   })
   .strict()
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error: any) {
     console.log('error', error.message)
-
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    const errorMessage = error.errors ? error.errors[0].message : error.message
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

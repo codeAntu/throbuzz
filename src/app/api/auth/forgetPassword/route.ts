@@ -7,14 +7,17 @@ import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
-const dataZ = z.object({
-  email: z
-    .string({ required_error: 'Email is required' }) //
-    .trim()
-    .min(3, { message: 'Email must be at least 3 characters long' })
-    .max(100, { message: 'Email must be at most 100 characters long' })
-    .toLowerCase(),
-})
+const dataZ = z
+  .object({
+    email: z
+      .string({ required_error: 'Email is required' }) //
+      .trim()
+      .min(3, { message: 'Email must be at least 3 characters long' })
+      .max(100, { message: 'Email must be at most 100 characters long' })
+      .toLowerCase(),
+  })
+  .strict()
+  .refine((data) => data.email, { message: 'Email is required' })
 
 connect()
 
@@ -91,6 +94,7 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error: any) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    const errorMessage = error.errors ? error.errors[0].message : error.message
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

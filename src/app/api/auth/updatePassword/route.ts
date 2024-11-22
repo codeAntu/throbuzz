@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Password updated successfully' }, { status: 200 })
   } catch (error: any) {
-    return NextResponse.json({ error: error.message, success: false }, { status: 400 })
+    const errorMessage = error.errors ? error.errors[0].message : error.message
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
