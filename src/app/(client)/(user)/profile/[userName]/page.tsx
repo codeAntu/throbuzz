@@ -200,8 +200,11 @@ function Profile({ userName }: { userName: string }) {
                 className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
                 onClick={() => {
                   console.log('clicked')
-
-                  handleUnFollow(user.id, setFollowed, setLoading)
+                  user.followers -= 1
+                  const res = handleUnFollow(user.id, setFollowed, setLoading)
+                  if (!followed) {
+                    user.followers += 1
+                  }
                 }}
                 disabled={loading}
               >
@@ -213,7 +216,12 @@ function Profile({ userName }: { userName: string }) {
                 className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
                 onClick={() => {
                   console.log('clicked')
+                  user.followers += 1
                   handleFollow(user.id, setFollowed, setLoading)
+                  // have to improve there
+                  if (followed) {
+                    user.followers -= 1
+                  }
                 }}
                 disabled={loading}
               >
@@ -327,12 +335,12 @@ function Posts({ username }: { username: string }) {
     )
   }
 
-  // if (!posts)
-  //   return (
-  //     <div className='px-5 py-16 text-center'>
-  //       <div className='text-lg font-semibold text-black/70 dark:text-white/70'>Do not have any posts yet.</div>
-  //     </div>
-  //   )
+  if (posts.length === 0)
+    return (
+      <div className='px-5 py-16 text-center'>
+        <div className='text-lg font-semibold text-black/70 dark:text-white/70'>Do not have any posts yet.</div>
+      </div>
+    )
 
   return (
     <>

@@ -8,11 +8,12 @@ export async function handleFollow(id: string, setFollowed: any, setLoading: any
   if (response.error) {
     console.error(response.error)
     setFollowed(false)
-    return
+    return false
   }
   setFollowed(true)
   console.log(response)
   setLoading(false)
+  return true
 }
 
 export async function handleUnFollow(id: string, setFollowed: any, setLoading: any) {
@@ -24,9 +25,10 @@ export async function handleUnFollow(id: string, setFollowed: any, setLoading: a
   if (response.error) {
     console.log(response.error)
     setFollowed(true)
-    return
+    return false
   }
   console.log(response)
   setFollowed(false)
   setLoading(false)
+  return true
 }

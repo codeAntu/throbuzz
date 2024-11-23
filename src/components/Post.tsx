@@ -20,6 +20,8 @@ import 'swiper/css'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import PostImage from './PostImage'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
+import { deletePost } from '@/handelers/post/deletePost'
+import CommentSkeleton, { CommentReplaySkeleton } from './skeleton/CommentSkeleton'
 
 export default function Post({ post }: { post: PostT }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -27,6 +29,7 @@ export default function Post({ post }: { post: PostT }) {
   const [showReactions, setShowReactions] = useState()
   const [likeCount, setLikeCount] = useState(post.likes)
   const [copyLink, setCopyLink] = useState(false)
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   const toggleContent = () => {
@@ -34,6 +37,7 @@ export default function Post({ post }: { post: PostT }) {
   }
 
   async function handleLike() {
+    setLoading(true)
     post.likes = post.likes + 1
     setIsLiked(true)
     const response = await like({ postId: post._id, reaction: 'like' })
@@ -41,15 +45,29 @@ export default function Post({ post }: { post: PostT }) {
       post.likes = post.likes - 1
       setIsLiked(false)
     }
+    setLoading(false)
   }
 
   async function handleUnlike() {
+    setLoading(true)
     post.likes = post.likes - 1
     setIsLiked(false)
     const response = await unlike({ postId: post._id })
     if (response.error) {
       post.likes = post.likes + 1
       setIsLiked(true)
+    }
+    setLoading(false)
+  }
+
+  async function handleDelete(postId: string) {
+    setLoading(true)
+    const response = await deletePost(postId)
+    if (response.error) {
+      console.log(response.error)
+      setLoading(false)
+    } else {
+      router.push('/profile/' + post.author.username)
     }
   }
 
@@ -70,7 +88,7 @@ export default function Post({ post }: { post: PostT }) {
             publicId={post.author.profilePic.publicId}
             height={50}
             width={50}
-            className='aspect-square w-12 rounded-full'
+            className='w-12z aspect-square rounded-full'
           />
         </Button>
         <div className='flex flex-grow select-none items-center justify-between'>
@@ -116,7 +134,12 @@ export default function Post({ post }: { post: PostT }) {
                     <Pencil size={17} className='mr-2' />
                     Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem className='text-red-500'>
+                  <DropdownMenuItem
+                    className='text-red-500'
+                    onClick={() => {
+                      handleDelete(post._id)
+                    }}
+                  >
                     <Trash2 size={17} className='mr-2' />
                     Delete
                   </DropdownMenuItem>
@@ -134,35 +157,38 @@ export default function Post({ post }: { post: PostT }) {
       >
         {post.text}
       </div>
-      <div className=''>
-        <Swiper
-          spaceBetween={12}
-          pagination={{
-            clickable: false,
-          }}
-          autoplay={{
-            delay: 3000,
-          }}
-          onSlideChange={() => {}}
-          onSwiper={(swiper) => {}}
-          className='rounded-xl'
-          navigation
-          scrollbar={{ draggable: true }}
+      {post.postImages.length > 1 && (
+        <div className=''>
+          <Swiper
+            spaceBetween={12}
+            pagination={{
+              clickable: false,
+            }}
+            autoplay={{
+              delay: 3000,
+            }}
+            onSlideChange={() => {}}
+            onSwiper={(swiper) => {}}
+            className='rounded-xl'
+            navigation
+            scrollbar={{ draggable: true }}
 
-          // slidesPerView={3}
-        >
-          {post.postImages.map((img, index) => (
-            <SwiperSlide key={index} className='flex w-full items-center justify-center'>
-              <div className='flex w-full items-center justify-center bg-black/5'>
-                <PostImage imageUrl={img.imageUrl} alt='' publicId={img.publicId} />
-              </div>
-              <div className='absolute right-2 top-2 rounded-full bg-black/50 px-2.5 py-1 text-[10px] font-medium text-white/80 sm:text-sm'>
-                {index + 1} / {post.postImages.length}
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+            // slidesPerView={3}
+          >
+            {post.postImages.map((img, index) => (
+              <SwiperSlide key={index} className='flex w-full items-center justify-center'>
+                <div className='flex w-full items-center justify-center bg-black/5'>
+                  <PostImage imageUrl={img.imageUrl} alt='' publicId={img.publicId} />
+                </div>
+                <div className='absolute right-2 top-2 rounded-full bg-black/50 px-2.5 py-1 text-[10px] font-medium text-white/80 sm:text-sm'>
+                  {index + 1} / {post.postImages.length}
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      )}
+
       <div className='flex select-none items-center justify-between gap-5 pl-1 sm:px-2'>
         <div className='flex flex-grow items-center gap-3 text-sm font-medium text-black/50 md:text-black/50'>
           <div className='flex items-center justify-normal gap-1.5'>
@@ -173,6 +199,7 @@ export default function Post({ post }: { post: PostT }) {
                 onClick={() => {
                   handleUnlike()
                 }}
+                disabled={loading}
               >
                 <Heart size={20} className='fill-current text-red-500' />
               </Button>
@@ -183,6 +210,7 @@ export default function Post({ post }: { post: PostT }) {
                 onClick={() => {
                   handleLike()
                 }}
+                disabled={loading}
               >
                 <Heart size={20} className='' />
               </Button>
@@ -198,7 +226,9 @@ export default function Post({ post }: { post: PostT }) {
                 <p className='hidden md:block'> {post.comments == 1 ? 'Comment' : 'Comments'} </p>
               </Button>
             </DrawerTrigger>
-            <DrawerContent className={`wbackdrop-blur-3xl mx-auto min-h-[600px] max-w-[800px]`}>
+            <DrawerContent
+              className={`mx-2.5 min-h-[600px] max-w-[800px] rounded-3xl backdrop-blur-3xl transition duration-300`}
+            >
               <Comments postId={post._id} />
             </DrawerContent>
           </Drawer>
@@ -234,6 +264,7 @@ export function Comments({ postId }: { postId: string }) {
   const [isCommenting, setIsCommenting] = useState(false)
   const [totalComments, setTotalComments] = useState(0)
   const savedUser = useStore((state) => state.savedUser)
+  const [loading, setLoading] = useState(false)
   const [reply, setReply] = useState({
     commentId: '',
     username: '',
@@ -242,8 +273,8 @@ export function Comments({ postId }: { postId: string }) {
   const setNewReplay = newReply((state) => state.setNewReply)
 
   async function handleComments() {
+    setLoading(true)
     const response = await getComments(postId)
-
     if (response.error) {
       console.log(response.error)
       return
@@ -252,6 +283,7 @@ export function Comments({ postId }: { postId: string }) {
     setNextLink(response.nextLink)
     setTotalComments(response.totalComments)
     console.log(response)
+    setLoading(false)
   }
 
   async function handleLoadMore() {
@@ -400,7 +432,7 @@ export function Comments({ postId }: { postId: string }) {
             />
           </div>
         )}
-        <div className='flex w-full items-center gap-1.5'>
+        <div className='z-50 flex w-full items-center gap-1.5'>
           <div className='aspect-square w-8 rounded-full'>
             <Img
               imageUrl={savedUser.profilePic.imageUrl}
@@ -433,8 +465,20 @@ export function Comments({ postId }: { postId: string }) {
         </div>
       </div>
       <div className='grid max-h-[85dvh] gap-5 overflow-auto py-1 pb-24'>
+        {loading && (
+          <div className='grid gap-3.5 px-5 py-2'>
+            <CommentSkeleton />
+            <CommentSkeleton />
+            <CommentSkeleton />
+            <CommentSkeleton />
+            <CommentSkeleton />
+            <CommentSkeleton />
+          </div>
+        )}
+
         {comments.map((comment, index) => (
           <Comment key={index} comment={comment} reply={reply} setReply={setReply} />
+          // <CommentSkeleton key={index} />
         ))}
 
         <div ref={loadMoreRef}></div>
@@ -456,6 +500,7 @@ export function Comment({
   const [isLiked, setIsLiked] = useState(comment.isLiked)
   const [showMore, setShowMore] = useState(false)
   const [comments, setComments] = useState(comment.comments)
+  const [loading, setLoading] = useState(false)
   const newReplay = newReply((state) => state.newReply)
 
   useEffect(() => {
@@ -467,6 +512,7 @@ export function Comment({
   }, [newReplay])
 
   async function handleLikeComment() {
+    setLoading(true)
     comment.likes = comment.likes + 1
     setIsLiked(true)
     const response = await likeComment(comment._id)
@@ -474,9 +520,11 @@ export function Comment({
       comment.likes = comment.likes - 1
       setIsLiked(false)
     }
+    setLoading(false)
   }
 
   async function handleUnlikeComment() {
+    setLoading(true)
     comment.likes = comment.likes - 1
     setIsLiked(false)
     const response = await unlikeComment(comment._id)
@@ -484,6 +532,7 @@ export function Comment({
       comment.likes = comment.likes + 1
       setIsLiked(true)
     }
+    setLoading(false)
   }
 
   return (
@@ -528,6 +577,7 @@ export function Comment({
                   onClick={() => {
                     handleUnlikeComment()
                   }}
+                  disabled={loading}
                 >
                   <Heart size={18} className='fill-current text-red-500' />
                 </Button>
@@ -538,6 +588,7 @@ export function Comment({
                   onClick={() => {
                     handleLikeComment()
                   }}
+                  disabled={loading}
                 >
                   <Heart size={18} className='' />
                 </Button>
@@ -579,16 +630,17 @@ export function Comment({
           )}
         </div>
       </div>
-      {showReplies && <CommentReplays commentId={comment._id} />}
+      {showReplies && <CommentReplays commentId={comment._id} count={comment.comments} />}
     </div>
   )
 }
 
-export function CommentReplays({ commentId }: { commentId: string }) {
+export function CommentReplays({ commentId, count }: { commentId: string; count: number }) {
   const [replays, setReplays] = useState<CommentReplaysT[]>([])
   const [showMore, setShowMore] = useState(false)
   const [nextLink, setNextLink] = useState('')
   const newReplay = newReply((state) => state.newReply)
+  const [loading, setLoading] = useState(false)
   const clearNewReplay = newReply((state) => state.clearNewReply)
 
   useEffect(() => {
@@ -599,6 +651,7 @@ export function CommentReplays({ commentId }: { commentId: string }) {
   }, [newReplay])
 
   async function getCommentsReplays() {
+    setLoading(true)
     try {
       const response = await axios.post('/api/post/getCommentReplays', {
         commentId,
@@ -610,6 +663,7 @@ export function CommentReplays({ commentId }: { commentId: string }) {
     } catch (error: any) {
       console.log(error)
     }
+    setLoading(false)
   }
 
   async function handleLoadMore() {
@@ -632,6 +686,13 @@ export function CommentReplays({ commentId }: { commentId: string }) {
 
   return (
     <div className='grid w-full gap-3.5 pb-2 pl-10 pt-0.5'>
+      {loading && (
+        <div className='grid gap-5'>
+          {[...Array(Math.min(5, count))].map((_, index) => (
+            <CommentReplaySkeleton key={index} />
+          ))}
+        </div>
+      )}
       {replays.map((replay, index) => (
         <CommentReplay key={index} {...replay} />
       ))}
@@ -654,8 +715,10 @@ export function CommentReplay(replay: CommentReplaysT) {
   const [isLiked, setIsLiked] = useState(replay.isLiked)
   const [likes, setLikes] = useState(replay.likes)
   const [showMore, setShowMore] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   async function handleLikeReplay() {
+    setLoading(true)
     setLikes(likes + 1)
     setIsLiked(true)
     const response = await likeReplay(replay._id)
@@ -664,9 +727,11 @@ export function CommentReplay(replay: CommentReplaysT) {
       setIsLiked(false)
     }
     console.log(response)
+    setLoading(false)
   }
 
   async function handleUnLikeReplay() {
+    setLoading(true)
     setLikes(likes - 1)
     setIsLiked(false)
     const response = await unlikeReplay(replay._id)
@@ -675,6 +740,7 @@ export function CommentReplay(replay: CommentReplaysT) {
       setIsLiked(true)
     }
     console.log(response)
+    setLoading(false)
   }
   return (
     <div className='flex w-full items-start justify-center gap-3'>
@@ -708,6 +774,7 @@ export function CommentReplay(replay: CommentReplaysT) {
             <Button
               variant='icon'
               className='text-xs font-semibold'
+              disabled={loading}
               onClick={() => {
                 handleUnLikeReplay()
               }}
@@ -718,6 +785,7 @@ export function CommentReplay(replay: CommentReplaysT) {
             <Button
               variant='icon'
               className='text-xs font-semibold'
+              disabled={loading}
               onClick={() => {
                 handleLikeReplay()
               }}
