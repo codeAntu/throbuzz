@@ -3,14 +3,27 @@
 'use client'
 
 import { Button } from '@/components/Button'
+import DeletePost from '@/components/DeletePost'
 import { MyDialog } from '@/components/MyDialog'
 import PostImage from '@/components/PostImage'
 import { Screen, Screen0 } from '@/components/Screen'
 import { DialogClose } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { deletePost } from '@/handelers/post/deletePost'
 import { colors } from '@/lib/const'
 import axios from 'axios'
-import { Check, ChevronDown, ChevronLeft, Delete, Earth, EarthLock, Image, Plus, Trash2 } from 'lucide-react'
+import {
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  Delete,
+  Earth,
+  EarthLock,
+  Image,
+  LoaderCircle,
+  Plus,
+  Trash2,
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
@@ -141,7 +154,7 @@ export default function EditPostPage({
 
   return (
     <Screen0 className='grid'>
-      <Header />
+      <Header postId={postId} />
 
       <Screen className='min-h-[93dvh] justify-between py-2'>
         <div className='flex flex-col gap-6'>
@@ -259,9 +272,11 @@ export default function EditPostPage({
   )
 }
 
-function Header() {
+function Header({ postId }: { postId: string }) {
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
   return (
-    <div className='z-10 flex min-h-3 w-full items-center justify-between border-b border-black/5 bg-white/80 px-3 py-0 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
+    <div className='z-10 flex min-h-3 w-full items-center justify-between border-b border-black/5 bg-white/80 px-3 py-0 pr-5 backdrop-blur-3xl dark:border-white/5 dark:bg-black/70'>
       <Button
         variant='icon'
         className='rounded-full p-3 active:bg-black/10 dark:active:bg-white/10'
@@ -273,38 +288,15 @@ function Header() {
       </Button>
       <div className='text-base font-bold'>Edit Post </div>
       {/* <Button variant='text' className='rounded-full p-3 text-base active:bg-red-100 active:dark:bg-red-900 md:p-3'> */}
-      <MyDialog
+      <DeletePost
+        postId={postId}
+        goto='back'
         trigger={
-          <Button variant='icon' className='rounded-full p-3 active:bg-black/10 dark:active:bg-white/10'>
+          <Button variant='icon' className='rounded-full active:bg-black/10 dark:active:bg-white/10'>
             <Trash2 size={21} className='text-red-500' />
           </Button>
         }
-      >
-        <div className='pt-5 text-center text-lg'>Do you want to delete the post</div>
-        <div className='pb-3 text-center text-xs text-black/50 dark:text-white/50'>
-          If you delete the post, it will be permanently removed from your account. This cannot be undone.
-        </div>
-        <div className='grid grid-cols-2 gap-3'>
-          <Button
-            variant='filled'
-            className='border-red-500 bg-red-500 text-white dark:border-red-500 dark:bg-red-500 dark:text-white'
-            onClick={() => {
-              // deletePost(postId)
-            }}
-          >
-            Delete
-          </Button>
-          <DialogClose>
-            <Button variant='filled' className=''>
-              Cancel
-            </Button>
-          </DialogClose>
-        </div>
-      </MyDialog>
-      {/* <Trash2 size={21} className='text-red-500' /> */}
-      {/* </Button> */}
-      {/* <Trash2 size={21} className='text-red-500' /> */}
-      {/* </Button> */}
+      />
     </div>
   )
 }

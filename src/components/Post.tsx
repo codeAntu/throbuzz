@@ -22,6 +22,7 @@ import PostImage from './PostImage'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { deletePost } from '@/handelers/post/deletePost'
 import CommentSkeleton, { CommentReplaySkeleton } from './skeleton/CommentSkeleton'
+import DeletePost from './DeletePost'
 
 export default function Post({ post }: { post: PostT }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -30,6 +31,7 @@ export default function Post({ post }: { post: PostT }) {
   const [likeCount, setLikeCount] = useState(post.likes)
   const [copyLink, setCopyLink] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const router = useRouter()
 
   const toggleContent = () => {
@@ -115,7 +117,7 @@ export default function Post({ post }: { post: PostT }) {
           </div>
           <Button variant='icon' className=''>
             {post.isMine ? (
-              <DropdownMenu>
+              <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
                 <DropdownMenuTrigger asChild className='p-2'>
                   <div>
                     <EllipsisVertical size={20} className='text-black' />
@@ -134,15 +136,26 @@ export default function Post({ post }: { post: PostT }) {
                     <Pencil size={17} className='mr-2' />
                     Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className='text-red-500'
-                    onClick={() => {
-                      handleDelete(post._id)
+                  <div
+                    className='p-1 pb-0 text-red-500'
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      setIsDropdownOpen(true) // Keep the dropdown open
                     }}
                   >
-                    <Trash2 size={17} className='mr-2' />
-                    Delete
-                  </DropdownMenuItem>
+                    {/* <Trash2 size={17} className='mr-2' />
+                    Delete */}
+                    <DeletePost
+                      postId={post._id}
+                      goto={'/profile/' + post.author.username}
+                      trigger={
+                        <Button variant='icon' className='rounded-full active:bg-black/10 dark:active:bg-white/10'>
+                          <Trash2 size={21} className='text-red-500' />
+                          <span className='text-red-500'>Delete</span>
+                        </Button>
+                      }
+                    />
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (

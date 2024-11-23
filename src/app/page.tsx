@@ -8,9 +8,13 @@ import { NewPost } from '@/components/NewPost'
 import Post from '@/components/Post'
 import { Screen, Screen0 } from '@/components/Screen'
 import Sidebar from '@/components/Sidebar'
+import FeedSkeleton from '@/components/skeleton/FeedSkeleton'
+import FollowSkeleton from '@/components/skeleton/FollowSkeleton'
+import PostSkeleton from '@/components/skeleton/PostSkeleton'
 import { PostT } from '@/lib/types'
 import useStore from '@/store/store'
 import axios from 'axios'
+import { User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
@@ -33,7 +37,7 @@ export default function Home() {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <FeedSkeleton />
   }
 
   return (
@@ -74,23 +78,26 @@ export default function Home() {
 }
 
 function Recent() {
-  const [posts, setPosts] = useState<PostT[] | []>([])
+  const [posts, setPosts] = useState<PostT[] | null>(null)
   const [nextPageUrl, setNextPageUrl] = useState('')
+  const [loading, setLoading] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
 
   async function getPosts(url: string) {
+    setLoading(true)
     try {
       const response = await axios.post(url)
       console.log(response)
-      if (posts.length === 0) {
+      if (posts?.length === 0) {
         setPosts(response.data.posts)
       } else {
-        setPosts((prev) => [...prev, ...response.data.posts])
+        setPosts((prev) => (prev ? [...prev, ...response.data.posts] : response.data.posts))
       }
       setNextPageUrl(response.data.nextPageUrl)
     } catch (error: any) {
       console.error(error)
     }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -120,37 +127,54 @@ function Recent() {
 
   return (
     <div className='space-y-4'>
-      {posts.map((post, index) => (
-        <Post key={index} post={post} />
-      ))}
+      {loading && !posts && (
+        <div className='space-y-4'>
+          <PostSkeleton />
+          <PostSkeleton />
+        </div>
+      )}
+      {!loading && !posts?.length && (
+        <div className='flex h-[50dvh] items-center justify-center'>
+          <div className='flex flex-col items-center gap-2'>
+            {/* <User size={40} /> */}
+            <div className='text-center text-lg font-semibold'>No Posts </div>
+          </div>
+        </div>
+      )}
+      {posts && posts.map((post, index) => <Post key={index} post={post} />)}
       <div ref={ref}></div>
     </div>
   )
 }
 
 function Following() {
-  const [posts, setPosts] = useState<PostT[] | []>([])
+  const [posts, setPosts] = useState<PostT[] | null>(null)
   const [nextPageUrl, setNextPageUrl] = useState('')
+  const [loading, setLoading] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
 
   async function getPosts(url: string) {
+    setLoading(true)
     try {
       const response = await axios.post(url)
-      console.log(response.data)
-      if (posts.length === 0) {
+      console.log(response)
+      if (posts?.length === 0) {
         setPosts(response.data.posts)
       } else {
-        setPosts((prev) => [...prev, ...response.data.posts])
+        setPosts((prev) => (prev ? [...prev, ...response.data.posts] : response.data.posts))
       }
       setNextPageUrl(response.data.nextPageUrl)
     } catch (error: any) {
       console.error(error)
     }
+    setLoading(false)
   }
 
   useEffect(() => {
     getPosts('/api/feed/following')
   }, [])
+
+  console.log(nextPageUrl)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -174,27 +198,41 @@ function Following() {
   })
   return (
     <div className='space-y-4'>
-      {posts.map((post, index) => (
-        <Post key={index} post={post} />
-      ))}
+      {loading && !posts && (
+        <div className='space-y-4'>
+          <PostSkeleton />
+          <PostSkeleton />
+        </div>
+      )}
+      {!loading && !posts?.length && (
+        <div className='flex h-[50dvh] items-center justify-center'>
+          <div className='flex flex-col items-center gap-2'>
+            {/* <User size={40} /> */}
+            <div className='text-center text-lg font-semibold'>No Posts </div>
+          </div>
+        </div>
+      )}
+      {posts && posts.map((post, index) => <Post key={index} post={post} />)}
+
       <div ref={ref}></div>
     </div>
   )
 }
 
 function Popular() {
-  const [posts, setPosts] = useState<PostT[] | []>([])
+  const [posts, setPosts] = useState<PostT[] | null>(null)
   const [nextPageUrl, setNextPageUrl] = useState('')
+  const [loading, setLoading] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
 
   async function getPosts(url: string) {
     try {
       const response = await axios.post(url)
       console.log(response.data)
-      if (posts.length === 0) {
+      if (posts?.length === 0) {
         setPosts(response.data.posts)
       } else {
-        setPosts((prev) => [...prev, ...response.data.posts])
+        setPosts((prev) => (prev ? [...prev, ...response.data.posts] : response.data.posts))
       }
       setNextPageUrl(response.data.nextPageUrl)
     } catch (error: any) {
@@ -231,9 +269,22 @@ function Popular() {
 
   return (
     <div className='space-y-4'>
-      {posts.map((post, index) => (
-        <Post key={index} post={post} />
-      ))}
+      {loading && !posts && (
+        <div className='space-y-4'>
+          <PostSkeleton />
+          <PostSkeleton />
+        </div>
+      )}
+      {!loading && !posts?.length && (
+        <div className='flex h-[50dvh] items-center justify-center'>
+          <div className='flex flex-col items-center gap-2'>
+            {/* <User size={40} /> */}
+            <div className='text-center text-lg font-semibold'>No Posts </div>
+          </div>
+        </div>
+      )}
+      {posts && posts.map((post, index) => <Post key={index} post={post} />)}
+
       <div ref={ref}></div>
     </div>
   )

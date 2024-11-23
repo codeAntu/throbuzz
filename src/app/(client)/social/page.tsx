@@ -5,9 +5,11 @@ import { Button } from '@/components/Button'
 import People, { PeopleT } from '@/components/people'
 import Post from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
+import FollowSkeleton from '@/components/skeleton/FollowSkeleton'
+import PostSkeleton from '@/components/skeleton/PostSkeleton'
 import { PostT } from '@/lib/types'
 import axios from 'axios'
-import { ChevronLeft, Search, ServerCrash, X } from 'lucide-react'
+import { ChevronLeft, Search, ServerCrash, User, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
@@ -148,10 +150,12 @@ export default function Page() {
 }
 
 function Account({ search }: { search: string }) {
-  const [searchResults, setSearchResults] = useState<PeopleT[] | []>([])
+  const [searchResults, setSearchResults] = useState<PeopleT[] | null>(null)
   const [totalSearchResults, setTotalSearchResults] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   async function getSearchRes() {
+    setLoading(true)
     try {
       const res = await axios.post('api/search/user', { search })
       setTotalSearchResults(res.data.totalUsers)
@@ -159,6 +163,7 @@ function Account({ search }: { search: string }) {
     } catch (error: any) {
       console.error('Error fetching search results:', error)
     }
+    setLoading(false)
   }
 
   console.log(searchResults)
@@ -177,23 +182,26 @@ function Account({ search }: { search: string }) {
   return (
     <Screen0 className='gap-5 p-5'>
       <div className='grid gap-5 sm:gap-7'>
-        {searchResults.length > 0 ? (
-          searchResults.map((item, index) => <People key={index} people={item} />)
-        ) : (
-          <div className='flex items-center justify-center gap-2'>
-            <ServerCrash size={24} />
-            <div className='text-sm font-medium'>No results found</div>
+        {loading && !searchResults && <FollowSkeleton />}
+        {!loading && !searchResults?.length && (
+          <div className='flex h-[50dvh] items-center justify-center'>
+            <div className='flex flex-col items-center gap-2'>
+              <User size={40} />
+              <div className='text-center text-lg font-semibold'>No Following</div>
+            </div>
           </div>
         )}
+        {searchResults && searchResults.map((item, index) => <People key={index} people={item} />)}
       </div>
     </Screen0>
   )
 }
 
 function Posts({ search }: { search: string }) {
-  const [searchResults, setSearchResults] = useState<PostT[] | []>([])
+  const [searchResults, setSearchResults] = useState<PostT[] | null>(null)
   const [totalSearchResults, setTotalSearchResults] = useState(0)
   const [nextPageUrl, setNextPageUrl] = useState('')
+  const [loading, setLoading] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
 
   async function getSearchRes() {
@@ -212,7 +220,7 @@ function Posts({ search }: { search: string }) {
     try {
       const res = await axios.post(nextPageUrl, { search })
       setTotalSearchResults(res.data.total)
-      setSearchResults([...searchResults, ...res.data.posts])
+      setSearchResults([...(searchResults || []), ...res.data.posts])
       console.log(typeof res.data.posts)
 
       setNextPageUrl(res.data.nextPageUrl)
@@ -250,29 +258,34 @@ function Posts({ search }: { search: string }) {
   return (
     <Screen0 className='gap-5 px-5'>
       <div className='grid gap-5 sm:gap-7'></div>
-      {searchResults.length > 0 ? (
-        searchResults.map((item, index) => <Post key={index} post={item} />)
-      ) : (
-        <div className='flex items-center justify-center gap-2'>
-          <ServerCrash size={24} />
-          <div className='text-sm font-medium'>No results found</div>
+      {loading && !searchResults && <PostSkeleton />}
+      {!totalSearchResults && (
+        <div className='flex h-[50dvh] items-center justify-center'>
+          <div className='flex flex-col items-center gap-2'>
+            <User size={40} />
+            <div className='text-center text-lg font-semibold'>No Following</div>
+          </div>
         </div>
       )}
-      <div ref={ref}></div>
+      {searchResults && searchResults.map((post, index) => <Post key={index} post={post} />)}
+      {/* <div ref={ref}></div> */}
     </Screen0>
   )
 }
 
 function Suggestions() {
-  const [suggestions, setSuggestions] = useState<PeopleT[] | []>([])
+  const [suggestions, setSuggestions] = useState<PeopleT[] | null>(null)
+  const [loading, setLoading] = useState(true)
 
   async function getSuggestions() {
+    setLoading(true)
     try {
       const res = await axios.post('api/search/suggestions')
       setSuggestions(res.data.users)
     } catch (error: any) {
       console.error('Error fetching suggestions:', error)
     }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -284,10 +297,16 @@ function Suggestions() {
   return (
     <Screen0 className='gap-5 px-5'>
       <div className='text-lg font-semibold'>Suggestions</div>
-      {/* <div className='grid gap-5 sm:gap-7'></div> */}
-      {suggestions.map((item, index) => (
-        <People key={index} people={item} />
-      ))}
+      {loading && !suggestions && <FollowSkeleton />}
+      {!loading && !suggestions?.length && (
+        <div className='flex h-[50dvh] items-center justify-center'>
+          <div className='flex flex-col items-center gap-2'>
+            <User size={40} />
+            <div className='text-center text-lg font-semibold'>No Following</div>
+          </div>
+        </div>
+      )}
+      {suggestions && suggestions.map((item, index) => <People key={index} people={item} />)}
     </Screen0>
   )
 }

@@ -16,7 +16,7 @@ export function MyDialog({ children, trigger }: { children: React.ReactNode; tri
   return (
     <Dialog>
       <DialogTrigger>{trigger}</DialogTrigger>
-      <DialogContent className='m-auto w-[90%] rounded-lg bg-white/5 p-5 backdrop-blur-xl'>
+      <DialogContent className='m-auto w-[90%] rounded-lg bg-white p-5 backdrop-blur-xl dark:bg-black'>
         {/* <DialogHeader className=''>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>

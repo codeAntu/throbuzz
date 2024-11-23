@@ -1,5 +1,4 @@
 'use client'
-import { FollowersT } from '@/app/(client)/(user)/profile/[userName]/followers/page'
 import { handleFollow, handleUnFollow } from '@/handelers/helpers/follow'
 import { useState } from 'react'
 import { Button } from './Button'

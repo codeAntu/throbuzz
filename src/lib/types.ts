@@ -193,6 +193,22 @@ export interface CommentReplaysT {
   }
   isLiked: boolean
 }
+export interface PeopleT {
+  _id: string
+  status: string
+  isFollowing: boolean
+  isMe: boolean
+  details: {
+    _id: string
+    name: string
+    username: string
+    profilePic: {
+      imageUrl: string
+      publicId: string
+    }
+    bio: string
+  }
+}
 
 // interface CommentT {
 //   _id: string

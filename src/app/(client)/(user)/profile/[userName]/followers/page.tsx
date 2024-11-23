@@ -6,30 +6,16 @@ import { Button } from '@/components/Button'
 import Header from '@/components/Header'
 import Img from '@/components/Img'
 import { Screen0 } from '@/components/Screen'
+import FollowSkeleton from '@/components/skeleton/FollowSkeleton'
+import PeopleSkeleton from '@/components/skeleton/PeopleSkeleton'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
 import { handleFollow, handleUnFollow } from '@/handelers/helpers/follow'
 import { getFollowers } from '@/handelers/user/follow'
+import { PeopleT } from '@/lib/types'
 import axios from 'axios'
-import { EllipsisVertical, Search } from 'lucide-react'
+import { EllipsisVertical, Search, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-
-export interface FollowersT {
-  _id: string
-  status: string
-  isFollowing: boolean
-  isMe: boolean
-  details: {
-    _id: string
-    name: string
-    username: string
-    profilePic: {
-      imageUrl: string
-      publicId: string
-    }
-    bio: string
-  }
-}
 
 export default function Followers({
   params,
@@ -39,41 +25,38 @@ export default function Followers({
     [key: string]: any
   }
 }) {
-  const [follower, setFollower] = useState<FollowersT[]>([])
-  const [searchResult, setSearchResult] = useState<FollowersT[]>([])
+  const [follower, setFollower] = useState<PeopleT[] | null>(null)
+  const [searchResult, setSearchResult] = useState<PeopleT[]>([])
   const [nextPageUrl, setNextPageUrl] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [totalFollowers, setTotalFollowers] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const [search, setSearch] = useState('')
 
   async function handleGetFollowers() {
+    setLoading(true)
     const response = await getFollowers(params.userName)
     console.log(response)
-
     if (response.error) {
       return
     }
-
     setFollower(response.followers)
     setTotalFollowers(response.totalFollowers)
     setNextPageUrl(response.nextPageUrl)
+    setLoading(false)
   }
 
   async function handleNextPage() {
     if (!nextPageUrl) {
       return
     }
-
     try {
-      setLoading(true)
       const response = await axios.post(nextPageUrl, {
         username: params.userName,
       })
       console.log(response)
-      setFollower([...follower, ...response.data.followers])
-      setLoading(false)
+      setFollower([...(follower || []), ...response.data.followers])
     } catch (error: any) {
       console.log(error)
     }
@@ -117,9 +100,20 @@ export default function Followers({
           <span className='px-2 text-accent'>{totalFollowers ? totalFollowers : ''}</span>
         </div>
         <div className='grid gap-5 sm:gap-7'>
-          {follower.map((follower) => (
-            <Follower key={follower._id} {...follower} />
-          ))}
+          {loading && !follower && <FollowSkeleton />}
+          {!loading && !follower?.length && (
+            <div className='flex h-[50dvh] items-center justify-center'>
+              <div className='flex flex-col items-center gap-2'>
+                <User size={40} />
+                <div className='text-center text-lg font-semibold'>No Following</div>
+              </div>
+            </div>
+          )}
+          {follower &&
+            follower.map((follower) => (
+              <Follower key={follower._id} {...follower} />
+              // <PeopleSkeleton key={follower._id} />
+            ))}
         </div>
         <div ref={ref}></div>
       </div>
@@ -127,7 +121,7 @@ export default function Followers({
   )
 }
 
-function Follower(props: FollowersT) {
+function Follower(props: PeopleT) {
   const [isFollowing, setIsFollowing] = useState(props.isFollowing)
   const [isMe, setIsMe] = useState(props.isMe)
   const [loading, setLoading] = useState(false)
@@ -169,7 +163,7 @@ function Follower(props: FollowersT) {
                   e.stopPropagation()
                   handleFollow(props.details._id, setIsFollowing, setLoading)
                 }}
-                disabled={isFollowing}
+                disabled={loading}
               >
                 Follow
               </Button>
@@ -181,48 +175,49 @@ function Follower(props: FollowersT) {
                   e.stopPropagation()
                   handleUnFollow(props.details._id, setIsFollowing, setLoading)
                 }}
-                disabled={!isFollowing}
+                disabled={loading}
               >
                 Unfollow
               </Button>
             )
           ) : null}
 
-          <MyDrawer />
+          {/* <MyDrawer /> */}
+          <EllipsisVertical size={26} strokeWidth={1} />
         </div>
       </div>
     </div>
   )
 }
 
-function MyDrawer() {
-  return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>
-          <EllipsisVertical size={26} strokeWidth={1} />
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent className={`wbackdrop-blur-3xl mx-auto max-w-[800px]`}>
-        <DrawerHeader className='w-full text-center font-extrabold'>Unfollow This account ?</DrawerHeader>
-        <div className='px-5 pb-10 pr-8'>
-          <div className='flex items-center gap-4'>
-            <img src='/images/img1.png' alt='' className='size-14 rounded-full sm:size-20' />
-            <div className='flex w-full justify-between gap-2.5'>
-              <div className=''>
-                <div className='text-sm font-semibold sm:text-lg'>Ananta Karmakar</div>
-                <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-base'>codeAntu</div>
-              </div>
-            </div>
-            <Button
-              variant='zero'
-              className='rounded-[8px] px-5 py-1.5 text-xs font-medium text-red-500 sm:py-2 sm:text-base'
-            >
-              Unfollow
-            </Button>
-          </div>
-        </div>
-      </DrawerContent>
-    </Drawer>
-  )
-}
+// function MyDrawer() {
+//   return (
+//     <Drawer>
+//       <DrawerTrigger asChild>
+//         <Button variant='zero' className='flex cursor-pointer items-center gap-1.5 font-normal'>
+//           <EllipsisVertical size={26} strokeWidth={1} />
+//         </Button>
+//       </DrawerTrigger>
+//       <DrawerContent className={`wbackdrop-blur-3xl mx-auto max-w-[800px]`}>
+//         <DrawerHeader className='w-full text-center font-extrabold'>Unfollow This account ?</DrawerHeader>
+//         <div className='px-5 pb-10 pr-8'>
+//           <div className='flex items-center gap-4'>
+//             <img src='/images/img1.png' alt='' className='size-14 rounded-full sm:size-20' />
+//             <div className='flex w-full justify-between gap-2.5'>
+//               <div className=''>
+//                 <div className='text-sm font-semibold sm:text-lg'>Ananta Karmakar</div>
+//                 <div className='text-xs font-medium text-black/60 dark:text-white/60 sm:text-base'>codeAntu</div>
+//               </div>
+//             </div>
+//             <Button
+//               variant='zero'
+//               className='rounded-[8px] px-5 py-1.5 text-xs font-medium text-red-500 sm:py-2 sm:text-base'
+//             >
+//               Unfollow
+//             </Button>
+//           </div>
+//         </div>
+//       </DrawerContent>
+//     </Drawer>
+//   )
+// }

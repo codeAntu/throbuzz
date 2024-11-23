@@ -64,7 +64,7 @@ export default function UserProfile({
         <Button
           variant='zero'
           onClick={() => {
-            router.push('/search')
+            router.push('/social')
           }}
           className=''
         >
@@ -198,12 +198,11 @@ function Profile({ userName }: { userName: string }) {
               <Button
                 variant='filled'
                 className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
-                onClick={() => {
+                onClick={async () => {
                   console.log('clicked')
-                  user.followers -= 1
-                  const res = handleUnFollow(user.id, setFollowed, setLoading)
-                  if (!followed) {
-                    user.followers += 1
+                  const res = await handleUnFollow(user.id, setFollowed, setLoading)
+                  if (res) {
+                    setUser((prev) => (prev ? { ...prev, followers: prev.followers - 1 } : prev))
                   }
                 }}
                 disabled={loading}
@@ -214,13 +213,11 @@ function Profile({ userName }: { userName: string }) {
               <Button
                 variant='filled'
                 className='border-2 border-black bg-black py-2.5 font-medium text-white dark:bg-white dark:text-black'
-                onClick={() => {
+                onClick={async () => {
                   console.log('clicked')
-                  user.followers += 1
-                  handleFollow(user.id, setFollowed, setLoading)
-                  // have to improve there
-                  if (followed) {
-                    user.followers -= 1
+                  const res = await handleFollow(user.id, setFollowed, setLoading)
+                  if (res) {
+                    setUser((prev) => (prev ? { ...prev, followers: prev.followers + 1 } : prev))
                   }
                 }}
                 disabled={loading}

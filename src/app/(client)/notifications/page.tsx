@@ -2,6 +2,7 @@
 'use client'
 import Header from '@/components/Header'
 import { Screen0 } from '@/components/Screen'
+import NotificationSkeleton from '@/components/skeleton/NotificationSkeleton'
 import { gteNotifications } from '@/handelers/notifications/notifications'
 import axios from 'axios'
 import { Bell, EllipsisVertical } from 'lucide-react'
@@ -21,26 +22,25 @@ export interface NotificationT {
 }
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<NotificationT[]>([])
+  const [notifications, setNotifications] = useState<NotificationT[] | null>(null)
   const [nextPage, setNextPage] = useState('')
   const ref = useRef<HTMLDivElement>(null)
   const [newNotificationsCount, setNewNotificationsCount] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   async function handleGetNotifications() {
+    setLoading(true)
     const response = await gteNotifications()
-
     console.log(response)
-
     if (response.error) {
       console.log(response.message)
       return
     }
-
     setNotifications(response.notifications)
     setNextPage(response.nextLink)
     setNewNotificationsCount(response.newNotificationsCount)
-
     console.log(response)
+    setLoading(false)
   }
 
   async function getNextNotifications(nextPage: string) {
@@ -52,7 +52,7 @@ export default function NotificationsPage() {
       const response = await axios.post(nextPage)
       console.log(response)
 
-      setNotifications([...notifications, ...response.data.notifications])
+      setNotifications([...(notifications || []), ...response.data.notifications])
       setNextPage(response.data.nextLink)
     } catch (error: any) {
       console.log(error.message)
@@ -80,6 +80,8 @@ export default function NotificationsPage() {
     }
   }, [nextPage])
 
+  // return <NotificationSkeleton />
+
   return (
     <Screen0 className=''>
       <Header title='Notifications' />
@@ -89,9 +91,29 @@ export default function NotificationsPage() {
           <span className='px-2 text-accent'>{newNotificationsCount > 0 ? newNotificationsCount : ''}</span>
         </div>
         <div className='space-y-5'>
-          {notifications.map((notification) => (
-            <Notification key={notification._id} notification={notification} />
-          ))}
+          {loading && !notifications && (
+            <div className='space-y-4'>
+              <NotificationSkeleton />
+              <NotificationSkeleton />
+              <NotificationSkeleton />
+              <NotificationSkeleton />
+              <NotificationSkeleton />
+              <NotificationSkeleton />
+            </div>
+          )}
+          {!loading && !notifications?.length && (
+            <div className='flex h-[50dvh] items-center justify-center'>
+              <div className='flex flex-col items-center gap-2'>
+                <div className='text-center text-lg font-semibold'>No Notifications </div>
+              </div>
+            </div>
+          )}
+
+          {notifications &&
+            notifications.map((notification) => (
+              <Notification key={notification._id} notification={notification} />
+              // <NotificationSkeleton key={notification._id} />
+            ))}
         </div>
         <div ref={ref} className='flex justify-center'></div>
       </div>

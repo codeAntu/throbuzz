@@ -101,7 +101,8 @@ export async function POST(req: NextRequest) {
       },
     ])
 
-    const nextPageUrl = posts.length === limit ? `/api/feed/friends?page=${page + 1}&limit=${limit}` : null
+    const nextPage = posts.length === limit ? page + 1 : null
+    const nextPageUrl = nextPage ? `/api/feed/following?page=${nextPage}&limit=${limit}` : ''
 
     return NextResponse.json({ posts, nextPageUrl })
   } catch (error: any) {

@@ -1,9 +1,12 @@
+import HeaderSkeleton from '@/components/skeleton/HeaderSkeleton'
 import PostSkeleton from '@/components/skeleton/PostSkeleton'
 import ProfileSkeleton from '@/components/skeleton/ProfileSkeleton'
+import { ChevronLeft, Search } from 'lucide-react'
 
 export default function Loading() {
   return (
     <div>
+      <HeaderSkeleton />
       <ProfileSkeleton />
       <div>
         <div className='space-y-2 px-5 py-5'>

@@ -14,12 +14,15 @@ import {
   EarthLock,
   EllipsisVertical,
   Image,
+  Loader,
+  LoaderCircle,
   Pencil,
   Plus,
   Trash2,
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 const colorNames: (keyof typeof colors)[] = [
   'stone',
@@ -47,6 +50,8 @@ export default function Page() {
   const [color, setColor] = useState<keyof typeof colors>('stone')
   const [isPublic, setIsPublic] = useState(true)
   const [images, setImages] = useState<FileList | null>(null)
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
   console.log('color', color)
 
@@ -75,17 +80,20 @@ export default function Page() {
     }
     formData.append('color', color)
 
+    setLoading(true)
     try {
       const response = await axios.post('/api/post/createPost', formData)
-
       if (response.status === 200) {
         console.log('Post created:', response.data)
       } else {
         console.log('Error creating post:', response.data)
       }
+      const postId = response.data.post._id
+      router.push(`/post/${postId}`)
     } catch (error) {
       console.error('Error creating post:', error)
     }
+    setLoading(false)
   }
 
   return (
@@ -247,7 +255,7 @@ export default function Page() {
 
         <div className=''>
           <Button variant='filled' className='w-full py-3' onClick={handleSubmit}>
-            Post
+            Post {loading ? <LoaderCircle size={20} className='animate-spin' /> : <Pencil size={20} />}
           </Button>
         </div>
       </Screen>
