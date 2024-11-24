@@ -170,7 +170,7 @@ export default function Post({ post }: { post: PostT }) {
       >
         {post.text}
       </div>
-      {post.postImages.length > 1 && (
+      {post.postImages.length > 0 && (
         <div className=''>
           <Swiper
             spaceBetween={12}
@@ -240,7 +240,7 @@ export default function Post({ post }: { post: PostT }) {
               </Button>
             </DrawerTrigger>
             <DrawerContent
-              className={`mx-2.5 min-h-[600px] max-w-[800px] rounded-3xl backdrop-blur-3xl transition duration-300`}
+              className={`mx-auto min-h-[600px] w-[97%] max-w-[800px] rounded-3xl backdrop-blur-3xl transition duration-300`}
             >
               <Comments postId={post._id} />
             </DrawerContent>
@@ -428,8 +428,10 @@ export function Comments({ postId }: { postId: string }) {
 
   return (
     <div className=''>
-      <DrawerHeader className='w-full text-center font-extrabold'>
-        <p>{totalComments == 0 ? 'Comments' : totalComments == 1 ? '1 Comment' : totalComments + ' Comments'}</p>
+      <DrawerHeader className='w-full font-extrabold'>
+        <span className='text-center'>
+          {totalComments == 0 ? 'Comments' : totalComments == 1 ? '1 Comment' : totalComments + ' Comments'}
+        </span>
       </DrawerHeader>
       <div className='absolute bottom-0 left-auto grid w-full gap-2 border-t bg-white/60 px-2 py-3 pt-4 backdrop-blur-lg dark:bg-black/60'>
         {reply.username && (
@@ -445,7 +447,7 @@ export function Comments({ postId }: { postId: string }) {
             />
           </div>
         )}
-        <div className='z-50 flex w-full items-center gap-1.5'>
+        <div className='z-50 mx-auto flex w-[99%] items-center gap-1.5'>
           <div className='aspect-square w-8 rounded-full'>
             <Img
               imageUrl={savedUser.profilePic.imageUrl}
@@ -489,7 +491,9 @@ export function Comments({ postId }: { postId: string }) {
           </div>
         )}
         {!loading && comments.length == 0 && (
-          <div className='flex h-40 items-center justify-center text-black/50 dark:text-white/50'>No comments yet</div>
+          <div className='flex h-60 items-end justify-center text-black/50 dark:text-white/50'>
+            <div className='text-center'>No comments yet</div>
+          </div>
         )}
         {comments.map((comment, index) => (
           <Comment key={index} comment={comment} reply={reply} setReply={setReply} />

@@ -23,6 +23,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import Error from '@/components/Error'
 
 const colorNames: (keyof typeof colors)[] = [
   'stone',
@@ -44,6 +45,8 @@ const colorNames: (keyof typeof colors)[] = [
   'red',
 ]
 
+const MAX_SIZE = 5 * 1024 * 1024
+
 export default function Page() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [text, setText] = useState('')
@@ -51,9 +54,12 @@ export default function Page() {
   const [isPublic, setIsPublic] = useState(true)
   const [images, setImages] = useState<FileList | null>(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   console.log('color', color)
+
+  console.log('images', !images)
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -65,8 +71,9 @@ export default function Page() {
   console.log('images', images)
 
   const handleSubmit = async () => {
-    if (!text && !images) {
+    if (!text && (!images || !images.length)) {
       console.log('Please add text or image')
+      setError('Please add text or image')
       return
     }
 
@@ -90,11 +97,16 @@ export default function Page() {
       }
       const postId = response.data.post._id
       router.push(`/post/${postId}`)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating post:', error)
+      setError(error.response.data.error)
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    setError('')
+  }, [text, images])
 
   return (
     <Screen0 className='grid'>
@@ -163,12 +175,20 @@ export default function Page() {
                       alert('You can only upload a maximum of 5 images.')
                       files = files.slice(0, 5 - (images ? images.length : 0))
                     }
+                    const validFiles = files.filter((file) => file.size <= MAX_SIZE)
+                    const invalidFiles = files.filter((file) => file.size > MAX_SIZE)
+
+                    if (invalidFiles.length > 0) {
+                      // alert('Some files exceed the size limit of 5MB and were not added.')
+                      setError('Some files exceed the size limit of 5MB and were not added.')
+                    }
+
                     setImages((prev) => {
                       const dataTransfer = new DataTransfer()
                       if (prev) {
                         Array.from(prev).forEach((file) => dataTransfer.items.add(file))
                       }
-                      files.forEach((file) => dataTransfer.items.add(file))
+                      validFiles.forEach((file) => dataTransfer.items.add(file))
                       return dataTransfer.files
                     })
                   }
@@ -253,7 +273,8 @@ export default function Page() {
           </div>
         </div>
 
-        <div className=''>
+        <div className='space-y-3'>
+          {error && <Error error={error} />}
           <Button variant='filled' className='w-full py-3' onClick={handleSubmit}>
             Post {loading ? <LoaderCircle size={20} className='animate-spin' /> : <Pencil size={20} />}
           </Button>

@@ -27,6 +27,10 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState('Recent')
 
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   useEffect(() => {
     setIsLoading(!savedUser)
   }, [savedUser])
@@ -55,7 +59,10 @@ export default function Home() {
                 key={i}
                 variant='zero'
                 className={`px-3 py-2 text-[10px] font-semibold ${page === p ? 'rounded-full bg-slate-300 px-4 text-black dark:bg-zinc-400' : 'text-black/30 dark:text-white/50'}`}
-                onClick={() => setPage(p)}
+                onClick={() => {
+                  setPage(p)
+                  scrollToTop()
+                }}
               >
                 {p}
               </Button>

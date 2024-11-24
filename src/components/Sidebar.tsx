@@ -174,20 +174,29 @@ export function Right() {
   )
 }
 
+const images = ['img1.png ', 'img5.png', 'img3.png', 'img4.png', 'img2.png']
+
 export function StatusComp() {
   return (
     <div>
       <div className='text-sm font-medium md:text-lg'>Status</div>
       <div className='grid grid-cols-3 gap-3 py-5'>
-        <Status />
-        <Status />
-        <Status />
-        <Status />
+        {images.map((img, i) => (
+          <Status key={i} img={img} />
+        ))}
       </div>
     </div>
   )
 }
 
-export function Status() {
-  return <div className='h-40 w-28 rounded-xl border bg-red-400'></div>
+export function Status({ img }: { img: string }) {
+  return (
+    <div className='relative h-40 w-28 overflow-hidden rounded-xl border'>
+      <img src={`/images/${img}`} alt='' className='relative h-full w-full object-cover' />
+      <div className='absolute bottom-1 left-1 flex w-[90%] items-center justify-normal gap-2 rounded-md p-0.5 backdrop-blur-sm'>
+        <img src='/icons/user.png' alt='' className='aspect-square w-7 rounded-full' />
+        <div className='text-sm font-medium'>User</div>
+      </div>
+    </div>
+  )
 }

@@ -3,6 +3,7 @@
 import Header from '@/components/Header'
 import Post from '@/components/Post'
 import { Screen0 } from '@/components/Screen'
+import { PostSkeletonImage } from '@/components/skeleton/PostSkeleton'
 import { PostT } from '@/lib/types'
 import axios from 'axios'
 import { useState } from 'react'
@@ -15,7 +16,7 @@ export default function PostPage({
   }
 }) {
   const [post, setPost] = useState<PostT | null>(null)
-
+  const [loading, setLoading] = useState(true)
   // console.log(params.postId)
 
   async function getPost() {
@@ -36,7 +37,7 @@ export default function PostPage({
   return (
     <Screen0 className=''>
       <Header title='Post' />
-      <div className='p-5'>{post ? <Post post={post} /> : <div className='text-center'>Loading...</div>}</div>
+      <div className='p-5'>{post ? <Post post={post} /> : <PostSkeletonImage />}</div>
     </Screen0>
   )
 }

@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
-import { ComponentProps } from 'react'
+import React, { ComponentProps, ForwardedRef } from 'react'
 
 type buttonProps = ComponentProps<'button'> & {
   className?: string
@@ -20,7 +20,10 @@ const variants = {
   zero: '',
 }
 
-export function Button({ className, children, variant = 'accent', ...rest }: buttonProps) {
+function Button(
+  { className, children, variant = 'accent', ...rest }: buttonProps,
+  ref: ForwardedRef<HTMLButtonElement>,
+) {
   return (
     <motion.button
       whileTap={{ scale: 0.95 }}
@@ -31,9 +34,33 @@ export function Button({ className, children, variant = 'accent', ...rest }: but
           ' ' +
           className,
       )}
+      ref={ref}
       {...rest}
     >
       {children}
     </motion.button>
   )
 }
+
+const ForwardedButton = React.forwardRef(Button)
+ForwardedButton.displayName = 'Button'
+
+export { ForwardedButton as Button }
+
+// export function Button({ className, children, variant = 'accent', ...rest }: buttonProps) {
+//   return (
+//     <motion.button
+//       whileTap={{ scale: 0.95 }}
+//       className={cn(
+//         'flex select-none items-center justify-center gap-2.5 rounded-[14px] text-sm font-semibold duration-100 hover:scale-[0.99] ' +
+//           ' ' +
+//           variants[variant] +
+//           ' ' +
+//           className,
+//       )}
+//       {...rest}
+//     >
+//       {children}
+//     </motion.button>
+//   )
+// }

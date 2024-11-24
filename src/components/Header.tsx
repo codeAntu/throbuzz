@@ -13,7 +13,8 @@ export default function Header({ title, children }: { title: string; children?: 
           variant='icon'
           className='rounded-full p-3 active:bg-black/10 dark:active:bg-white/10'
           onClick={() => {
-            router.back()
+            // router.back()
+            window.history.back()
           }}
         >
           <ChevronLeft size={24} />

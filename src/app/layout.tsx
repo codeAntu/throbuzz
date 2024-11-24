@@ -24,7 +24,6 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={poppins.className}>
-        {/* <body> */}
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
           <div className='flex justify-center'>
             <OpenSidebar />
@@ -35,7 +34,6 @@ export default function RootLayout({
           </div>
           <GetMe />
         </ThemeProvider>
-        {/* </body> */}
       </body>
     </html>
   )

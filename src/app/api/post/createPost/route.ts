@@ -21,7 +21,7 @@ const imageSchema = z.instanceof(File).refine((file) => file.size <= maxSizeInBy
 
 const dataZ = z.object({
   color: z.enum(colorNamesTuple).optional(),
-  text: z.string().min(1).max(500).optional(),
+  text: z.string().max(500).optional(),
   visibility: z.enum(['public', 'private']).optional(),
   images: z.array(imageSchema).max(5).optional(),
 })
@@ -59,6 +59,10 @@ export async function POST(request: NextRequest, response: NextResponse) {
     } = validationResult.data
 
     console.log(validatedText, validatedImages, validatedVisibility, validatedColor)
+
+    if (!validatedText && !validatedImages?.length) {
+      return NextResponse.json({ error: 'Post must have text or image' }, { status: 400 })
+    }
 
     const postImages: {
       publicId: string
