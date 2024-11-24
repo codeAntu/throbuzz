@@ -8,6 +8,7 @@ import { Ic } from '@/components/Icon'
 import Img from '@/components/Img'
 import Input from '@/components/Input'
 import { Screen0 } from '@/components/Screen'
+import EditProfileSkeleton from '@/components/skeleton/EditProfileSkeleton'
 import useStore from '@/store/store'
 import axios from 'axios'
 import { AtSign, Check, ChevronLeft, ImagePlus, LoaderCircle, Pen, Pencil, Trash2, User, X } from 'lucide-react'
@@ -53,7 +54,7 @@ export default function Edit() {
   })
 
   const [newUsername, setNewUsername] = useState('')
-  const [error, setError] = useState('')
+  const [error, setError] = useState('wwwwwwww')
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false)
   const [isUsernameChecking, setIsUsernameChecking] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -127,8 +128,8 @@ export default function Edit() {
       !profileImage
     ) {
       setLoading(false)
+      setError('No changes made')
       console.log('No changes made')
-
       return
     }
 
@@ -205,7 +206,11 @@ export default function Edit() {
     setProfileImageUrl(URL.createObjectURL(file))
   }
 
-  if (!user) return <div>Loading...</div>
+  useEffect(() => {
+    setError('')
+  }, [updatedUser, newUsername])
+
+  if (!user) return <EditProfileSkeleton />
 
   return (
     <Screen0 className=''>
@@ -216,8 +221,10 @@ export default function Edit() {
           onClick={() => {
             updateUser()
           }}
+          disabled={loading}
         >
-          <div>Save</div>
+          {loading ? <LoaderCircle className='animate-spin' /> : <div>Save</div>}
+          {/* <div>Save</div> */}
         </Button>
       </Header>
 
@@ -254,6 +261,7 @@ export default function Edit() {
               </label>
             </div>
             <div>
+              {error && <Error error={error} />}
               <div className='px-1.5 text-base font-medium text-black/80 dark:text-white/80'>Name</div>
               <Input
                 type='text'

@@ -132,6 +132,8 @@ export default function EditPostPage({
       return
     }
 
+    setLoading(true)
+
     try {
       const response = await axios.post('/api/post/editPost', {
         text,
@@ -144,6 +146,7 @@ export default function EditPostPage({
     } catch (error) {
       console.log('error ', error)
     }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -189,7 +192,10 @@ export default function EditPostPage({
                 colors[color].card
               } no-scrollbar max-h-60 w-full rounded-2xl border border-black/5 px-2 py-3 text-sm text-black/80 outline-none placeholder:text-black/50 sm:text-base sm:font-extrabold`}
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => {
+                setError('')
+                setText(e.target.value)
+              }}
               rows={6}
             ></textarea>
             <div className='flex items-start justify-between gap-4 px-2 text-xs font-semibold text-black/80 dark:text-white/80 sm:text-sm sm:font-extrabold'>
@@ -215,6 +221,8 @@ export default function EditPostPage({
                     <DropdownMenuItem
                       className='text-accent'
                       onClick={() => {
+                        setError('')
+
                         setIsPublic(true)
                       }}
                     >
@@ -225,6 +233,8 @@ export default function EditPostPage({
                     <DropdownMenuItem
                       className=''
                       onClick={() => {
+                        setError('')
+
                         setIsPublic(false)
                       }}
                     >
@@ -247,7 +257,10 @@ export default function EditPostPage({
                   className={`flex aspect-square size-12 cursor-pointer items-center justify-center gap-2 rounded-full border sm:size-14 ${
                     colors[colorName].card
                   }`}
-                  onClick={() => setColor(colorName)}
+                  onClick={() => {
+                    setError('')
+                    setColor(colorName)
+                  }}
                 >
                   {color === colorName ? <Check /> : null}
                 </Button>
@@ -257,14 +270,17 @@ export default function EditPostPage({
         </div>
 
         <div className=''>
+          {error && <div className='py-3 text-center text-sm font-semibold text-red-500'>{error}</div>}
           <Button
             variant='filled'
             className='w-full py-3'
             onClick={() => {
               editPost({ text, visibility, postId })
             }}
+            disabled={loading}
           >
             Save changes
+            {loading && <LoaderCircle className='ml-2 animate-spin' size={20} />}
           </Button>
         </div>
       </Screen>

@@ -13,7 +13,7 @@ export default function Loading() {
           <Search size={20} />
           <input type='text' className='w-full border-none bg-transparent outline-none' placeholder='Search ' />
         </div>
-        <div className='text-lg font-semibold'>All Following</div>
+        <div className='text-lg font-semibold'>Have not followed anyone yet</div>
         <div className='grid gap-5 sm:gap-7'>
           <PeopleSkeleton />
           <PeopleSkeleton />

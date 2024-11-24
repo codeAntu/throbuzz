@@ -27,11 +27,11 @@ export default function RootLayout({
         {/* <body> */}
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
           <div className='flex justify-center'>
-            {/* <OpenSidebar /> */}
-            {/* <div className='hidden w-full max-w-[400px] xl:block'></div> */}
+            <OpenSidebar />
+            <div className='hidden w-full max-w-[400px] xl:block'></div>
             {children}
-            {/* <div className='hidden w-full max-w-[400px] 2xl:block'></div> */}
-            {/* <Right /> */}
+            <div className='hidden w-full max-w-[400px] 2xl:block'></div>
+            <Right />
           </div>
           <GetMe />
         </ThemeProvider>

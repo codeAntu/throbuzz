@@ -42,7 +42,9 @@ export default function DeletePost({
             if (goto === 'back') router.back()
             else {
               console.log('goto', goto)
-              router.refresh()
+              // router.refresh()
+              // router.push(goto)
+              window.location.reload()
             }
           }}
         >

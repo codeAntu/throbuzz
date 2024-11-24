@@ -8,6 +8,7 @@ import { Screen0 } from '@/components/Screen'
 import FollowSkeleton from '@/components/skeleton/FollowSkeleton'
 import PostSkeleton from '@/components/skeleton/PostSkeleton'
 import { PostT } from '@/lib/types'
+import useSearchHistory from '@/store/SearchHistory'
 import axios from 'axios'
 import { ChevronLeft, Search, ServerCrash, User, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -18,9 +19,15 @@ export default function Page() {
   const router = useRouter()
   const [page, setPage] = useState('Accounts')
   const pages = ['Accounts', 'Posts']
-  const [searchedItems, setSearchedItems] = useState(['test 1', 'test 2', 'ediehfnubj'])
+  // const [searchedItems, setSearchedItems] = useState(['test 1', 'test 2', 'ediehfnubj'])
   const [searched, setSearched] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
+  const searchHistory = useSearchHistory((state) => state.searchHistory)
+  const addSearchHistory = useSearchHistory((state) => state.addSearchHistory)
+  const clearSearchHistory = useSearchHistory((state) => state.clearSearchHistory)
+  const removeSearchHistory = useSearchHistory((state) => state.removeSearchHistory)
+
+  console.log(searchHistory, 'searchHistory')
 
   return (
     <Screen0 className='flex flex-col gap-2'>
@@ -92,10 +99,17 @@ export default function Page() {
         <div className='space-y-2 px-5'>
           <div className='flex justify-between px-1 text-xs font-semibold'>
             <div>Recent Searches</div>
-            <div className='text-accent'>See all </div>
+            <div
+              className='text-accent'
+              onClick={() => {
+                clearSearchHistory()
+              }}
+            >
+              Clear all
+            </div>
           </div>
           <div>
-            {searchedItems.map((item, index) => (
+            {searchHistory.map((item, index) => (
               <div
                 key={index}
                 className='flex items-center justify-between border-black/10 p-2 text-xs font-medium dark:border-white/10'
@@ -114,7 +128,14 @@ export default function Page() {
                   />
                   <div>{item}</div>
                 </div>
-                <X size={18} className='cursor-pointer text-black/40 dark:text-white/40' strokeWidth={1.5} />
+                <X
+                  size={18}
+                  className='cursor-pointer text-black/40 dark:text-white/40'
+                  strokeWidth={1.5}
+                  onClick={() => {
+                    removeSearchHistory(item)
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -153,9 +174,11 @@ function Account({ search }: { search: string }) {
   const [searchResults, setSearchResults] = useState<PeopleT[] | null>(null)
   const [totalSearchResults, setTotalSearchResults] = useState(0)
   const [loading, setLoading] = useState(true)
+  const addSearchHistory = useSearchHistory((state) => state.addSearchHistory)
 
   async function getSearchRes() {
     setLoading(true)
+    addSearchHistory(search)
     try {
       const res = await axios.post('api/search/user', { search })
       setTotalSearchResults(res.data.totalUsers)
@@ -187,7 +210,7 @@ function Account({ search }: { search: string }) {
           <div className='flex h-[50dvh] items-center justify-center'>
             <div className='flex flex-col items-center gap-2'>
               <User size={40} />
-              <div className='text-center text-lg font-semibold'>No Following</div>
+              <div className='text-center text-lg font-semibold'>No User found</div>
             </div>
           </div>
         )}
@@ -203,8 +226,11 @@ function Posts({ search }: { search: string }) {
   const [nextPageUrl, setNextPageUrl] = useState('')
   const [loading, setLoading] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
+  const addSearchHistory = useSearchHistory((state) => state.addSearchHistory)
 
   async function getSearchRes() {
+    setLoading(true)
+    addSearchHistory(search)
     try {
       const res = await axios.post('api/search/post', { search })
       setTotalSearchResults(res.data.total)
@@ -263,7 +289,7 @@ function Posts({ search }: { search: string }) {
         <div className='flex h-[50dvh] items-center justify-center'>
           <div className='flex flex-col items-center gap-2'>
             <User size={40} />
-            <div className='text-center text-lg font-semibold'>No Following</div>
+            <div className='text-center text-lg font-semibold'>No Post found </div>
           </div>
         </div>
       )}
@@ -302,7 +328,7 @@ function Suggestions() {
         <div className='flex h-[50dvh] items-center justify-center'>
           <div className='flex flex-col items-center gap-2'>
             <User size={40} />
-            <div className='text-center text-lg font-semibold'>No Following</div>
+            <div className='text-center text-lg font-semibold'>No Suggestions found</div>
           </div>
         </div>
       )}

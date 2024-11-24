@@ -166,9 +166,28 @@ export function OpenSidebar() {
 export function Right() {
   return (
     <div className='fixed right-0 hidden h-[100dvh] w-full max-w-[400px] border border-r p-5 2xl:block'>
-      <div>New feathers</div>
+      {/* <div>New feathers</div>
       <div>Suggestions</div>
-      <div>Stories</div>
+      <div>Stories</div> */}
+      <StatusComp />
     </div>
   )
+}
+
+export function StatusComp() {
+  return (
+    <div>
+      <div className='text-sm font-medium md:text-lg'>Status</div>
+      <div className='grid grid-cols-3 gap-3 py-5'>
+        <Status />
+        <Status />
+        <Status />
+        <Status />
+      </div>
+    </div>
+  )
+}
+
+export function Status() {
+  return <div className='h-40 w-28 rounded-xl border bg-red-400'></div>
 }

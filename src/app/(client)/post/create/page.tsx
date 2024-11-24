@@ -92,8 +92,8 @@ export default function Page() {
       router.push(`/post/${postId}`)
     } catch (error) {
       console.error('Error creating post:', error)
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (

@@ -488,7 +488,9 @@ export function Comments({ postId }: { postId: string }) {
             <CommentSkeleton />
           </div>
         )}
-
+        {!loading && comments.length == 0 && (
+          <div className='flex h-40 items-center justify-center text-black/50 dark:text-white/50'>No comments yet</div>
+        )}
         {comments.map((comment, index) => (
           <Comment key={index} comment={comment} reply={reply} setReply={setReply} />
           // <CommentSkeleton key={index} />

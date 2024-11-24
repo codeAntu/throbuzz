@@ -105,7 +105,7 @@ export default function Followers({
             <div className='flex h-[50dvh] items-center justify-center'>
               <div className='flex flex-col items-center gap-2'>
                 <User size={40} />
-                <div className='text-center text-lg font-semibold'>No Following</div>
+                <div className='text-center text-lg font-semibold'>Do not have any followers yet</div>
               </div>
             </div>
           )}
