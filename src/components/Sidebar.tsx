@@ -8,6 +8,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import useStore from '@/store/store'
 import Img from './Img'
 import { logOut } from '@/handelers/helpers/logout'
+import { useEffect, useState } from 'react'
 
 const paths = [
   { name: 'Home', path: '/', icon: <House size={24} className='' /> },
@@ -98,8 +99,19 @@ export function OpenSidebar() {
   const router = useRouter()
   const savedUser = useStore((state) => state.savedUser)
   const clearSavedUser = useStore((state) => state.clearSavedUser)
+
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  if (!isClient) {
+    return null // Render nothing on the server
+  }
+
   return (
-    <div className='fixed left-0 hidden h-[100dvh] w-full max-w-[400px] border border-l px-5 xl:block'>
+    <div className='fixed left-0 hidden h-[100dvh] w-full max-w-[380px] border border-l px-5 xl:block'>
       <Button
         variant='zero'
         className='flex w-full flex-col items-center justify-center gap-5 py-8 sm:gap-8'
@@ -165,7 +177,7 @@ export function OpenSidebar() {
 
 export function Right() {
   return (
-    <div className='fixed right-0 hidden h-[100dvh] w-full max-w-[400px] border border-r p-5 2xl:block'>
+    <div className='fixed right-0 hidden h-[100dvh] w-full max-w-[380px] border border-r p-5 2xl:block'>
       {/* <div>New feathers</div>
       <div>Suggestions</div>
       <div>Stories</div> */}

@@ -45,6 +45,9 @@ export default function Verification() {
           <p className='text-center text-xs text-black/40 dark:text-white/40'>
             We have sent an OTP to your email address .
           </p>
+          <p className='"text-center text-xs text-black/40 dark:text-white/40'>
+            If you do not find the email, please check your spam folder.
+          </p>
         </div>
         <div className=''>
           <OTPInput length={6} getOTp={(otp: string) => setOtp(otp)} />

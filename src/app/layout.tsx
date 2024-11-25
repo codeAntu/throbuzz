@@ -27,9 +27,9 @@ export default function RootLayout({
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
           <div className='flex justify-center'>
             <OpenSidebar />
-            <div className='hidden w-full max-w-[400px] xl:block'></div>
+            <div className='hidden w-full max-w-[380px] xl:block'></div>
             {children}
-            <div className='hidden w-full max-w-[400px] 2xl:block'></div>
+            <div className='hidden w-full max-w-[380px] 2xl:block'></div>
             <Right />
           </div>
           <GetMe />
