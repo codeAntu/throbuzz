@@ -136,25 +136,26 @@ export async function POST(request: NextRequest) {
 
     response.cookies.set('token', token, {
       httpOnly: true,
+      maxAge: 60 * 60 * 24 * 365 * 5, // 5 years
     })
 
-    const userAgent = request.headers.get('user-agent') || 'Unknown device'
+    // const userAgent = request.headers.get('user-agent') || 'Unknown device'
 
-    const notification = new Notification({
-      userId: user._id,
-      title: 'User logged in',
-      message: `User has logged in from device: ${userAgent}`,
-      read: false,
-      readAt: new Date(),
-      url: '',
-    })
+    // const notification = new Notification({
+    //   userId: user._id,
+    //   title: 'User logged in',
+    //   message: `User has logged in from device: ${userAgent}`,
+    //   read: false,
+    //   readAt: new Date(),
+    //   url: '',
+    // })
 
-    await notification.save()
+    // await notification.save()
 
-    // update newNotificationsCount for user
+    // // update newNotificationsCount for user
 
-    user.newNotificationsCount += 1
-    await user.save()
+    // user.newNotificationsCount += 1
+    // await user.save()
 
     return response
   } catch (error: any) {

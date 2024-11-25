@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import GetMe from '@/components/GetMe'
 import { OpenSidebar, Right } from '@/components/Sidebar'
+import ClientProvider from '@/components/ClientProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 const poppins = Poppins({
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang='en'>
       <body className={poppins.className}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+          <ClientProvider />
           <div className='flex justify-center'>
             <OpenSidebar />
             <div className='hidden w-full max-w-[380px] xl:block'></div>

@@ -112,6 +112,20 @@ export async function POST(request: NextRequest) {
     user.verificationCode = ''
     user.verificationCodeExpires = new Date()
 
+    const notification = new Notification({
+      userId: user._id,
+      title: 'User verified',
+      message: 'welcome to the Throbuzz , your account is verified',
+      read: false,
+      readAt: null,
+      url: '',
+    })
+
+    await notification.save()
+
+    // update the user's new notification count
+    // await User.findByIdAndUpdate(user._id, { $inc: { newNotificationsCount: 1 } })
+
     await user.save()
 
     const tokenData = {
@@ -142,23 +156,10 @@ export async function POST(request: NextRequest) {
 
     response.cookies.set('token', token, {
       httpOnly: true,
+      maxAge: 60 * 60 * 24 * 365 * 5, // 5 years
     })
 
     // notification
-
-    const notification = new Notification({
-      userId: user._id,
-      title: 'User verified',
-      message: 'welcome to the Throbuzz , your account is verified',
-      read: false,
-      readAt: null,
-      url: '',
-    })
-
-    await notification.save()
-
-    // update the user's new notification count
-    await User.findByIdAndUpdate(user._id, { $inc: { newNotificationsCount: 1 } })
 
     return response
   } catch (error: any) {
