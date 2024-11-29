@@ -25,10 +25,12 @@ const commentSchema: mongoose.Schema<CommentT> = new mongoose.Schema(
     likes: {
       type: Number,
       default: 0,
+      min: [0, 'Likes cannot be negative'],
     },
     comments: {
       type: Number,
       default: 0,
+      min: [0, 'Likes cannot be negative'],
     },
   },
   { timestamps: true },

@@ -160,14 +160,17 @@ const userSchema: Schema<UserT> = new mongoose.Schema(
     followers: {
       type: Number,
       default: 0,
+      min: [0, 'Followers cannot be negative'],
     },
     following: {
       type: Number,
       default: 0,
+      min: [0, 'Following cannot be negative'],
     },
     postsCount: {
       type: Number,
       default: 0,
+      min: [0, 'Posts count cannot be negative'],
     },
     newNotificationsCount: {
       type: Number,

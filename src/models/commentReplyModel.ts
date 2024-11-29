@@ -15,7 +15,12 @@ const commentReplySchema: Schema<commentReplyT> = new mongoose.Schema(
     commentId: { type: Schema.Types.ObjectId, ref: 'Comment', required: true },
     postId: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
     content: { type: String, required: true },
-    likes: { type: Number, default: 0 },
+    likes: {
+      type: Number,
+      min: [0, 'Likes cannot be negative'],
+
+      default: 0,
+    },
   },
   { timestamps: true },
 )

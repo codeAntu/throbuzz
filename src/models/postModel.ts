@@ -35,10 +35,12 @@ const postSchema: Schema<PostT> = new mongoose.Schema(
     likes: {
       type: Number,
       default: 0,
+      min: [0, 'Likes cannot be negative'],
     },
     comments: {
       type: Number,
       default: 0,
+      min: [0, 'Comments cannot be negative'],
     },
     color: {
       type: String,

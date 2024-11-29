@@ -9,7 +9,7 @@ export default async function imageUpload(file: File) {
       .upload_stream(
         {
           resource_type: 'image',
-          folder: 'test',
+          folder: 'throbuzz',
         },
         async (error: any, result: any) => {
           if (error) {
