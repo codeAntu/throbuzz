@@ -179,7 +179,7 @@ function Profile({ userName }: { userName: string }) {
               }}
             >
               <Pencil size={16} className='' />
-              Edit Profile
+              Edit
             </Button>
             <Button
               variant='outline'
