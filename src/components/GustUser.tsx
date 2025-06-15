@@ -75,7 +75,7 @@ export default function GustUser() {
             Welcome, Guest!
           </DrawerTitle>
           <DrawerDescription className='mx-auto max-w-sm text-base leading-relaxed text-muted-foreground'>
-            Jump right in and explore everything our platform has to offer. As a guest, you'll have access to:
+            Jump right in and explore everything our platform has to offer. As a guest, you will have access to:
           </DrawerDescription>
           <div className='mt-6 grid grid-cols-2 gap-3 text-sm'>
             <div className='flex items-center space-x-2 rounded-lg border border-accent/20 bg-accent/10 p-3'>
