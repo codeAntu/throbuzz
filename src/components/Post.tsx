@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @next/next/no-img-element */
 'use client '
 import { Button } from '@/components/Button'
 import Img from '@/components/Img'
@@ -13,23 +11,30 @@ import newReply from '@/store/newReply'
 import useStore from '@/store/store'
 import { nFormatter } from '@/utils/utils'
 import axios from 'axios'
-import { EllipsisVertical, Heart, Link, LoaderCircle, MessageSquareText, Pencil, Trash2, X } from 'lucide-react'
+import {
+  EllipsisVertical,
+  Heart,
+  LoaderCircle,
+  MessageSquareText,
+  Pencil,
+  Share,
+  Share2,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import 'swiper/css'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import PostImage from './PostImage'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
-import { deletePost } from '@/handelers/post/deletePost'
-import CommentSkeleton, { CommentReplaySkeleton } from './skeleton/CommentSkeleton'
 import DeletePost from './DeletePost'
+import PostImage from './PostImage'
+import CommentSkeleton, { CommentReplaySkeleton } from './skeleton/CommentSkeleton'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
 
 export default function Post({ post }: { post: PostT }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isLiked, setIsLiked] = useState(post.isLiked)
-  const [showReactions, setShowReactions] = useState()
-  const [likeCount, setLikeCount] = useState(post.likes)
-  const [copyLink, setCopyLink] = useState(false)
+  const [shareStatus, setShareStatus] = useState('')
   const [loading, setLoading] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const router = useRouter()
@@ -49,7 +54,6 @@ export default function Post({ post }: { post: PostT }) {
     }
     setLoading(false)
   }
-
   async function handleUnlike() {
     setLoading(true)
     post.likes = post.likes - 1
@@ -61,15 +65,29 @@ export default function Post({ post }: { post: PostT }) {
     }
     setLoading(false)
   }
+  async function handleShare() {
+    const url = window.location.origin + '/post/' + post._id
+    const shareData = {
+      title: `${post.author.name} on Throbuzz`,
+      text: post.text.length > 100 ? post.text.substring(0, 100) + '...' : post.text,
+      url: url,
+    }
 
-  async function handleDelete(postId: string) {
-    setLoading(true)
-    const response = await deletePost(postId)
-    if (response.error) {
-      console.log(response.error)
-      setLoading(false)
-    } else {
-      router.push('/profile/' + post.author.username)
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData)
+        setShareStatus('Shared!')
+      } else {
+        await navigator.clipboard.writeText(url)
+        setShareStatus('Link copied!')
+      }
+    } catch (error) {
+      try {
+        await navigator.clipboard.writeText(url)
+        setShareStatus('Link copied!')
+      } catch (clipboardError) {
+        setShareStatus('Share failed')
+      }
     }
   }
 
@@ -143,8 +161,6 @@ export default function Post({ post }: { post: PostT }) {
                       setIsDropdownOpen(true) // Keep the dropdown open
                     }}
                   >
-                    {/* <Trash2 size={17} className='mr-2' />
-                    Delete */}
                     <DeletePost
                       postId={post._id}
                       goto={'/profile/' + post.author.username}
@@ -185,8 +201,6 @@ export default function Post({ post }: { post: PostT }) {
             className='rounded-xl'
             navigation
             scrollbar={{ draggable: true }}
-
-            // slidesPerView={3}
           >
             {post.postImages.map((img, index) => (
               <SwiperSlide key={index} className='flex w-full items-center justify-center'>
@@ -245,22 +259,15 @@ export default function Post({ post }: { post: PostT }) {
               <Comments postId={post._id} />
             </DrawerContent>
           </Drawer>
-        </div>
+        </div>{' '}
         <Button
           variant='zero'
           className={`cursor-pointer select-none rounded-full border-[0.5px] border-black/5 px-5 py-2 text-xs font-semibold ${colors[post.color as keyof typeof colors].button} text-black/45`}
-          onClick={() => {
-            const url = window.location.origin + '/post/' + post._id
-            navigator.clipboard.writeText(url)
-            setCopyLink(true)
-            setTimeout(() => {
-              setCopyLink(false)
-            }, 2000)
-          }}
+          onClick={handleShare}
         >
           <div className='flex items-center gap-1'>
-            <Link size={16} className='' />
-            {copyLink ? 'Link copied' : 'Copy link'}
+            <Share2 size={16} className='' />
+            {shareStatus || 'Share'}
           </div>
         </Button>
       </div>
