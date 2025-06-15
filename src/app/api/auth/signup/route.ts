@@ -1,13 +1,13 @@
 import { connect } from '@/dbConfig/dbConfig'
-import { NextRequest, NextResponse } from 'next/server'
-import bcryptjs from 'bcryptjs'
-import User from '@/models/userModel'
-import jwt from 'jsonwebtoken'
-import { z } from 'zod'
-import { parseJson } from '@/utils/utils'
 import { TokenDataT } from '@/lib/types'
 import { sendEmail } from '@/mail/mailer'
 import EmailComponent from '@/mail/verifyAccountTemplate'
+import User from '@/models/userModel'
+import { parseJson } from '@/utils/utils'
+import bcryptjs from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
 const user = z
   .object({

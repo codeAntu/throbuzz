@@ -1,14 +1,24 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import { Screen } from '@/components/Screen'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { Bell, House, icons, LogOut, Mail, Menu, Settings, User } from 'lucide-react'
-import { Button } from './Button'
-import { usePathname, useRouter } from 'next/navigation'
-import useStore from '@/store/store'
-import Img from './Img'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { logOut } from '@/handelers/helpers/logout'
+import useStore from '@/store/store'
+import { Bell, House, LogOut, Mail, Menu, Settings, User } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Button } from './Button'
+import Img from './Img'
 
 const paths = [
   { name: 'Home', path: '/', icon: <House size={24} className='' /> },
@@ -73,19 +83,36 @@ export default function Sidebar() {
           </div>
           <div>
             {savedUser.username && (
-              <Button
-                variant='zero'
-                className='flex w-full bg-red-100 px-5 py-4 text-red-500'
-                onClick={() => {
-                  logOut(() => {
-                    clearSavedUser()
-                    router.push('/')
-                  })
-                }}
-              >
-                <LogOut size={24} className='' />
-                <span className='w-full text-left'>Logout</span>
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant='zero' className='flex w-full bg-red-100 px-5 py-4 text-red-500'>
+                    <LogOut size={24} className='' />
+                    <span className='w-full text-left'>Logout</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      You will be logged out of your account and redirected to the home page.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        logOut(() => {
+                          clearSavedUser()
+                          router.push('/')
+                        })
+                      }}
+                      className='bg-red-500 hover:bg-red-600'
+                    >
+                      Logout
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </div>
         </div>
@@ -151,23 +178,40 @@ export function OpenSidebar() {
               {p.icon}
               <span className='w-full text-left'>{p.name}</span>
             </Button>
-          ))}
+          ))}{' '}
         </div>
         <div>
           {savedUser.username && (
-            <Button
-              variant='zero'
-              className='flex w-full bg-red-100 px-5 py-4 text-red-500'
-              onClick={() => {
-                logOut(() => {
-                  clearSavedUser()
-                  router.push('/')
-                })
-              }}
-            >
-              <LogOut size={24} className='' />
-              <span className='w-full text-left'>Logout</span>
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant='zero' className='flex w-full bg-red-100 px-5 py-4 text-red-500'>
+                  <LogOut size={24} className='' />
+                  <span className='w-full text-left'>Logout</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    You will be logged out of your account and redirected to the home page.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      logOut(() => {
+                        clearSavedUser()
+                        router.push('/')
+                      })
+                    }}
+                    className='bg-red-500 hover:bg-red-600'
+                  >
+                    Logout
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
       </div>
