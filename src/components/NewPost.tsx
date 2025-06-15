@@ -4,6 +4,7 @@ import { Button } from '@/components/Button'
 import Img from '@/components/Img'
 import { ArrowRight, ChevronDown, Earth, Image } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import GustUser from './GustUser'
 
 type User = {
   username: string
@@ -16,28 +17,33 @@ export function NewPost({ savedUser }: { savedUser: User }) {
 
   if (!savedUser.username)
     return (
-      <div
-        className='flex cursor-pointer select-none items-center justify-between gap-3 rounded-2xl bg-slate-200/90 px-3 py-3 text-sm dark:bg-zinc-800'
-        onClick={() => {
-          router.push('/login')
-        }}
-      >
-        <div className='flex items-center gap-2 sm:gap-4 sm:text-base'>
-          <div className='w-8'>
-            <Img
-              imageUrl={savedUser.profilePic?.imageUrl || '/icons/user.png'}
-              publicId={savedUser.profilePic?.publicId || ''}
-              height={20}
-              width={20}
-            />
+      <>
+        <div
+          className='flex cursor-pointer select-none items-center justify-between gap-3 rounded-2xl bg-slate-200/90 px-3 py-3 text-sm dark:bg-zinc-800'
+          onClick={() => {
+            router.push('/login')
+          }}
+        >
+          <div className='flex items-center gap-2 sm:gap-4 sm:text-base'>
+            <div className='w-8'>
+              <Img
+                imageUrl={savedUser.profilePic?.imageUrl || '/icons/user.png'}
+                publicId={savedUser.profilePic?.publicId || ''}
+                height={20}
+                width={20}
+              />
+            </div>
+            Login to Throbuzz
           </div>
-          Login to Throbuzz
+          <div className='flex gap-1.5 rounded-xl bg-accent object-center px-5 py-3 text-xs font-medium text-white'>
+            Login
+            <ArrowRight size={16} />
+          </div>
         </div>
-        <div className='flex gap-1.5 rounded-xl bg-accent object-center px-5 py-3 text-xs font-medium text-white'>
-          Login
-          <ArrowRight size={16} />
+        <div className='pt-3'>
+          <GustUser />
         </div>
-      </div>
+      </>
     )
 
   return (

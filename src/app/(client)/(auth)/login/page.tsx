@@ -14,6 +14,7 @@ import Input from '@/components/Input'
 import Error from '@/components/Error'
 import useUserStore from '@/store/store'
 import { togglePasswordVisibility } from '@/components/TogglePasswordVisibility'
+import GustUser from '@/components/GustUser'
 
 export default function Login() {
   const router = useRouter()
@@ -66,7 +67,7 @@ export default function Login() {
   return (
     <Screen className='justify-center gap-12 pt-8'>
       <Hero />
-      <div className='flex flex-col gap-7'>
+      <div className='flex flex-col gap-10'>
         <div className='flex flex-col items-center justify-center gap-3.5'>
           <Input
             type='text'
@@ -98,29 +99,31 @@ export default function Login() {
               Forget Password?
             </button>
           </div>
+
+          <Button variant='accent' title='Login' onClick={() => onLogin()} disabled={loading}>
+            {loading ? (
+              <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
+            ) : (
+              <Ic Icon={LogIn} className='text-white dark:text-black' />
+            )}
+            <span>Login</span>
+          </Button>
+          {error && <Error error={error} />}
+
+          <div className='text-center text-sm text-black/40 dark:text-white/40'>
+            Do not have an account?{'  '}
+            <button
+              onClick={() => {
+                router.push('/signup')
+              }}
+              className='font-semibold text-accent'
+            >
+              Sign up
+            </button>
+          </div>
+          <GustUser />
         </div>
 
-        <Button variant='accent' title='Login' onClick={() => onLogin()} disabled={loading}>
-          {loading ? (
-            <Ic Icon={LoaderCircle} className='animate-spin text-white dark:text-black' />
-          ) : (
-            <Ic Icon={LogIn} className='text-white dark:text-black' />
-          )}
-          <span>Login</span>
-        </Button>
-        {error && <Error error={error} />}
-
-        <div className='text-center text-sm text-black/40 dark:text-white/40'>
-          Do not have an account?{'  '}
-          <button
-            onClick={() => {
-              router.push('/signup')
-            }}
-            className='font-semibold text-accent'
-          >
-            Sign up
-          </button>
-        </div>
         <Continue />
         <TAndC />
       </div>
