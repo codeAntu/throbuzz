@@ -1,13 +1,16 @@
 import { connect } from '@/dbConfig/dbConfig'
-import { NextRequest, NextResponse } from 'next/server'
-import bcryptjs from 'bcryptjs'
-import User from '@/models/userModel'
-import jwt from 'jsonwebtoken'
-import { z } from 'zod'
-import { parseJson } from '@/utils/utils'
+import redis from '@/dbConfig/redis'
+import { addUsernameToBloomFilter } from '@/helpers/checkUsername'
 import { TokenDataT } from '@/lib/types'
 import { sendEmail } from '@/mail/mailer'
 import EmailComponent from '@/mail/verifyAccountTemplate'
+import User from '@/models/userModel'
+import { parseJson } from '@/utils/utils'
+import bcryptjs from 'bcryptjs'
+import { BloomFilter } from 'bloom-filters'
+import jwt from 'jsonwebtoken'
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
 const user = z
   .object({
@@ -23,7 +26,7 @@ const user = z
       .min(3, { message: 'Username must be at least 3 characters long' })
       .max(50, { message: 'Username must be at most 50 characters long' })
       .toLowerCase()
-      .regex(/^[a-zA-Z0-9]*$/, { message: 'Username must contain only letters and numbers' }),
+      .regex(/^[a-z0-9]*$/, { message: 'Username must contain only letters and numbers' }),
     email: z
       .string({ required_error: 'Email is required' }) //
       .trim()
@@ -110,6 +113,8 @@ export async function POST(request: NextRequest) {
 
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
 
+    console.log('verificationCode', verificationCode)
+
     if (userByEmil && !userByEmil.isVerified) {
       userByEmil.name = name
       userByEmil.password = hashedPassword
@@ -117,6 +122,9 @@ export async function POST(request: NextRequest) {
       userByEmil.verificationCode = verificationCode
       userByEmil.verificationCodeExpires = expiryDate
       await userByEmil.save()
+
+      // Add username to bloom filter
+      await addUsernameToBloomFilter(username)
     } else {
       const newUser = new User({
         name,
@@ -128,6 +136,9 @@ export async function POST(request: NextRequest) {
       })
 
       const savedUser = await newUser.save()
+
+      // Add username to bloom filter
+      await addUsernameToBloomFilter(username)
     }
 
     const htmlToSend = EmailComponent.generateEmailHtml({

@@ -73,8 +73,8 @@ export default function SignUpPage() {
     setIsUsernameChecking(true)
 
     try {
-      const response = await axios.post('/api/auth/check-username', { username: username })
-      if (await response.data.success) {
+      const response = await axios.get('/api/auth/check-username', { params: { username: username } })
+      if (response.data.exists === false) {
         setIsUsernameAvailable(true)
       } else {
         setIsUsernameAvailable(false)
@@ -82,6 +82,7 @@ export default function SignUpPage() {
       console.log('response', response.data.success)
     } catch (error: any) {
       console.log('error', error.response.data)
+      setIsUsernameAvailable(false)
     } finally {
       setIsUsernameChecking(false)
     }
@@ -139,7 +140,8 @@ export default function SignUpPage() {
             }
             value={username}
             onChange={(e: any) => {
-              setUsername(e.target.value)
+              const value = e.target.value.replace(/\s/g, '')
+              setUsername(value)
             }}
           />
           <Input

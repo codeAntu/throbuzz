@@ -1,5 +1,5 @@
 import { connect } from '@/dbConfig/dbConfig'
-import User from '@/models/userModel'
+import { addUsernameToBloomFilter, checkUsernameExists } from '@/helpers/checkUsername'
 import { parseJson } from '@/utils/utils'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -7,12 +7,12 @@ import { z } from 'zod'
 const userLoginValid = z
   .object({
     username: z
-      .string({ required_error: 'Email is required' }) //
+      .string({ required_error: 'Username is required' })
       .trim()
-      .min(3, { message: 'Email must be at least 3 characters long' })
-      .max(100, { message: 'Email must be at most 100 characters long' })
+      .min(3, { message: 'Username must be at least 3 characters long' })
+      .max(50, { message: 'Username must be at most 50 characters long' })
       .toLowerCase()
-      .optional(),
+      .regex(/^[a-z0-9]*$/, { message: 'Username must contain only letters and numbers' }),
   })
   .strict()
   .refine((data) => data.username, { message: 'username is required' })
@@ -24,42 +24,65 @@ export async function POST(request: NextRequest) {
   if (body instanceof NextResponse) return body
 
   try {
-    const { username } = await userLoginValid.parse(body)
+    const validationResult = userLoginValid.safeParse(body)
 
-    if (!username) {
+    if (!validationResult.success) {
       return NextResponse.json(
         {
           title: 'Invalid input',
-          error: 'Username is required',
+          error: validationResult.error.errors[0]?.message || 'Invalid username',
+          success: false,
+        },
+        { status: 400 },
+      )
+    }
+    const { username } = validationResult.data
+
+    const exists = await checkUsernameExists(username)
+
+    if (exists) {
+      return NextResponse.json({ message: 'Username already exists', exists: true, success: true })
+    }
+
+    // Add username to bloom filter for future fast lookups
+    await addUsernameToBloomFilter(username)
+
+    return NextResponse.json({ message: 'Username added successfully', exists: false, success: true })
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        title: 'Error',
+        error: error.message,
+        success: false,
+      },
+      { status: 500 },
+    )
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const url = new URL(request.url)
+    const username = url.searchParams.get('username')
+
+    const validationResult = userLoginValid.safeParse({ username })
+
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          title: 'Invalid input',
+          error: validationResult.error.errors[0]?.message || 'Invalid username',
           success: false,
         },
         { status: 400 },
       )
     }
 
-    console.log('username', username)
+    const validatedUsername = validationResult.data.username
 
-    const user = await User.findOne({ username })
-    console.log('user', user)
+    const exists = await checkUsernameExists(validatedUsername)
 
-    if (user) {
-      return NextResponse.json(
-        {
-          title: 'User found ',
-          message: 'User found with this username',
-          success: false,
-        },
-        { status: 200 },
-      )
-    }
-    return NextResponse.json(
-      {
-        title: 'User not found',
-        message: 'User not found with this username',
-        success: true,
-      },
-      { status: 200 },
-    )
+    return NextResponse.json({ message: 'Username checked successfully', exists, success: true })
   } catch (error: any) {
     return NextResponse.json(
       {
