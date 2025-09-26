@@ -44,7 +44,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Username already exists', exists: true, success: true })
     }
 
-    // Add username to bloom filter for future fast lookups
     await addUsernameToBloomFilter(username)
 
     return NextResponse.json({ message: 'Username added successfully', exists: false, success: true })
@@ -81,8 +80,9 @@ export async function GET(request: NextRequest) {
     const validatedUsername = validationResult.data.username
 
     const exists = await checkUsernameExists(validatedUsername)
+    const isAvailable = !exists
 
-    return NextResponse.json({ message: 'Username checked successfully', exists, success: true })
+    return NextResponse.json({ message: 'Username checked successfully', isAvailable, success: true })
   } catch (error: any) {
     return NextResponse.json(
       {

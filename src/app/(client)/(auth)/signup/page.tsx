@@ -74,7 +74,10 @@ export default function SignUpPage() {
 
     try {
       const response = await axios.get('/api/auth/check-username', { params: { username: username } })
-      if (response.data.exists === false) {
+      if (!response.data.success) {
+        return
+      }
+      if (response.data.isAvailable) {
         setIsUsernameAvailable(true)
       } else {
         setIsUsernameAvailable(false)
