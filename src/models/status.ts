@@ -1,10 +1,15 @@
 import mongoose, { Document, Schema } from 'mongoose'
 
+interface StatusImage {
+  publicId: string
+  imageUrl: string
+}
+
 interface Status extends Document {
   user: Schema.Types.ObjectId
-  content: string
-  imageUrl?: string
-  privacy: 'public' | 'friends' | 'only me'
+  text?: string
+  image?: StatusImage
+  visibility: 'public' | 'friends'
   createdAt: Date
   updatedAt: Date
   expireAt: Date
@@ -13,9 +18,12 @@ interface Status extends Document {
 const statusSchema: Schema<Status> = new mongoose.Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    content: { type: String, default: '' },
-    imageUrl: { type: String, default: '' },
-    privacy: {
+    text: { type: String, default: '' },
+    image: {
+      publicId: { type: String },
+      imageUrl: { type: String },
+    },
+    visibility: {
       type: String,
       enum: ['public', 'friends', 'only me'],
       default: 'public',
@@ -29,12 +37,14 @@ const statusSchema: Schema<Status> = new mongoose.Schema(
   { timestamps: true },
 )
 
-// Require at least one of 'content' or 'imageUrl'
+// Require at least one of 'text' or 'image'
 statusSchema.pre('validate', function (next) {
-  if (!this.content && !this.imageUrl) {
-    this.invalidate('content', 'Either content or imageUrl is required.')
+  if (!this.text && !this.image?.imageUrl) {
+    this.invalidate('text', 'Either text or image is required.')
   }
   next()
 })
 
-export default mongoose.models.Status || mongoose.model<Status>('Status', statusSchema)
+const Status = mongoose.models.Status || mongoose.model<Status>('Status', statusSchema)
+
+export default Status

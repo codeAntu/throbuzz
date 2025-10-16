@@ -1,20 +1,22 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import { Screen } from '@/components/Screen'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { Bell, House, icons, LogOut, Mail, Menu, Settings, User } from 'lucide-react'
-import { Button } from './Button'
-import { usePathname, useRouter } from 'next/navigation'
-import useStore from '@/store/store'
-import Img from './Img'
+import StatusPage from '@/app/(client)/(user)/status/page'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { logOut } from '@/handelers/helpers/logout'
+import useStore from '@/store/store'
+import { Bell, House, LogOut, Mail, Menu, Settings, User } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Button } from './Button'
+import Img from './Img'
+import { StatusComp } from './status/StatusCreate'
 
 const paths = [
   { name: 'Home', path: '/', icon: <House size={24} className='' /> },
   { name: 'Notifications', path: '/notifications', icon: <Bell size={24} className='' /> },
   { name: 'Messages', path: '/messages', icon: <Mail size={24} className='' /> },
   { name: 'Social', path: '/social', icon: <User size={24} className='' /> },
+  { name: 'Statuses', path: '/status', icon: <img src='/icons/icon.png' alt='Statuses' className='h-6 w-6' /> },
   { name: 'Settings', path: '/settings', icon: <Settings size={24} className='' /> },
 ]
 
@@ -176,30 +178,15 @@ export function OpenSidebar() {
 }
 
 export function Right() {
+  const path = usePathname()
   return (
     <div className='fixed right-0 hidden h-[100dvh] w-full max-w-[380px] border border-r p-5 2xl:block'>
-      {/* <div>New feathers</div>
-      <div>Suggestions</div>
-      <div>Stories</div> */}
-      <StatusComp />
+      {path === '/status' ? <StatusComp /> : <StatusPage />}
     </div>
   )
 }
 
 const images = ['img1.png ', 'img5.png', 'img3.png', 'img4.png', 'img2.png']
-
-export function StatusComp() {
-  return (
-    <div>
-      <div className='text-sm font-medium md:text-lg'>Status</div>
-      <div className='grid grid-cols-3 gap-3 py-5'>
-        {images.map((img, i) => (
-          <Status key={i} img={img} />
-        ))}
-      </div>
-    </div>
-  )
-}
 
 export function Status({ img }: { img: string }) {
   return (
