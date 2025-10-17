@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import StatusPage from '@/app/(client)/(user)/status/page'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { logOut } from '@/handelers/helpers/logout'
 import useStore from '@/store/store'
@@ -9,7 +8,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Button } from './Button'
 import Img from './Img'
-import { StatusComp } from './status/StatusCreate'
+import StatusMain from './status/status'
 
 const paths = [
   { name: 'Home', path: '/', icon: <House size={24} className='' /> },
@@ -181,7 +180,7 @@ export function Right() {
   const path = usePathname()
   return (
     <div className='fixed right-0 hidden h-[100dvh] w-full max-w-[380px] border border-r p-5 2xl:block'>
-      {path === '/status' ? <StatusComp /> : <StatusPage />}
+      {path !== '/status' && <StatusMain />}
     </div>
   )
 }

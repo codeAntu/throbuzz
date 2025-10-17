@@ -2,7 +2,6 @@ import imageUpload from '@/cloudinary/cloudinaryUploadImage'
 import { connect } from '@/dbConfig/dbConfig'
 import { CloudinaryImageResponse, TokenDataT } from '@/lib/types'
 import Status from '@/models/status'
-import User from '@/models/userModel'
 import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -36,12 +35,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const user = await User.findById(tokenData.id)
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
     const formData = await request.formData()
     const text = formData.get('text') as string
     const visibility = formData.get('visibility') as string
@@ -67,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     const status = new Status({
-      user: user._id,
+      user: tokenData.id,
       text: validatedText,
       visibility: validatedVisibility || 'public',
       image: statusImage,

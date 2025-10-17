@@ -2,7 +2,6 @@ import cloudinaryDeleteImage from '@/cloudinary/cloudinaryDeleteImage'
 import { connect } from '@/dbConfig/dbConfig'
 import { TokenDataT } from '@/lib/types'
 import Status from '@/models/status'
-import User from '@/models/userModel'
 import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -15,10 +14,6 @@ export async function DELETE(request: NextRequest) {
     if (!tokenData || !tokenData.isVerified) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
-    const user = await User.findById(tokenData.id)
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
     const { statusId } = await request.json()
     if (!statusId) {
       return NextResponse.json({ error: 'Status ID required' }, { status: 400 })
@@ -27,7 +22,7 @@ export async function DELETE(request: NextRequest) {
     if (!status) {
       return NextResponse.json({ error: 'Status not found' }, { status: 404 })
     }
-    if (String(status.userId) !== String(user._id)) {
+    if (String(status.userId) !== String(tokenData.id)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
     // Delete image from Cloudinary if present
