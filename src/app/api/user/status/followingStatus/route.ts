@@ -24,31 +24,62 @@ export async function GET(request: NextRequest) {
     const followingIds = follows.map((f) => f.following)
     const now = new Date()
 
-    const statuses = await Status.find({
-      user: { $in: followingIds },
-      visibility: { $in: ['public', 'friends'] },
-      expireAt: { $gt: now },
-    })
-      .sort({ createdAt: -1 })
-      .populate('user', 'name username profileImage')
-      .lean()
+    // Use aggregation pipeline to group statuses by user
+    const groupedStatuses = await Status.aggregate([
+      {
+        $match: {
+          user: { $in: followingIds },
+          visibility: { $in: ['public', 'friends'] },
+          expireAt: { $gt: now },
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'user',
+          foreignField: '_id',
+          as: 'userInfo',
+        },
+      },
+      {
+        $unwind: '$userInfo',
+      },
+      {
+        $group: {
+          _id: '$user',
+          user: {
+            $first: {
+              _id: '$userInfo._id',
+              name: '$userInfo.name',
+              username: '$userInfo.username',
+              profileImage: '$userInfo.profileImage',
+            },
+          },
+          statuses: {
+            $push: {
+              _id: '$_id',
+              text: '$text',
+              image: '$image',
+              visibility: '$visibility',
+              createdAt: '$createdAt',
+              expireAt: '$expireAt',
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          user: 1,
+          statuses: 1,
+        },
+      },
+    ])
 
-    // Group statuses by user
-    const groupedStatuses = statuses.reduce((acc: any, status: any) => {
-      const userId = status.user._id.toString()
-      if (!acc[userId]) {
-        acc[userId] = {
-          user: status.user,
-          statuses: [],
-        }
-      }
-      acc[userId].statuses.push(status)
-      return acc
-    }, {})
-
-    const groupedArray = Object.values(groupedStatuses)
-
-    return NextResponse.json({ groupedStatuses: groupedArray }, { status: 200 })
+    return NextResponse.json({ groupedStatuses }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
