@@ -103,7 +103,6 @@ export default function StatusViewer({ open, onClose, statuses, initialIndex = 0
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Progress bar */}
       <div className='absolute left-0 right-0 top-0 z-50 mx-auto max-w-lg gap-1 p-3'>
         <div className='flex gap-1'>
           {statuses.map((_, i) => (
@@ -140,9 +139,7 @@ export default function StatusViewer({ open, onClose, statuses, initialIndex = 0
           </button>
         </div>
       </div>
-      {/* Content */}
       <div className='relative flex w-full max-w-lg flex-col items-center justify-center overflow-hidden rounded-xl bg-zinc-900 p-6 shadow-lg'>
-        {/* Gradient overlay for text and image background, responsive to theme */}
         <div className='pointer-events-none absolute inset-0 z-10 rounded-xl bg-gradient-to-b from-white/80 via-white/40 to-transparent dark:from-indigo-900/80 dark:via-purple-800/60 dark:to-transparent'></div>
         {status.image && (
           <img src={status.image.imageUrl} alt='status-img-full' className='z-20 w-full' draggable={false} />
@@ -152,7 +149,6 @@ export default function StatusViewer({ open, onClose, statuses, initialIndex = 0
             {status.text}
           </div>
         )}
-        {/* User info below status lines */}
       </div>
     </div>
   )
