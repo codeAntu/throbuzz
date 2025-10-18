@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Img from '../Img'
 import StatusViewer from './StatusViewer'
 
 type StatusCardProps = {
@@ -10,6 +11,10 @@ type StatusCardProps = {
       name?: string
       username?: string
       profileImage?: string
+      profilePic?: {
+        imageUrl: string
+        publicId: string
+      }
     }
     // Add optional statuses and index for stories navigation
     statuses?: any[]
@@ -58,12 +63,17 @@ export default function StatusCard({ status }: StatusCardProps) {
             </span>
           </div>
         )}
-        <div className='absolute bottom-2 left-1/2 z-30 line-clamp-1 flex max-w-[90%] -translate-x-1/2 items-center gap-1 rounded-full bg-black/60 px-1.5 py-1 backdrop-blur-sm'>
-          <img
-            src={status.user?.profileImage}
-            alt='user-avatar'
-            className='h-7 w-7 rounded-full border border-white bg-zinc-800 object-cover'
-          />
+        <div className='absolute bottom-2 left-1/2 z-30 line-clamp-1 flex max-w-[95%] -translate-x-1/2 items-center gap-0.5 rounded-full bg-black/60 px-1 py-1 backdrop-blur-sm'>
+          <div>
+            <Img
+              imageUrl={status.user?.profilePic?.imageUrl || status.user?.profileImage || '/icons/user.png'}
+              publicId={status.user?.profilePic?.publicId || ''}
+              imageAlt='user-avatar'
+              height={28}
+              width={28}
+              className='aspect-square size-7 rounded-full object-cover'
+            />
+          </div>
           <div className='line-clamp-1 text-xs text-zinc-300'>@{status.user?.username}</div>
         </div>
       </div>

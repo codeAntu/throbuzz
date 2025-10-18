@@ -14,7 +14,8 @@ export async function GET(request: NextRequest) {
     if (!tokenData || !tokenData.isVerified) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
-    const user = await User.findById(tokenData.id).select('name username profileImage').lean()
+    const user = await User.findOne({ _id: tokenData.id }).select('name username profileImage profilePic').lean()
+
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }

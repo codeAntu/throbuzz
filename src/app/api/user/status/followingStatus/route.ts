@@ -20,7 +20,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ statuses: [] }, { status: 200 })
     }
 
-    const follows = await Follow.find({ follower: tokenData.id }).select('following').lean()
+    const follows = await Follow.find({ follower: tokenData.id })
+      .select('following')
+      .select('name username profileImage profilePic')
+      .lean()
     const followingIds = follows.map((f) => f.following)
     const now = new Date()
 
@@ -55,7 +58,7 @@ export async function GET(request: NextRequest) {
               _id: '$userInfo._id',
               name: '$userInfo.name',
               username: '$userInfo.username',
-              profileImage: '$userInfo.profileImage',
+              profilePic: '$userInfo.profilePic',
             },
           },
           statuses: {
