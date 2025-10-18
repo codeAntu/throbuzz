@@ -130,7 +130,7 @@ export default function StatusMain() {
               <div key={group.user._id} className='relative'>
                 {/* Badge for total statuses */}
                 {group.statuses.length > 1 && (
-                  <span className='absolute -right-2 -top-2 z-10 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-bold text-white'>
+                  <span className='absolute -right-2 -top-2 z-40 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-bold text-white'>
                     {group.statuses.length}
                   </span>
                 )}

@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
+import Img from '../Img'
 
 export type StatusViewerProps = {
   open: boolean
@@ -9,7 +10,15 @@ export type StatusViewerProps = {
     image?: { imageUrl: string }
   }>
   initialIndex?: number
-  user?: { name?: string; username?: string; profileImage?: string }
+  user?: {
+    name?: string
+    username?: string
+    profileImage?: string
+    profilePic?: {
+      imageUrl: string
+      publicId: string
+    }
+  }
 }
 
 const STATUS_DURATION = 4000 // 4 seconds per status
@@ -127,27 +136,30 @@ export default function StatusViewer({ open, onClose, statuses, initialIndex = 0
         </div>
         <div className='mt-2 flex items-center justify-between'>
           <div className='mt-2 flex items-center gap-2'>
-            <img
-              src={user?.profileImage}
-              alt='user-avatar'
-              className='h-8 w-8 rounded-full border border-white bg-zinc-800 object-cover'
-            />
+            <div>
+              <Img
+                imageUrl={user?.profilePic?.imageUrl || user?.profileImage || '/icons/user.png'}
+                publicId={user?.profilePic?.publicId || ''}
+                imageAlt='user-avatar'
+                height={32}
+                width={32}
+                className='aspect-square size-10 rounded-full object-cover'
+              />
+            </div>
             <div className='flex flex-col'>
               <span className='text-[12px] font-medium text-white drop-shadow'>{user?.name}</span>
               <span className='text-[11px] text-white drop-shadow'>@{user?.username}</span>
             </div>
           </div>
-          <button
-            type='button'
+          <div
             aria-label='Close status viewer'
-            className='ml-2 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-zinc-800/80 shadow-lg backdrop-blur-lg transition-colors duration-150 hover:bg-zinc-700/80'
             onClick={(e) => {
               e.stopPropagation()
               onClose()
             }}
           >
-            <X size={20} className='text-white' />
-          </button>
+            <X size={22} className='rounded-full border p-1 text-white' />
+          </div>
         </div>
       </div>
       <div className='relative flex w-full max-w-lg flex-col items-center justify-center overflow-hidden rounded-xl bg-zinc-900 bg-gradient-to-br from-blue-200/60 via-purple-200/40 to-pink-200/40 p-6 shadow-lg dark:from-blue-700/60 dark:via-purple-700/40 dark:to-pink-600/40'>
