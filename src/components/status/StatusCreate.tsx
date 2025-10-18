@@ -83,7 +83,7 @@ export function StatusComp({ onSuccess }: { onSuccess?: () => void }) {
     <div className='w-full max-w-md rounded-2xl shadow-xl'>
       <div className='mb-6'>
         <h2 className='text-2xl font-bold text-zinc-900 dark:text-white'>Create Status</h2>
-        <p className='mt-1 text-sm text-zinc-500 dark:text-zinc-400'>Share what's on your mind</p>
+        <p className='mt-1 text-sm text-zinc-500 dark:text-zinc-400'>Share what&apos;s on your mind</p>
       </div>
 
       <form onSubmit={handleSubmit} className='flex flex-col gap-5'>
