@@ -150,13 +150,12 @@ export default function StatusViewer({ open, onClose, statuses, initialIndex = 0
           </button>
         </div>
       </div>
-      <div className='relative flex w-full max-w-lg flex-col items-center justify-center overflow-hidden rounded-xl bg-zinc-900 p-6 shadow-lg'>
-        <div className='pointer-events-none absolute inset-0 z-10 rounded-xl bg-gradient-to-b from-white/80 via-white/40 to-transparent dark:from-indigo-900/80 dark:via-purple-800/60 dark:to-transparent'></div>
+      <div className='relative flex w-full max-w-lg flex-col items-center justify-center overflow-hidden rounded-xl bg-zinc-900 bg-gradient-to-br from-blue-200/60 via-purple-200/40 to-pink-200/40 p-6 shadow-lg dark:from-blue-700/60 dark:via-purple-700/40 dark:to-pink-600/40'>
         {status.image && (
           <img src={status.image.imageUrl} alt='status-img-full' className='z-20 w-full' draggable={false} />
         )}
         {status.text && (
-          <div className='z-20 mb-2 flex min-h-[80px] w-full items-center justify-center whitespace-pre-line break-words px-4 text-center text-lg font-semibold text-white'>
+          <div className='z-20 mb-2 flex min-h-[80px] w-full items-center justify-center whitespace-pre-line break-words px-4 text-center text-base font-semibold text-white'>
             {status.text}
           </div>
         )}

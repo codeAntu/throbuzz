@@ -90,7 +90,7 @@ export function StatusComp({ onSuccess }: { onSuccess?: () => void }) {
         {/* Text Input */}
         <div>
           <textarea
-            className='w-full rounded-xl border-2 border-zinc-200 bg-zinc-50 p-4 text-zinc-900 placeholder-zinc-400 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500'
+            className='w-full rounded-xl border-2 border-zinc-200 bg-zinc-50 p-4 text-zinc-900 placeholder-zinc-400 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500'
             placeholder="What's on your mind?"
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -114,7 +114,7 @@ export function StatusComp({ onSuccess }: { onSuccess?: () => void }) {
           {!image ? (
             <label
               htmlFor='status-image'
-              className='flex cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-dashed border-zinc-300 bg-zinc-50 p-6 transition hover:border-blue-400 hover:bg-blue-50/50 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-blue-500 dark:hover:bg-blue-950/30'
+              className='flex cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-dashed border-zinc-300 bg-zinc-50 p-6 transition hover:border-blue-400 hover:bg-blue-50/50 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-blue-500 dark:hover:bg-blue-950/30'
             >
               <Image className='h-6 w-6 text-zinc-400 dark:text-zinc-500' />
               <span className='font-medium text-zinc-600 dark:text-zinc-400'>Add an image</span>

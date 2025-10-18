@@ -26,7 +26,7 @@ export default function StatusCard({ status }: StatusCardProps) {
         onClick={() => setOpen(true)}
       >
         {/* Blurred colored overlay */}
-        <div className='absolute left-0 top-0 z-0 h-full w-full bg-gradient-to-br from-blue-700/60 via-purple-700/40 to-pink-600/40 backdrop-blur-sm'></div>
+        <div className='absolute left-0 top-0 z-0 h-full w-full bg-gradient-to-br from-blue-200/60 via-purple-200/40 to-pink-200/40 backdrop-blur-sm dark:from-blue-700/60 dark:via-purple-700/40 dark:to-pink-600/40'></div>
         {status.image && (
           <img
             src={status.image.imageUrl}
@@ -42,10 +42,10 @@ export default function StatusCard({ status }: StatusCardProps) {
               style={{
                 fontSize:
                   status.text.length < 40
-                    ? '1.25rem' // text-lg
+                    ? '1rem' // text-base
                     : status.text.length < 100
-                      ? '1rem' // text-base
-                      : '0.875rem', // text-sm
+                      ? '0.875rem' // text-sm
+                      : '0.75rem', // text-xs
                 display: '-webkit-box',
                 WebkitLineClamp: 3,
                 WebkitBoxOrient: 'vertical',
