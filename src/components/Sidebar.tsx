@@ -179,7 +179,7 @@ export function OpenSidebar() {
 export function Right() {
   const path = usePathname()
   return (
-    <div className='fixed right-0 hidden h-[100dvh] w-full max-w-[380px] border border-r p-5 2xl:block'>
+    <div className='fixed right-0 z-[999] hidden h-[100dvh] w-full max-w-[380px] border border-r p-5 2xl:block'>
       {path !== '/status' && <StatusMain />}
     </div>
   )
