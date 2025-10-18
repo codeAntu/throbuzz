@@ -8,6 +8,7 @@ export type StatusViewerProps = {
   statuses: Array<{
     text?: string
     image?: { imageUrl: string }
+    createdAt?: string // Add status time property
   }>
   initialIndex?: number
   user?: {
@@ -19,6 +20,17 @@ export type StatusViewerProps = {
       publicId: string
     }
   }
+}
+
+function formatTimeAgo(dateString?: string) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  const now = new Date()
+  const diff = Math.floor((now.getTime() - date.getTime()) / 1000)
+  if (diff < 60) return `${diff}s ago`
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+  return date.toLocaleDateString()
 }
 
 const STATUS_DURATION = 4000 // 4 seconds per status
@@ -148,7 +160,11 @@ export default function StatusViewer({ open, onClose, statuses, initialIndex = 0
             </div>
             <div className='flex flex-col'>
               <span className='text-[12px] font-medium text-white drop-shadow'>{user?.name}</span>
-              <span className='text-[11px] text-white drop-shadow'>@{user?.username}</span>
+              <div className='flex items-center gap-2'>
+                <span className='text-[11px] text-white drop-shadow'>@{user?.username}</span>
+                <span className='aspect-square size-1.5 rounded-full bg-white/50'></span>
+                <span className='text-[10px] text-zinc-300'>{formatTimeAgo(status.createdAt)}</span>
+              </div>
             </div>
           </div>
           <div
