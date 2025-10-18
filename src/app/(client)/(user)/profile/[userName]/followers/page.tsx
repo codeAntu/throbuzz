@@ -7,8 +7,6 @@ import Header from '@/components/Header'
 import Img from '@/components/Img'
 import { Screen0 } from '@/components/Screen'
 import FollowSkeleton from '@/components/skeleton/FollowSkeleton'
-import PeopleSkeleton from '@/components/skeleton/PeopleSkeleton'
-import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
 import { handleFollow, handleUnFollow } from '@/handelers/helpers/follow'
 import { getFollowers } from '@/handelers/user/follow'
 import { PeopleT } from '@/lib/types'
@@ -76,6 +74,14 @@ export default function Followers({
     if (ref.current) observer.observe(ref.current)
   }, [nextPageUrl])
 
+  const filteredFollowers = search
+    ? (follower || []).filter(
+        (f) =>
+          f.details.name.toLowerCase().includes(search.toLowerCase()) ||
+          f.details.username.toLowerCase().includes(search.toLowerCase()),
+      )
+    : follower
+
   return (
     <Screen0 className=''>
       <Header title='Followers' />
@@ -101,7 +107,7 @@ export default function Followers({
         </div>
         <div className='grid gap-5 sm:gap-7'>
           {loading && !follower && <FollowSkeleton />}
-          {!loading && !follower?.length && (
+          {!loading && (!filteredFollowers || !filteredFollowers.length) && (
             <div className='flex h-[50dvh] items-center justify-center'>
               <div className='flex flex-col items-center gap-2'>
                 <User size={40} />
@@ -109,8 +115,8 @@ export default function Followers({
               </div>
             </div>
           )}
-          {follower &&
-            follower.map((follower) => (
+          {filteredFollowers &&
+            filteredFollowers.map((follower) => (
               <Follower key={follower._id} {...follower} />
               // <PeopleSkeleton key={follower._id} />
             ))}

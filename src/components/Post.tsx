@@ -5,6 +5,7 @@ import { Button } from '@/components/Button'
 import Img from '@/components/Img'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
 import { getComments, likeComment, unlikeComment } from '@/handelers/post/comment'
+import { deletePost } from '@/handelers/post/deletePost'
 import { like, unlike } from '@/handelers/post/like'
 import { likeReplay, unlikeReplay } from '@/handelers/post/replay'
 import { colors } from '@/lib/const'
@@ -13,16 +14,25 @@ import newReply from '@/store/newReply'
 import useStore from '@/store/store'
 import { nFormatter } from '@/utils/utils'
 import axios from 'axios'
-import { EllipsisVertical, Heart, Link, LoaderCircle, MessageSquareText, Pencil, Trash2, X } from 'lucide-react'
+import {
+  AlertCircle,
+  EllipsisVertical,
+  Heart,
+  Link,
+  LoaderCircle,
+  MessageSquareText,
+  Pencil,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import 'swiper/css'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import PostImage from './PostImage'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
-import { deletePost } from '@/handelers/post/deletePost'
-import CommentSkeleton, { CommentReplaySkeleton } from './skeleton/CommentSkeleton'
 import DeletePost from './DeletePost'
+import PostImage from './PostImage'
+import CommentSkeleton, { CommentReplaySkeleton } from './skeleton/CommentSkeleton'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
 
 export default function Post({ post }: { post: PostT }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -116,51 +126,57 @@ export default function Post({ post }: { post: PostT }) {
             </div>
           </div>
           <Button variant='icon' className=''>
-            {post.isMine ? (
-              <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-                <DropdownMenuTrigger asChild className='p-2'>
-                  <div>
-                    <EllipsisVertical size={20} className='text-black' />
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align='end'
-                  className='border border-black/10 bg-white/10 backdrop-blur-md dark:border-white/10 dark:bg-black/25'
-                >
-                  <DropdownMenuItem
-                    className=''
-                    onClick={() => {
-                      router.push('/post/edit/' + post._id)
-                    }}
-                  >
-                    <Pencil size={17} className='mr-2' />
-                    Edit
+            <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+              <DropdownMenuTrigger asChild className='p-2'>
+                <div>
+                  <EllipsisVertical size={20} className='text-black' />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align='end'
+                className='border border-black/10 bg-white/10 backdrop-blur-md dark:border-white/10 dark:bg-black/25'
+              >
+                {post.isMine ? (
+                  <>
+                    <DropdownMenuItem
+                      className=''
+                      onClick={() => {
+                        router.push('/post/edit/' + post._id)
+                      }}
+                    >
+                      <Pencil size={17} className='mr-2' />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className='text-red-500'
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        setIsDropdownOpen(true)
+                      }}
+                      asChild
+                    >
+                      <DeletePost
+                        postId={post._id}
+                        goto={'/profile/' + post.author.username}
+                        trigger={
+                          <span className='flex items-center px-2 text-sm text-red-500'>
+                            <Trash2 size={17} className='mr-2' />
+                            Delete
+                          </span>
+                        }
+                      />
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem onClick={() => {}}>
+                    <span className='flex items-center'>
+                      <AlertCircle size={18} className='mr-2' />
+                      Report
+                    </span>
                   </DropdownMenuItem>
-                  <div
-                    className='p-1 pb-0 text-red-500'
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      setIsDropdownOpen(true) // Keep the dropdown open
-                    }}
-                  >
-                    {/* <Trash2 size={17} className='mr-2' />
-                    Delete */}
-                    <DeletePost
-                      postId={post._id}
-                      goto={'/profile/' + post.author.username}
-                      trigger={
-                        <Button variant='icon' className='rounded-full active:bg-black/10 dark:active:bg-white/10'>
-                          <Trash2 size={21} className='text-red-500' />
-                          <span className='text-red-500'>Delete</span>
-                        </Button>
-                      }
-                    />
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <EllipsisVertical size={20} className='text-black' />
-            )}
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </Button>
         </div>
       </div>

@@ -7,7 +7,6 @@ import Header from '@/components/Header'
 import Img from '@/components/Img'
 import { Screen0 } from '@/components/Screen'
 import FollowSkeleton from '@/components/skeleton/FollowSkeleton'
-import PeopleSkeleton from '@/components/skeleton/PeopleSkeleton'
 import { handleFollow, handleUnFollow } from '@/handelers/helpers/follow'
 import { getFollowing } from '@/handelers/user/follow'
 import { PeopleT } from '@/lib/types'
@@ -29,6 +28,7 @@ export default function Followings({
   const [totalFollowing, setTotalFollowing] = useState(0)
   const [nextPageUrl, setNextPageUrl] = useState('')
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
   const ref = useRef<HTMLDivElement>(null)
 
   async function handleGetFollowing() {
@@ -83,13 +83,32 @@ export default function Followings({
     }
   }, [ref.current, loading])
 
+  const filteredFollowings = search
+    ? (followings || []).filter(
+        (f) =>
+          f.details.name.toLowerCase().includes(search.toLowerCase()) ||
+          f.details.username.toLowerCase().includes(search.toLowerCase()),
+      )
+    : followings
+
   return (
     <Screen0>
       <Header title='Following' />
       <div className='grid select-none gap-4 px-5 py-4'>
         <div className='flex w-full items-center justify-center gap-2 rounded-full bg-black/5 px-3 py-2.5 text-xs text-black/80 dark:bg-white/5 dark:text-white/80'>
           <Search size={20} />
-          <input type='text' className='w-full border-none bg-transparent outline-none' placeholder='Search ' />
+          <input
+            type='text'
+            className='w-full border-none bg-transparent outline-none'
+            placeholder='Search '
+            onChange={(e) => setSearch(e.target.value)}
+            value={search}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                // Optionally handle enter
+              }
+            }}
+          />
         </div>
         <div className='text-lg font-semibold'>
           All Following
@@ -97,7 +116,7 @@ export default function Followings({
         </div>
         <div className='grid gap-5 sm:gap-7'>
           {loading && !followings && <FollowSkeleton />}
-          {!loading && !followings?.length && (
+          {!loading && (!filteredFollowings || !filteredFollowings.length) && (
             <div className='flex h-[50dvh] items-center justify-center'>
               <div className='flex flex-col items-center gap-2'>
                 <User size={40} />
@@ -105,7 +124,8 @@ export default function Followings({
               </div>
             </div>
           )}
-          {followings && followings.map((following) => <Following key={following._id} {...following} />)}
+          {filteredFollowings &&
+            filteredFollowings.map((following) => <Following key={following._id} {...following} />)}
         </div>
         <div ref={ref}></div>
       </div>
