@@ -150,8 +150,23 @@ export default function StatusMain() {
 
       {/* Empty State */}
       {(!myStatuses.statuses || myStatuses.statuses.length === 0) && followingStatuses.length === 0 && (
-        <div className='py-12 text-center text-gray-500'>
-          No statuses yet. Create one or follow people to see their statuses!
+        <div className='flex flex-col items-center gap-6 py-12 text-center text-gray-500'>
+          <div>No statuses yet. Create one or follow people to see their statuses!</div>
+          <MyDialog
+            trigger={
+              <div className='flex aspect-[9/16] h-56 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-blue-400/50'>
+                <span className='flex aspect-square h-12 w-12 items-center justify-center rounded-full bg-blue-600/80 text-white'>
+                  <Plus size={32} />
+                </span>
+              </div>
+            }
+          >
+            <StatusComp
+              onSuccess={() => {
+                loadMyStatuses()
+              }}
+            />
+          </MyDialog>
         </div>
       )}
     </div>
